@@ -1,1 +1,1 @@
-# spaticalFurbish
+# spatialFurbish
