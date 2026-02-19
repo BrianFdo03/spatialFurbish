@@ -30,7 +30,7 @@ export function Sidebar() {
     <div className="w-64 min-h-screen bg-[#F3EFE0] p-6 flex flex-col justify-between border-r border-stone-200">
       <div>
         <h1 className="text-xl font-serif font-bold text-stone-800 mb-8 tracking-wide">
-          LUMIÈRE ADMIN
+          SPATIALFURBISH ADMIN
         </h1>
 
         <nav className="space-y-2">
@@ -42,11 +42,10 @@ export function Sidebar() {
               <Link
                 key={item.path}
                 to={item.path} // This is the React Router link prop
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                  isActive
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive
                     ? "bg-white text-stone-900 shadow-sm"
                     : "text-stone-600 hover:bg-stone-200/50"
-                }`}
+                  }`}
               >
                 <item.icon className="w-4 h-4" />
                 {item.label}
