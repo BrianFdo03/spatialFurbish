@@ -4,12 +4,11 @@ import { Navbar } from "../../components/User/Navbar";
 import { Footer } from "../../components/User/Footer";
 import { ProductCard } from "../../components/Dashboard/ProductCard";
 import { Button } from "@/components/ui/button";
-import { Leaf, Droplet, Sun, Shield, Activity, ArrowRight } from "lucide-react";
-import heroImage from "../../assets/hero.jpg";
+import { Armchair, Utensils, BedDouble, Presentation, Wrench, ArrowRight } from "lucide-react";
 import { productAPI } from "@/services/api";
 import { useSocket } from "@/context/SocketContext";
 const data = {
-  brand: "LUMIÈRE",
+  brand: "SpatialFurbish",
   navigation: [
     { label: "Home", href: "/" },
     { label: "Shop", href: "/Shop" },
@@ -17,20 +16,20 @@ const data = {
     { label: "Contact Us", href: "/contact" },
   ],
   hero: {
-    headline: "Natural Beauty, Scientifically Proven",
+    headline: "Visualizing Comfort,Precisely Modeled",
     subheadline:
-      "Discover our award-winning collection of organic skincare essentials designed to nourish and protect your skin.",
+      "Create immersive 2D and 3D room layouts for customers using real-time scaling and shading tools.",
     cta_primary: "Shop Collection",
     cta_secondary: "Our Story",
     image:
-      "https://images.unsplash.com/photo-1556228720-1987ba426eb8?auto=format&fit=crop&q=80&w=2000",
+      "https://i.pinimg.com/736x/66/93/00/6693007955898bfed8b66b75bd3e6ea1.jpg",
   },
-  skin_types: [
-    { label: "Acne Skin", icon: "Leaf" },
-    { label: "Oily Skin", icon: "Droplet" },
-    { label: "Dry Skin", icon: "Sun" },
-    { label: "Sensitive Skin", icon: "Shield" },
-    { label: "Combination Skin", icon: "Activity" },
+  ferniture_types: [
+    { label: "Living Room", icon: "Armchair" },
+    { label: "Dining Area", icon: "Utensils" },
+    { label: "BedRoom Sets", icon: "BedDouble" },
+    { label: "Office Space", icon: "Presentation" },
+    { label: "Custom Layouts", icon: "Wrench" },
   ],
   best_sellers: {
     title: "Best Sellers",
@@ -41,49 +40,49 @@ const data = {
     title: "Shop by Category",
     items: [
       {
-        label: "Cleanser",
+        label: "Kitchen",
         image:
-          "https://plus.unsplash.com/premium_photo-1716629668013-28a2c26358c6?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8Y2xlYW5zZXJ8ZW58MHx8MHx8fDA%3D",
+          "https://www.ikea.com/global/en/media/PH_206388_d64074fbaa.jpg?f=xxxl",
       },
       {
-        label: "Moisturizer",
+        label: "Living Room",
         image:
-          "https://images.unsplash.com/photo-1606424359367-af69e3da9832?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjd8fGNyZWFtfGVufDB8fDB8fHww",
+          "https://static.ikea.pr/assets/bannerImages/card_163_es_pr_17248564861.jpeg",
       },
       {
-        label: "Serum",
+        label: "Bed Room",
         image:
-          "https://images.unsplash.com/photo-1620916297397-a4a5402a3c6c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2VydW18ZW58MHx8MHx8fDA%3D",
+          "https://www.ikea.com/global/en/media/PH_199247_bbd59cc523.jpg?f=xxxl",
       },
       {
-        label: "Sunscreen",
+        label: "Child Room",
         image:
-          "https://images.unsplash.com/photo-1657023828553-18c23601c4d7?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+          "https://www.ikea.com/global/en/media/PH_199492_a4a56a60ed.jpg?f=xxxl",
       },
     ],
   },
   footer: {
-    brand_description: "Natural skincare for the modern lifestyle.",
+    brand_description: "Visualizing Comfort, Precisely Modeled.",
     links: [
       { label: "All Products", href: "#" },
       { label: "Best Sellers", href: "#" },
       { label: "New Arrivals", href: "#" },
     ],
     contact: {
-      email: "hello@lumiere.com",
+      email: "hello@spatialfurbish.com",
       phone: "+1 (555) 123-4567",
     },
-    copyright: "© 2023 Lumière Skincare. All rights reserved.",
+    copyright: "© 2026 SpatialFurbish furnitures. All rights reserved.",
   },
 };
 
 // Map string icon names to actual components
 const iconMap: Record<string, React.ElementType> = {
-  Leaf,
-  Droplet,
-  Sun,
-  Shield,
-  Activity,
+  Armchair,
+  Utensils,
+  BedDouble,
+  Presentation,
+  Wrench,
 };
 
 export function Home() {
@@ -152,13 +151,13 @@ export function Home() {
   // Filter products based on search query
   const filteredProducts = searchQuery
     ? products.filter((product) => {
-        const searchLower = searchQuery.toLowerCase();
-        return (
-          product.name.toLowerCase().includes(searchLower) ||
-          product.description?.toLowerCase().includes(searchLower) ||
-          product.category?.toLowerCase().includes(searchLower)
-        );
-      })
+      const searchLower = searchQuery.toLowerCase();
+      return (
+        product.name.toLowerCase().includes(searchLower) ||
+        product.description?.toLowerCase().includes(searchLower) ||
+        product.category?.toLowerCase().includes(searchLower)
+      );
+    })
     : products.slice(0, 4); // Show only first 4 if no search query
 
   return (
@@ -206,9 +205,9 @@ export function Home() {
           <div className="order-1 md:order-2 relative">
             <div className="aspect-square bg-[#f5f5f0] rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] -z-10 blur-3xl opacity-50" />
             <img
-              src={heroImage}
+              src={data.hero.image}
               alt="Skincare Collection"
-              className="w-full h-auto object-contain drop-shadow-2xl relative z-10"
+              className="w-full h-[500px] object-contain drop-shadow-2xl relative z-10"
             />
           </div>
         </div>
@@ -218,8 +217,8 @@ export function Home() {
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 text-center">
-            {data.skin_types.map((type) => {
-              const Icon = iconMap[type.icon] || Activity;
+            {data.ferniture_types.map((type) => {
+              const Icon = iconMap[type.icon] || Wrench;
               return (
                 <div
                   key={type.label}
