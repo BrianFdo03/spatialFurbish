@@ -1,12 +1,17 @@
-import RoomCanvas from "@/components/RoomCanvas";
-import "./App.css";
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import RoomSelectionPage from "@/components/RoomSelectionPage"
+import FloorPlanEditor from "@/components/FloorPlanEditor"
+import "./App.css"
 
 function App() {
   return (
-    <div className="app-container" style={{ width: '100vw', height: '100vh' }}>
-      <RoomCanvas />
-    </div>
-  );
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<RoomSelectionPage />} />
+        <Route path="/editor" element={<FloorPlanEditor />} />
+      </Routes>
+    </BrowserRouter>
+  )
 }
 
-export default App;
+export default App
