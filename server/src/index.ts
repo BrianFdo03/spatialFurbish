@@ -1,9 +1,20 @@
-const greeting: string = "Hello, TypeScript!";
+import express from 'express';
+import type { Request, Response } from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
 
-function sayHello(name: string): string {
-  return `${greeting} My name is ${name}.`;
-}
+dotenv.config();
 
-const message: string = sayHello("Lakmal");
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-console.log(message);
+app.use(cors());
+app.use(express.json());
+
+app.get('/health', (req: Request, res: Response) => {
+  res.json({ status: 'OK', message: 'Server is running' });
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
