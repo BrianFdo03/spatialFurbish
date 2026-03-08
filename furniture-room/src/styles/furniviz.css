@@ -1,0 +1,71 @@
+:root {
+  --background: #f7f8fa;
+  --foreground: #0b1220;
+  --border: #00000014;
+  --input: #ffffff;
+  --primary: #3b2df5;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f3f6;
+  --secondary-foreground: #39414a;
+  --muted: #e6e9ee;
+  --muted-foreground: #7a858f;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background: var(--background);
+}
+
+/* Header */
+.header {
+  height: 64px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  background: white;
+}
+
+/* Main Layout */
+.main-workspace {
+  display: flex;
+  height: calc(100vh - 64px);
+}
+
+/* Left Sidebar */
+.sidebar-left {
+  width: 320px;
+  border-right: 1px solid var(--border);
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Canvas Area */
+.canvas-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #f8fafc;
+}
+
+.canvas-toolbar {
+  height: 48px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: white;
+}
+
+/* Right Sidebar */
+.sidebar-right {
+  width: 280px;
+  border-left: 1px solid var(--border);
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
