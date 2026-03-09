@@ -1,0 +1,100 @@
+.header {
+  height: 60px;
+  background: #f5f3ea;
+  border-bottom: 1px solid #ffffff;
+  padding: 0 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  font-family: sans-serif;
+  color: #0c0c0b;
+}
+
+/* LEFT */
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #0c0c0b;
+}
+
+.projectTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.titleText {
+  font-weight: 600;
+  font-size: 15px;
+}
+
+.statusDot {
+  color: orange;
+  font-size: 12px;
+}
+
+
+/* CENTER TOGGLE */
+
+.viewToggle {
+  background: #0c0c0b;
+  padding: 4px;
+  border-radius: 8px;
+
+  display: flex;
+  gap: 4px;
+}
+
+.toggleButton {
+  border: none;
+  background: transparent;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+
+  font-size: 14px;
+}
+
+.toggleButton.active {
+  background: #6c7a5c;
+  color: rgb(255, 255, 255);
+}
+
+
+/* RIGHT */
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.iconButton {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.iconButton:hover {
+  opacity: 0.6;
+}
+
+.saveButton {
+  background: #6c7a5c;
+  color: rgb(253, 253, 253);
+  border: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+
+  font-size: 14px;
+}
+
+.saveButton:hover {
+  background: #5b684f;
+}

@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 
-import Sidebar from "../components/layout/Sidebar";
+import Header from "../components/layout/Header";
+import FurnitureSidebar from "../components/layout/FurnitureSidebar";
+import RightSidebar from "../components/layout/RightSidebar";
 import SceneCanvas from "../components/scene/SceneCanvas";
 
 export default function Configurator() {
@@ -11,39 +13,30 @@ export default function Configurator() {
   const [leftWallColor, setLeftWallColor] = useState("#f5f5f5");
   const [rightWallColor, setRightWallColor] = useState("#eeeeee");
 
-
   // ================= ROOM SIZE =================
 
   const [roomWidth, setRoomWidth] = useState(10);
   const [roomDepth, setRoomDepth] = useState(10);
   const [roomHeight, setRoomHeight] = useState(5);
 
-
   // ================= FLOOR =================
 
   const [floorType, setFloorType] = useState("cement");
   const [floorColor, setFloorColor] = useState("#cccccc");
 
-
   // ================= FURNITURE =================
 
-  const [furnitureColor, setFurnitureColor] = useState("#8B4513");
-
-  const [frameColor, setFrameColor] = useState("#8B4513");
   const [cushionColor, setCushionColor] = useState("#ffffff");
   const [fabricType, setFabricType] = useState("fabric1");
-
 
   // ================= LIGHT =================
 
   const [lightOn, setLightOn] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
 
-
   // ================= ROOM TYPE =================
 
   const [roomType, setRoomType] = useState("living");
-
 
   // ================= OBJECT VISIBILITY =================
 
@@ -51,9 +44,14 @@ export default function Configurator() {
   const [showVase, setShowVase] = useState(false);
   const [showTable, setShowTable] = useState(false);
 
+  // ================= OBJECT REFERENCES =================
 
   const objectsRef = useRef([]);
 
+  const [selectedObject, setSelectedObject] = useState(null);
+  const [selectedType, setSelectedType] = useState(null);
+
+  const [selectedObjectRef, setSelectedObjectRef] = useState(null);
 
   // ================= ROOM PRESETS =================
 
@@ -91,107 +89,117 @@ export default function Configurator() {
 
   }, [roomType]);
 
-
-  // ================= UI =================
+  const [viewMode, setViewMode] = useState("3D");
 
   return (
 
-    <div
-      style={{
-        display: "flex",
-        height: "100vh",
-        width: "100vw",
-        background: "#121212",
-      }}
-    >
+    <div style={{ display: "flex", flexDirection: "column", height: "100vh", width: "100vw" }}>
 
-      {/* SIDEBAR */}
+      {/* HEADER */}
+      <Header viewMode={viewMode} setViewMode={setViewMode} />
 
-      <Sidebar
+      {/* MAIN CONTENT */}
 
-        roomType={roomType}
-        setRoomType={setRoomType}
+      <div style={{ display: "flex", flex: 1, height: "100%" }}>
 
-        roomWidth={roomWidth}
-        setRoomWidth={setRoomWidth}
+        {/* LEFT SIDEBAR */}
+        <FurnitureSidebar />
 
-        roomDepth={roomDepth}
-        setRoomDepth={setRoomDepth}
+        {/* CENTER CANVAS */}
 
-        roomHeight={roomHeight}
-        setRoomHeight={setRoomHeight}
+        <div style={{ flex: 1, height: "100%" }}>
 
-        floorType={floorType}
-        setFloorType={setFloorType}
+          <SceneCanvas
+            lightOn={lightOn}
+            roomWidth={roomWidth}
+            roomDepth={roomDepth}
+            roomHeight={roomHeight}
+            floorType={floorType}
+            floorColor={floorColor}
+            backWallColor={backWallColor}
+            leftWallColor={leftWallColor}
+            rightWallColor={rightWallColor}
 
-        floorColor={floorColor}
-        setFloorColor={setFloorColor}
+            cushionColor={cushionColor}
+            fabricType={fabricType}
 
-        backWallColor={backWallColor}
-        setBackWallColor={setBackWallColor}
+            setIsDragging={setIsDragging}
+            isDragging={isDragging}
 
-        leftWallColor={leftWallColor}
-        setLeftWallColor={setLeftWallColor}
+            showTV={showTV}
+            showVase={showVase}
+            showTable={showTable}
 
-        rightWallColor={rightWallColor}
-        setRightWallColor={setRightWallColor}
+            objectsRef={objectsRef}
 
-        furnitureColor={furnitureColor}
-        setFurnitureColor={setFurnitureColor}
+            selectedObject={selectedObject}
+            setSelectedObject={setSelectedObject}
 
-        frameColor={frameColor}
-        setFrameColor={setFrameColor}
+            selectedType={selectedType}
+            setSelectedType={setSelectedType}
 
-        cushionColor={cushionColor}
-        setCushionColor={setCushionColor}
+            selectedObjectRef={selectedObjectRef}
+            setSelectedObjectRef={setSelectedObjectRef}
+          />
 
-        fabricType={fabricType}
-        setFabricType={setFabricType}
+        </div>
 
-        showTV={showTV}
-        setShowTV={setShowTV}
+        {/* RIGHT SIDEBAR */}
 
-        showVase={showVase}
-        setShowVase={setShowVase}
+        <RightSidebar
+          roomType={roomType}
+          setRoomType={setRoomType}
 
-        showTable={showTable}
-        setShowTable={setShowTable}
+          roomWidth={roomWidth}
+          setRoomWidth={setRoomWidth}
 
-        lightOn={lightOn}
-        setLightOn={setLightOn}
+          roomDepth={roomDepth}
+          setRoomDepth={setRoomDepth}
 
-      />
+          roomHeight={roomHeight}
+          setRoomHeight={setRoomHeight}
 
+          floorType={floorType}
+          setFloorType={setFloorType}
 
-      {/* 3D SCENE */}
+          floorColor={floorColor}
+          setFloorColor={setFloorColor}
 
-      <SceneCanvas
+          backWallColor={backWallColor}
+          setBackWallColor={setBackWallColor}
 
-        lightOn={lightOn}
+          leftWallColor={leftWallColor}
+          setLeftWallColor={setLeftWallColor}
 
-        roomWidth={roomWidth}
-        roomDepth={roomDepth}
-        roomHeight={roomHeight}
+          rightWallColor={rightWallColor}
+          setRightWallColor={setRightWallColor}
 
-        floorType={floorType}
-        floorColor={floorColor}
+          cushionColor={cushionColor}
+          setCushionColor={setCushionColor}
 
-        backWallColor={backWallColor}
-        leftWallColor={leftWallColor}
-        rightWallColor={rightWallColor}
+          fabricType={fabricType}
+          setFabricType={setFabricType}
 
-        frameColor={frameColor}
-        cushionColor={cushionColor}
-        fabricType={fabricType}
+          showTV={showTV}
+          setShowTV={setShowTV}
 
-        setIsDragging={setIsDragging}
-        isDragging={isDragging}
+          showVase={showVase}
+          setShowVase={setShowVase}
 
-        showTV={showTV}
-        showVase={showVase}
-        showTable={showTable}
+          showTable={showTable}
+          setShowTable={setShowTable}
 
-      />
+          lightOn={lightOn}
+          setLightOn={setLightOn}
+
+          selectedObject={selectedObject}
+          selectedType={selectedType}
+          selectedObjectRef={selectedObjectRef}
+
+          setSelectedObject={setSelectedObject}
+        />
+
+      </div>
 
     </div>
 

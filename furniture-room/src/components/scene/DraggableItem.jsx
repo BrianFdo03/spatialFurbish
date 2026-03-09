@@ -1,5 +1,5 @@
 import { useThree, useFrame } from "@react-three/fiber";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import * as THREE from "three";
 
 export default function DraggableItem({
@@ -8,14 +8,13 @@ export default function DraggableItem({
   roomDepth,
   initialPosition,
   setIsDragging,
-  objectsRef
+  objectsRef,
+  onClick,
+  setSelectedObjectRef
 }) {
 
   const groupRef = useRef();
-
   const boundingBox = useRef(new THREE.Box3());
-
-  const [selected, setSelected] = useState(false);
 
   const { camera, gl } = useThree();
 
@@ -52,17 +51,6 @@ export default function DraggableItem({
     setIsDragging(false);
 
     gl.domElement.style.cursor = "auto";
-
-  };
-
-
-  /* ================= ROTATE ================= */
-
-  const rotateObject = () => {
-
-    if (!groupRef.current) return;
-
-    groupRef.current.rotation.y += Math.PI / 2;
 
   };
 
@@ -115,7 +103,6 @@ export default function DraggableItem({
     const rect = gl.domElement.getBoundingClientRect();
 
     mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-
     mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
 
     raycaster.setFromCamera(mouse, camera);
@@ -197,26 +184,24 @@ export default function DraggableItem({
     <group
       ref={groupRef}
       position={initialPosition}
+
       onPointerDown={(e) => {
+
         onPointerDown(e);
-        setSelected(true);
+
+        if (onClick) onClick();
+
+        if (setSelectedObjectRef) {
+
+          setSelectedObjectRef(groupRef);
+
+        }
+
       }}
+
     >
 
       {children}
-
-      {selected && (
-        <mesh
-          position={[0, 2, 0]}
-          onClick={(e) => {
-            e.stopPropagation();
-            rotateObject();
-          }}
-        >
-          <boxGeometry args={[0.5, 0.2, 0.5]} />
-          <meshStandardMaterial color="orange" />
-        </mesh>
-      )}
 
     </group>
 

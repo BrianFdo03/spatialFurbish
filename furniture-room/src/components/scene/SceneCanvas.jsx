@@ -1,6 +1,6 @@
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, ContactShadows } from "@react-three/drei";
-import { useRef } from "react";
+import { useEffect } from "react";
 
 import Floor from "./Floor";
 import DraggableItem from "./DraggableItem";
@@ -10,7 +10,29 @@ import TV from "../objects/TV";
 import FlowerVase from "../objects/FlowerVase";
 import Table from "../objects/Table";
 
+
+/* ================= CAMERA CONTROLLER ================= */
+
+function CameraController() {
+
+  const { camera } = useThree();
+
+  useEffect(() => {
+
+    camera.position.set(7, 6, 7);
+    camera.lookAt(0, 0, 0);
+
+  }, [camera]);
+
+  return null;
+
+}
+
+
+/* ================= SCENE CANVAS ================= */
+
 export default function SceneCanvas({
+
   lightOn,
   roomWidth,
   roomDepth,
@@ -20,40 +42,60 @@ export default function SceneCanvas({
   backWallColor,
   leftWallColor,
   rightWallColor,
+
   cushionColor,
   fabricType,
+
   setIsDragging,
   isDragging,
+
   showTV,
   showVase,
-  showTable
-}) {
+  showTable,
 
-  const objectsRef = useRef([]);
+  objectsRef,
+
+  selectedObject,
+  setSelectedObject,
+  selectedType,
+  setSelectedType,
+
+  selectedObjectRef,
+  setSelectedObjectRef
+
+}) {
 
   return (
 
-    <div style={{ flex: 1 }}>
+    <div style={{ width: "100%", height: "100%" }}>
 
       <Canvas
         shadows
+        camera={{ fov: 60 }}
         style={{ width: "100%", height: "100%" }}
-        camera={{ position: [15, 10, 15], fov: 50 }}
       >
 
-        {/* LIGHT */}
+        <CameraController />
+
+
+        {/* ================= LIGHT ================= */}
 
         {lightOn && (
+
           <directionalLight
-            position={[10, 20, 10]}
-            intensity={1.5}
+            position={[8, 10, 8]}
+            intensity={1.3}
             castShadow
             shadow-mapSize-width={2048}
             shadow-mapSize-height={2048}
           />
+
         )}
 
-        <ambientLight intensity={0.6} />
+        <ambientLight intensity={0.5} />
+
+
+        {/* ================= CONTACT SHADOW ================= */}
 
         <ContactShadows
           position={[0, 0.01, 0]}
@@ -63,30 +105,71 @@ export default function SceneCanvas({
           far={20}
         />
 
-        {/* FLOOR */}
+
+        {/* ================= FLOOR ================= */}
 
         <Floor
           roomWidth={roomWidth}
           roomDepth={roomDepth}
           floorType={floorType}
           floorColor={floorColor}
+
+          onClick={() => {
+
+            setSelectedObject("floor");
+            setSelectedType("room");
+
+          }}
+
         />
 
-        {/* BACK WALL */}
 
-        <mesh position={[0, roomHeight / 2, -roomDepth / 2]} receiveShadow>
+        {/* ================= BACK WALL ================= */}
+
+        <mesh
+          position={[0, roomHeight / 2, -roomDepth / 2]}
+          receiveShadow
+
+          onClick={() => {
+
+            setSelectedObject("back wall");
+            setSelectedType("room");
+
+          }}
+
+        >
+
           <boxGeometry args={[roomWidth, roomHeight, 0.2]} />
+
           <meshStandardMaterial color={backWallColor} />
+
         </mesh>
 
-        {/* LEFT WALL */}
 
-        <mesh position={[-roomWidth / 2, roomHeight / 2, 0]} receiveShadow>
+        {/* ================= LEFT WALL ================= */}
+
+        <mesh
+          position={[-roomWidth / 2, roomHeight / 2, 0]}
+          receiveShadow
+
+          onClick={() => {
+
+            setSelectedObject("left wall");
+            setSelectedType("room");
+
+          }}
+
+        >
+
           <boxGeometry args={[0.2, roomHeight, roomDepth]} />
+
           <meshStandardMaterial color={leftWallColor} />
+
         </mesh>
 
-        {/* GLB FURNITURE */}
+
+
+        {/* ================= CHAIR ================= */}
 
         <DraggableItem
           roomWidth={roomWidth}
@@ -94,6 +177,16 @@ export default function SceneCanvas({
           initialPosition={[0, 0, 0]}
           setIsDragging={setIsDragging}
           objectsRef={objectsRef}
+
+          setSelectedObjectRef={setSelectedObjectRef}
+
+          onClick={() => {
+
+            setSelectedObject("chair");
+            setSelectedType("furniture");
+
+          }}
+
         >
 
           <GLBFurniture
@@ -103,7 +196,9 @@ export default function SceneCanvas({
 
         </DraggableItem>
 
-        {/* TV */}
+
+
+        {/* ================= TV ================= */}
 
         {showTV && (
 
@@ -113,6 +208,16 @@ export default function SceneCanvas({
             initialPosition={[0, 1.5, -roomDepth / 2 + 0.3]}
             setIsDragging={setIsDragging}
             objectsRef={objectsRef}
+
+            setSelectedObjectRef={setSelectedObjectRef}
+
+            onClick={() => {
+
+              setSelectedObject("tv");
+              setSelectedType("furniture");
+
+            }}
+
           >
 
             <TV roomHeight={roomHeight} roomDepth={roomDepth} />
@@ -121,7 +226,9 @@ export default function SceneCanvas({
 
         )}
 
-        {/* VASE */}
+
+
+        {/* ================= VASE ================= */}
 
         {showVase && (
 
@@ -131,6 +238,16 @@ export default function SceneCanvas({
             initialPosition={[0, 0, -roomDepth / 2 + 0.3]}
             setIsDragging={setIsDragging}
             objectsRef={objectsRef}
+
+            setSelectedObjectRef={setSelectedObjectRef}
+
+            onClick={() => {
+
+              setSelectedObject("vase");
+              setSelectedType("furniture");
+
+            }}
+
           >
 
             <FlowerVase />
@@ -139,7 +256,9 @@ export default function SceneCanvas({
 
         )}
 
-        {/* TABLE */}
+
+
+        {/* ================= TABLE ================= */}
 
         {showTable && (
 
@@ -149,6 +268,16 @@ export default function SceneCanvas({
             initialPosition={[0, 0, -roomDepth / 2 + 0.3]}
             setIsDragging={setIsDragging}
             objectsRef={objectsRef}
+
+            setSelectedObjectRef={setSelectedObjectRef}
+
+            onClick={() => {
+
+              setSelectedObject("table");
+              setSelectedType("furniture");
+
+            }}
+
           >
 
             <Table />
@@ -157,9 +286,18 @@ export default function SceneCanvas({
 
         )}
 
-        {/* CONTROLS */}
 
-        <OrbitControls enabled={!isDragging} />
+
+        {/* ================= CONTROLS ================= */}
+
+        <OrbitControls
+          enabled={!isDragging}
+          target={[0, 0, 0]}
+          minDistance={4}
+          maxDistance={15}
+          maxPolarAngle={Math.PI / 2.05}
+        />
+
 
       </Canvas>
 
