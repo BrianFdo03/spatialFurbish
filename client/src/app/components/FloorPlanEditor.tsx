@@ -2,9 +2,8 @@ import { useState, useReducer } from "react"
 import { useSearchParams } from "react-router-dom"
 import EditorTopBar from "./EditorTopBar"
 import FurniturePanel from "./FurniturePanel"
-import type { FurnitureDef } from "./FurniturePanel"
 import PropertiesPanel from "./PropertiesPanel"
-import type { PlacedItem } from "./PropertiesPanel"
+import type { FurnitureDef, PlacedItem } from "../types/furniture"
 import FloorPlanCanvas from "./FloorPlanCanvas"
 import RoomCanvas from "./RoomCanvas"
 import type { RoomType } from "./RoomSelector"
@@ -17,7 +16,7 @@ type Action =
 
 function reducer(state: PlacedItem[], action: Action): PlacedItem[] {
     switch (action.type) {
-        case 'ADD_ITEM':
+        case 'ADD_ITEM': {
             const def = action.payload
             return [...state, {
                 ...def,
@@ -27,6 +26,7 @@ function reducer(state: PlacedItem[], action: Action): PlacedItem[] {
                 rotation: 0,
                 color: "#3B82F6"
             }]
+        }
         case 'UPDATE_ITEM':
             return state.map(item =>
                 item.instanceId === action.payload.id
@@ -48,7 +48,7 @@ export default function FloorPlanEditor() {
     const [selectedId, setSelectedId] = useState<string | null>(null)
 
     const rawRoom = searchParams.get("room") ?? "square"
-    const roomType = (["square", "rectangle", "l-shape"].includes(rawRoom) ? rawRoom : "square") as RoomType
+    const roomType = (["square", "rectangle", "l-shape", "square-large", "rectangle-large", "l-shape-large"].includes(rawRoom) ? rawRoom : "square") as RoomType
 
     const selectedItem = items.find(i => i.instanceId === selectedId) || null
 
@@ -66,7 +66,7 @@ export default function FloorPlanEditor() {
     }
 
     return (
-        <div className="flex flex-col h-screen w-screen overflow-hidden bg-[#F5F0E8]">
+        <div className="flex flex-col h-screen w-screen overflow-hidden bg-bg text-text">
             <EditorTopBar
                 title={title}
                 onTitleChange={setTitle}

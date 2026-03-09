@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react"
 import type { RoomType } from "./RoomSelector"
-import type { PlacedItem } from "./PropertiesPanel"
+import type { PlacedItem } from "../types/furniture"
 
 interface FloorPlanCanvasProps {
     roomType: RoomType
@@ -10,14 +10,25 @@ interface FloorPlanCanvasProps {
     onUpdateItem: (id: string, updates: Partial<PlacedItem>) => void
 }
 
-// Map room types to CSS sizes (proportional to metres)
-const ROOM_MAP: Record<RoomType, { w: number; h: number; path?: string }> = {
-    square: { w: 400, h: 400 },
-    rectangle: { w: 560, h: 360 },
-    "l-shape": { w: 480, h: 480 }, // Complex via clip-path
+// Room dimensions in meters
+const ROOM_METERS: Record<RoomType, { w: number; d: number }> = {
+    square: { w: 10, d: 10 },
+    rectangle: { w: 14, d: 9 },
+    "l-shape": { w: 14, d: 12 },
+    "square-large": { w: 20, d: 20 },
+    "rectangle-large": { w: 28, d: 18 },
+    "l-shape-large": { w: 28, d: 24 },
 }
 
-const SCALE_PX_PER_M = 40 // 1 metre = 40 pixels
+// Preferred scale (pixels per meter) for each room type to fit screens
+const ROOM_SCALES: Record<RoomType, number> = {
+    square: 40,
+    rectangle: 40,
+    "l-shape": 40,
+    "square-large": 30, // Scaled down
+    "rectangle-large": 30, // Scaled down
+    "l-shape-large": 25, // Scaled down significantly to fit
+}
 
 export default function FloorPlanCanvas({
     roomType,
@@ -30,7 +41,10 @@ export default function FloorPlanCanvas({
     const dragStartPos = useRef({ x: 0, y: 0 })
     const itemStartPos = useRef({ x: 0, y: 0 })
 
-    const room = ROOM_MAP[roomType]
+    const roomScale = ROOM_SCALES[roomType]
+    const roomDim = ROOM_METERS[roomType]
+    const pixelWidth = roomDim.w * roomScale
+    const pixelHeight = roomDim.d * roomScale
 
     // Handle outside click to deselect
     const handleCanvasClick = (e: React.MouseEvent) => {
@@ -77,22 +91,17 @@ export default function FloorPlanCanvas({
 
     return (
         <main className="flex-1 relative overflow-hidden bg-[#EDE7D9] flex items-center justify-center cursor-default">
-            {/* 5m Label */}
-            <div className="absolute top-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 opacity-40">
-                <span className="text-[10px] font-bold tracking-widest text-[#7A7A6E]">5m</span>
-                <div className="w-[200px] h-[1px] bg-[#7A7A6E]" />
-            </div>
 
             <div
                 onClick={handleCanvasClick}
                 className="relative shadow-2xl transition-all duration-300 pointer-events-auto"
                 style={{
-                    width: `${room.w}px`,
-                    height: `${room.h}px`,
+                    width: `${pixelWidth}px`,
+                    height: `${pixelHeight}px`,
                     backgroundColor: "#DCD5C9",
                     border: "2px solid #B0A093",
                     borderRadius: roomType === "l-shape" ? "0" : "8px",
-                    clipPath: roomType === "l-shape"
+                    clipPath: (roomType === "l-shape" || roomType === "l-shape-large")
                         ? "polygon(0 0, 100% 0, 100% 50%, 50% 50%, 50% 100%, 0 100%)"
                         : "none"
                 }}
@@ -106,8 +115,8 @@ export default function FloorPlanCanvas({
                         style={{
                             left: `${item.x}px`,
                             top: `${item.y}px`,
-                            width: `${item.w * SCALE_PX_PER_M}px`,
-                            height: `${item.d * SCALE_PX_PER_M}px`,
+                            width: `${item.w * roomScale}px`,
+                            height: `${item.d * roomScale}px`,
                             backgroundColor: item.color,
                             color: "#FFFFFF",
                             transform: `rotate(${item.rotation}deg)`,

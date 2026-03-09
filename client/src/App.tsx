@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import RoomSelectionPage from "@/components/RoomSelectionPage"
 import FloorPlanEditor from "@/components/FloorPlanEditor"
-import "./App.css"
 
 function App() {
   return (

@@ -1,6 +1,6 @@
 import React from "react";
 
-export type RoomType = "square" | "rectangle" | "l-shape";
+export type RoomType = "square" | "rectangle" | "l-shape" | "square-large" | "rectangle-large" | "l-shape-large";
 
 interface RoomSelectorProps {
     selected: RoomType;
@@ -43,37 +43,80 @@ const rooms: { type: RoomType; label: string; icon: React.ReactNode; desc: strin
             </svg>
         ),
     },
+    {
+        type: "square-large",
+        label: "Grand Square",
+        desc: "Massive 20×20m open space",
+        icon: (
+            <svg viewBox="0 0 60 60" width="44" height="44" fill="none">
+                <rect x="5" y="5" width="50" height="50" rx="3" stroke="currentColor" strokeWidth="4" />
+                <rect x="15" y="15" width="30" height="30" rx="2" stroke="currentColor" strokeWidth="1" strokeDasharray="4 4" opacity="0.4" />
+            </svg>
+        ),
+    },
+    {
+        type: "rectangle-large",
+        label: "Double Suite",
+        desc: "Expansive 28×18m floor plan",
+        icon: (
+            <svg viewBox="0 0 80 50" width="54" height="34" fill="none">
+                <rect x="5" y="5" width="70" height="40" rx="3" stroke="currentColor" strokeWidth="4" />
+                <line x1="40" y1="5" x2="40" y2="45" stroke="currentColor" strokeWidth="1" strokeDasharray="4 4" opacity="0.4" />
+            </svg>
+        ),
+    },
+    {
+        type: "l-shape-large",
+        label: "L-Grand",
+        desc: "Extensive 28×24m corner layout",
+        icon: (
+            <svg viewBox="0 0 60 60" width="44" height="44" fill="none">
+                <polyline
+                    points="5,5 5,55 55,55 55,35 30,35 30,5 5,5"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    strokeLinejoin="round"
+                />
+            </svg>
+        ),
+    },
 ];
 
 export default function RoomSelector({ selected, onChange }: RoomSelectorProps) {
     return (
-        <div style={styles.overlay}>
-            <div style={styles.panel}>
-                <div style={styles.header}>
-                    <div style={styles.headerDot} />
-                    <span style={styles.headerLabel}>Room Type</span>
+        <div className="absolute top-6 left-6 z-[100] pointer-events-none">
+            <div className="pointer-events-auto bg-[#0F121C]/82 backdrop-blur-[18px] border border-white/10 rounded-[24px] p-6 w-[280px] shadow-[0_8px_40px_rgba(0,0,0,0.5),inset_0_0_0_0.5px_rgba(255,255,255,0.05)]">
+                <div className="flex items-center gap-2 mb-1">
+                    <div className="w-2 h-2 rounded-full bg-gradient-to-br from-[#a78bfa] to-[#818cf8] shadow-[0_0_8px_rgba(167,139,250,0.6)]" />
+                    <span className="font-sans text-[13px] font-bold tracking-[0.08em] uppercase text-text-muted">
+                        Room Type
+                    </span>
                 </div>
-                <p style={styles.subtitle}>Select your floor plan shape</p>
-                <div style={styles.cardGrid}>
+                <p className="font-sans text-lg font-bold text-white mb-4 leading-tight">
+                    Select your floor plan shape
+                </p>
+                <div className="flex flex-col gap-3">
                     {rooms.map((room) => {
                         const isSelected = selected === room.type;
                         return (
                             <button
                                 key={room.type}
                                 onClick={() => onChange(room.type)}
-                                style={{
-                                    ...styles.card,
-                                    ...(isSelected ? styles.cardSelected : styles.cardIdle),
-                                }}
+                                className={`relative flex items-center gap-4 px-5 py-4 rounded-[16px] border transition-all duration-200 cursor-pointer text-left outline-none w-full
+                                    ${isSelected
+                                        ? "bg-[#a78bfa]/10 border-[#a78bfa]/40 shadow-[0_0_20px_rgba(167,139,250,0.12)]"
+                                        : "bg-white/5 border-white/10 hover:bg-white/10"
+                                    }`}
                             >
-                                <div style={{ ...styles.iconWrapper, color: isSelected ? "#a78bfa" : "#94a3b8" }}>
+                                <div className={`shrink-0 flex items-center justify-center transition-colors duration-200 ${isSelected ? "text-[#a78bfa]" : "text-[#94a3b8]"}`}>
                                     {room.icon}
                                 </div>
-                                <span style={{ ...styles.cardLabel, color: isSelected ? "#f1f5f9" : "#cbd5e1" }}>
+                                <span className={`font-sans text-sm font-bold transition-colors duration-200 ${isSelected ? "text-white" : "text-[#cbd5e1]"}`}>
                                     {room.label}
                                 </span>
-                                <span style={styles.cardDesc}>{room.desc}</span>
-                                {isSelected && <div style={styles.selectedIndicator} />}
+                                {isSelected && (
+                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-gradient-to-br from-[#a78bfa] to-[#818cf8] shadow-[0_0_8px_rgba(167,139,250,0.8)]" />
+                                )}
                             </button>
                         );
                     })}
@@ -82,110 +125,3 @@ export default function RoomSelector({ selected, onChange }: RoomSelectorProps) 
         </div>
     );
 }
-
-const styles: Record<string, React.CSSProperties> = {
-    overlay: {
-        position: "absolute",
-        top: "24px",
-        left: "24px",
-        zIndex: 100,
-        pointerEvents: "none",
-    },
-    panel: {
-        pointerEvents: "all",
-        background: "rgba(15, 18, 28, 0.82)",
-        backdropFilter: "blur(18px)",
-        WebkitBackdropFilter: "blur(18px)",
-        border: "1px solid rgba(148, 163, 184, 0.12)",
-        borderRadius: "20px",
-        padding: "20px",
-        width: "240px",
-        boxShadow: "0 8px 40px rgba(0,0,0,0.5), 0 0 0 0.5px rgba(255,255,255,0.05) inset",
-    },
-    header: {
-        display: "flex",
-        alignItems: "center",
-        gap: "8px",
-        marginBottom: "4px",
-    },
-    headerDot: {
-        width: "8px",
-        height: "8px",
-        borderRadius: "50%",
-        background: "linear-gradient(135deg, #a78bfa, #818cf8)",
-        boxShadow: "0 0 8px rgba(167,139,250,0.6)",
-    },
-    headerLabel: {
-        fontFamily: "'Inter', 'Segoe UI', sans-serif",
-        fontSize: "13px",
-        fontWeight: 600,
-        letterSpacing: "0.08em",
-        textTransform: "uppercase" as const,
-        color: "#94a3b8",
-    },
-    subtitle: {
-        fontFamily: "'Inter', 'Segoe UI', sans-serif",
-        fontSize: "18px",
-        fontWeight: 700,
-        color: "#f1f5f9",
-        margin: "0 0 16px 0",
-        lineHeight: 1.3,
-    },
-    cardGrid: {
-        display: "flex",
-        flexDirection: "column",
-        gap: "10px",
-    },
-    card: {
-        position: "relative",
-        display: "flex",
-        alignItems: "center",
-        gap: "14px",
-        padding: "12px 14px",
-        borderRadius: "14px",
-        border: "1px solid transparent",
-        cursor: "pointer",
-        textAlign: "left",
-        transition: "all 0.2s ease",
-        outline: "none",
-        width: "100%",
-    },
-    cardIdle: {
-        background: "rgba(255,255,255,0.04)",
-        borderColor: "rgba(255,255,255,0.07)",
-    },
-    cardSelected: {
-        background: "rgba(167, 139, 250, 0.1)",
-        borderColor: "rgba(167, 139, 250, 0.4)",
-        boxShadow: "0 0 20px rgba(167,139,250,0.12)",
-    },
-    iconWrapper: {
-        flexShrink: 0,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        transition: "color 0.2s",
-    },
-    cardLabel: {
-        fontFamily: "'Inter', 'Segoe UI', sans-serif",
-        fontSize: "14px",
-        fontWeight: 600,
-        display: "flex",
-        flexDirection: "column",
-        transition: "color 0.2s",
-    },
-    cardDesc: {
-        display: "none",
-    },
-    selectedIndicator: {
-        position: "absolute",
-        right: "12px",
-        top: "50%",
-        transform: "translateY(-50%)",
-        width: "6px",
-        height: "6px",
-        borderRadius: "50%",
-        background: "linear-gradient(135deg, #a78bfa, #818cf8)",
-        boxShadow: "0 0 8px rgba(167,139,250,0.8)",
-    },
-};
