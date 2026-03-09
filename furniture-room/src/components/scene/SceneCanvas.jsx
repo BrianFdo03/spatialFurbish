@@ -92,14 +92,22 @@ export default function SceneCanvas({
 
         {/* GLB MODEL */}
 
-        <GLBFurniture
-          frameColor={frameColor}
-          cushionColor={cushionColor}
-          fabricType={fabricType}
+        {/* GLB MODEL */}
+
+        <DraggableItem
           roomWidth={roomWidth}
           roomDepth={roomDepth}
+          initialPosition={[0, 0, 0]}
           setIsDragging={setIsDragging}
-        />
+        >
+
+          <GLBFurniture
+            frameColor={frameColor}
+            cushionColor={cushionColor}
+            fabricType={fabricType}
+          />
+
+        </DraggableItem>
 
         {/* TV */}
 

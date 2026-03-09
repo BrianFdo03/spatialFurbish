@@ -1,6 +1,7 @@
 import { useThree, useFrame } from "@react-three/fiber";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import * as THREE from "three";
+import { useState } from "react";
 
 export default function DraggableItem({
   children,
@@ -11,6 +12,8 @@ export default function DraggableItem({
 }) {
 
   const groupRef = useRef();
+
+  const [selected, setSelected] = useState(false);
 
   const { camera, gl } = useThree();
 
@@ -25,6 +28,8 @@ export default function DraggableItem({
   const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 
 
+  /* ================= START DRAG ================= */
+
   const onPointerDown = (e) => {
 
     e.stopPropagation();
@@ -38,7 +43,9 @@ export default function DraggableItem({
   };
 
 
-  const onPointerUp = () => {
+  /* ================= STOP DRAG ================= */
+
+  const stopDrag = () => {
 
     dragging.current = false;
 
@@ -48,6 +55,19 @@ export default function DraggableItem({
 
   };
 
+
+  /* ================= ROTATE  ================= */
+
+  const rotateObject = () => {
+
+    if (!groupRef.current) return;
+
+    groupRef.current.rotation.y += Math.PI / 2;
+
+  };
+
+
+  /* ================= GLOBAL POINTER MOVE ================= */
 
   const onPointerMove = (event) => {
 
@@ -65,47 +85,82 @@ export default function DraggableItem({
 
     raycaster.ray.intersectPlane(plane, intersectPoint);
 
-    if (intersectPoint) {
+    if (!intersectPoint) return;
 
-      const maxX = roomWidth / 2 - 1;
+    const maxX = roomWidth / 2 - 1;
 
-      const maxZ = roomDepth / 2 - 1;
+    const maxZ = roomDepth / 2 - 1;
 
-      targetPosition.current.x = THREE.MathUtils.clamp(
-        intersectPoint.x,
-        -maxX,
-        maxX
-      );
+    const newX = THREE.MathUtils.clamp(intersectPoint.x, -maxX, maxX);
 
-      targetPosition.current.z = THREE.MathUtils.clamp(
-        intersectPoint.z,
-        -maxZ,
-        maxZ
-      );
-    }
+    const newZ = THREE.MathUtils.clamp(intersectPoint.z, -maxZ, maxZ);
+
+    targetPosition.current.set(newX, targetPosition.current.y, newZ);
+
   };
+
+
+  /* ================= GLOBAL EVENTS ================= */
+
+  useEffect(() => {
+
+    window.addEventListener("pointermove", onPointerMove);
+
+    window.addEventListener("pointerup", stopDrag);
+
+    return () => {
+
+      window.removeEventListener("pointermove", onPointerMove);
+
+      window.removeEventListener("pointerup", stopDrag);
+
+    };
+
+  }, []);
+
+
+  /* ================= SMOOTH MOVEMENT ================= */
 
   useFrame(() => {
 
     if (!groupRef.current) return;
 
-    groupRef.current.position.lerp(targetPosition.current, 0.2);
+    groupRef.current.position.lerp(targetPosition.current, 0.15);
 
   });
+
+
+  /* ================= RENDER ================= */
 
   return (
 
     <group
       ref={groupRef}
       position={initialPosition}
-      onPointerDown={onPointerDown}
-      onPointerUp={onPointerUp}
-      onPointerMove={onPointerMove}
+      onPointerDown={(e) => {
+        onPointerDown(e);
+        setSelected(true);
+      }}
+      
     >
 
       {children}
 
+      {selected && (
+        <mesh
+          position={[0, 2, 0]}
+          onClick={(e) => {
+            e.stopPropagation();
+            rotateObject();
+          }}
+        >
+          <boxGeometry args={[0.5, 0.2, 0.5]} />
+          <meshStandardMaterial color="orange" />
+        </mesh>
+      )}
+
     </group>
 
   );
+
 }
