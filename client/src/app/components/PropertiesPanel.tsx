@@ -1,9 +1,12 @@
 import type { PlacedItem } from "../types/furniture"
+import type { RoomProps } from "../types/room"
 
 interface PropertiesPanelProps {
     selectedItem: PlacedItem | null
     onUpdate: (updates: Partial<PlacedItem>) => void
     onDelete: (id: string) => void
+    roomProps: RoomProps
+    onUpdateRoom: (updates: Partial<RoomProps>) => void
 }
 
 const COLORS = [
@@ -19,13 +22,62 @@ export default function PropertiesPanel({
     selectedItem,
     onUpdate,
     onDelete,
+    roomProps,
+    onUpdateRoom,
 }: PropertiesPanelProps) {
     if (!selectedItem) {
         return (
-            <aside className="w-64 shrink-0 border-l h-full flex items-center justify-center p-6 text-center bg-bg border-border text-text-muted">
-                <p className="text-sm">
-                    Select an item on the canvas to edit its properties
-                </p>
+            <aside className="w-72 shrink-0 border-l h-full overflow-y-auto shadow-sm bg-bg border-border">
+                <div className="p-6 flex flex-col gap-8">
+                    <h2 className="text-base font-bold text-text">Room Customization</h2>
+
+                    {/* Wall Customization */}
+                    <div className="space-y-4">
+                        <h3 className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Wall Styling</h3>
+                        <div className="flex flex-wrap gap-4">
+                            {COLORS.map((c) => (
+                                <button
+                                    key={c.value}
+                                    className={`w-9 h-9 rounded-full border-2 transition-all cursor-pointer hover:scale-110 ${roomProps.wallColor === c.value ? "ring-2 ring-offset-2 ring-accent border-white" : "border-black/5"}`}
+                                    style={{ backgroundColor: c.value }}
+                                    onClick={() => onUpdateRoom({ wallColor: c.value })}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Floor Customization */}
+                    <div className="space-y-4">
+                        <h3 className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Floor Styling</h3>
+                        <div className="flex flex-wrap gap-4">
+                            {COLORS.map((c) => (
+                                <button
+                                    key={c.value}
+                                    className={`w-9 h-9 rounded-md border-2 transition-all cursor-pointer hover:scale-110 ${roomProps.floorColor === c.value ? "ring-2 ring-offset-2 ring-accent border-white" : "border-black/5"}`}
+                                    style={{ backgroundColor: c.value }}
+                                    onClick={() => onUpdateRoom({ floorColor: c.value })}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Wall Height */}
+                    <div className="space-y-2">
+                        <div className="flex justify-between text-[11px] font-semibold text-text-muted">
+                            <span>Wall Height</span>
+                            <span>{roomProps.wallHeight.toFixed(1)}m</span>
+                        </div>
+                        <input
+                            type="range"
+                            min="2"
+                            max="5"
+                            step="0.1"
+                            value={roomProps.wallHeight}
+                            onChange={(e) => onUpdateRoom({ wallHeight: parseFloat(e.target.value) })}
+                            className="w-full accent-accent"
+                        />
+                    </div>
+                </div>
             </aside>
         )
     }

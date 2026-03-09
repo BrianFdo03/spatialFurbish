@@ -4,6 +4,7 @@ import EditorTopBar from "./EditorTopBar"
 import FurniturePanel from "./FurniturePanel"
 import PropertiesPanel from "./PropertiesPanel"
 import type { FurnitureDef, PlacedItem } from "../types/furniture"
+import type { RoomProps } from "../types/room"
 import FloorPlanCanvas from "./FloorPlanCanvas"
 import RoomCanvas from "./RoomCanvas"
 import type { RoomType } from "./RoomSelector"
@@ -46,6 +47,13 @@ export default function FloorPlanEditor() {
     const [title, setTitle] = useState("Untitled Design")
     const [items, dispatch] = useReducer(reducer, [])
     const [selectedId, setSelectedId] = useState<string | null>(null)
+    const [roomProps, setRoomProps] = useState<RoomProps>({
+        wallColor: "#F1EADB",
+        wallTexture: "none",
+        floorColor: "#DCD5C9",
+        floorTexture: "none",
+        wallHeight: 3,
+    })
 
     const rawRoom = searchParams.get("room") ?? "square"
     const roomType = (["square", "rectangle", "l-shape", "square-large", "rectangle-large", "l-shape-large"].includes(rawRoom) ? rawRoom : "square") as RoomType
@@ -89,7 +97,7 @@ export default function FloorPlanEditor() {
                     />
                 ) : (
                     <div className="flex-1 relative">
-                        <RoomCanvas />
+                        <RoomCanvas roomProps={roomProps} />
                         <div className="absolute top-4 left-4 z-10 p-3 bg-white/80 backdrop-blur-md rounded-xl border border-border shadow-lg max-w-[200px]">
                             <p className="text-xs font-bold text-accent mb-1 uppercase tracking-wider">3D Real-time View</p>
                             <p className="text-[10px] text-text-muted">Interactive walk-through of your current layout.</p>
@@ -101,6 +109,8 @@ export default function FloorPlanEditor() {
                     selectedItem={selectedItem}
                     onUpdate={(updates) => selectedId && handleUpdate(selectedId, updates)}
                     onDelete={handleDelete}
+                    roomProps={roomProps}
+                    onUpdateRoom={(updates) => setRoomProps(prev => ({ ...prev, ...updates }))}
                 />
             </div>
         </div>
