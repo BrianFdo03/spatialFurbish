@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import * as THREE from "three";
 
 export default function GLBFurniture({
-  frameColor,
   cushionColor,
   fabricType,
 }) {
@@ -14,15 +13,30 @@ export default function GLBFurniture({
   const fabric1 = useLoader(THREE.TextureLoader, "/textures/fabric1.jpg");
   const fabric2 = useLoader(THREE.TextureLoader, "/textures/fabric2.jpg");
 
+
+  /* ================= FLOOR ALIGNMENT ================= */
+
+  useEffect(() => {
+
+    const box = new THREE.Box3().setFromObject(gltf.scene);
+    const size = new THREE.Vector3();
+
+    box.getSize(size);
+
+    gltf.scene.position.y = size.y / 2;
+
+  }, [gltf]);
+
+
+  /* ================= MATERIAL CUSTOMIZATION ================= */
+
   useEffect(() => {
 
     const selectedFabric =
       fabricType === "fabric1" ? fabric1 : fabric2;
 
     selectedFabric.wrapS = selectedFabric.wrapT = THREE.RepeatWrapping;
-
     selectedFabric.repeat.set(2, 2);
-
     selectedFabric.colorSpace = THREE.SRGBColorSpace;
 
     gltf.scene.traverse((child) => {
@@ -35,26 +49,13 @@ export default function GLBFurniture({
       child.material = new THREE.MeshStandardMaterial({
         color: cushionColor,
         map: selectedFabric,
-        roughness: 0.6,
+        roughness: 0.7,
       });
 
     });
 
   }, [gltf, cushionColor, fabricType, fabric1, fabric2]);
 
-  /* ================= FLOOR ALIGNMENT ================= */
-
-  useEffect(() => {
-
-    const box = new THREE.Box3().setFromObject(gltf.scene);
-
-    const size = new THREE.Vector3();
-
-    box.getSize(size);
-
-    gltf.scene.position.y = size.y / 2;
-
-  }, [gltf]);
 
   return (
     <group scale={2}>

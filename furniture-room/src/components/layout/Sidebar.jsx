@@ -27,9 +27,6 @@ export default function Sidebar({
   rightWallColor,
   setRightWallColor,
 
-  furnitureColor,
-  setFurnitureColor,
-
   frameColor,
   setFrameColor,
 
@@ -83,20 +80,15 @@ export default function Sidebar({
           onChange={(e) => setRoomType(e.target.value)}
           style={{ width: "100%", padding: "6px" }}
         >
-
           <option value="living">Living Room</option>
-
           <option value="dining">Dining Room</option>
-
           <option value="bedroom">Master Bedroom</option>
-
           <option value="family">Family Room</option>
-
           <option value="kitchen">Kitchen</option>
-
         </select>
 
       </section>
+
 
       {/* ROOM SIZE */}
 
@@ -105,7 +97,6 @@ export default function Sidebar({
         <h4>Room Size</h4>
 
         <label>Width: {roomWidth}m</label>
-
         <input
           type="range"
           min="5"
@@ -116,7 +107,6 @@ export default function Sidebar({
         />
 
         <label>Depth: {roomDepth}m</label>
-
         <input
           type="range"
           min="5"
@@ -127,7 +117,6 @@ export default function Sidebar({
         />
 
         <label>Height: {roomHeight}m</label>
-
         <input
           type="range"
           min="3"
@@ -138,6 +127,7 @@ export default function Sidebar({
         />
 
       </section>
+
 
       {/* FLOOR */}
 
@@ -150,29 +140,23 @@ export default function Sidebar({
           onChange={(e) => setFloorType(e.target.value)}
           style={{ width: "100%", padding: "6px" }}
         >
-
           <option value="cement">Cement</option>
-
           <option value="tile">Tile</option>
-
           <option value="wood">Wood</option>
-
           <option value="color">Custom Color</option>
-
         </select>
 
         {floorType === "color" && (
-
           <input
             type="color"
             value={floorColor}
             onChange={(e) => setFloorColor(e.target.value)}
             style={{ width: "100%", height: "40px", marginTop: "10px" }}
           />
-
         )}
 
       </section>
+
 
       {/* WALL COLORS */}
 
@@ -180,18 +164,21 @@ export default function Sidebar({
 
         <h4>Wall Colors</h4>
 
+        {/* <label>Back Wall</label> */}
         <input
           type="color"
           value={backWallColor}
           onChange={(e) => setBackWallColor(e.target.value)}
         />
 
+        {/* <label>Left Wall</label> */}
         <input
           type="color"
           value={leftWallColor}
           onChange={(e) => setLeftWallColor(e.target.value)}
         />
 
+        {/* <label>Right Wall</label> */}
         <input
           type="color"
           value={rightWallColor}
@@ -200,49 +187,81 @@ export default function Sidebar({
 
       </section>
 
-      {/* OBJECTS */}
+
+      {/* EXISTING OBJECTS */}
 
       <section>
 
-        <h4>Objects</h4>
+        <h4>Existing Items</h4>
 
         <label>
-
           <input
             type="checkbox"
             checked={showTV}
             onChange={() => setShowTV(!showTV)}
           />
-
-          TV
-
+          Add TV
         </label>
 
-        <label>
+        <br />
 
+        <label>
           <input
             type="checkbox"
             checked={showVase}
             onChange={() => setShowVase(!showVase)}
           />
-
-          Vase
-
+          Add Flower Vase
         </label>
 
-        <label>
+        <br />
 
+        <label>
           <input
             type="checkbox"
             checked={showTable}
             onChange={() => setShowTable(!showTable)}
           />
-
-          Table
-
+          Add Table
         </label>
 
       </section>
+
+
+      {/* GLB FURNITURE SETTINGS */}
+
+      <section>
+
+        <h4>GLB Furniture</h4>
+
+        <label>Frame Color</label>
+        <input
+          type="color"
+          value={frameColor}
+          onChange={(e) => setFrameColor(e.target.value)}
+          style={{ width: "100%", height: "35px" }}
+        />
+
+        <label>Cushion Color</label>
+        <input
+          type="color"
+          value={cushionColor}
+          onChange={(e) => setCushionColor(e.target.value)}
+          style={{ width: "100%", height: "35px" }}
+        />
+
+        <label>Fabric Type</label>
+        <select
+          value={fabricType}
+          onChange={(e) => setFabricType(e.target.value)}
+          style={{ width: "100%", padding: "6px" }}
+        >
+          <option value="fabric1">Fabric 1</option>
+          <option value="fabric2">Fabric 2</option>
+        </select>
+
+      </section>
+
 
       {/* LIGHT */}
 
@@ -258,12 +277,11 @@ export default function Sidebar({
           color: "#fff",
         }}
       >
-
         {lightOn ? "Lights OFF" : "Lights ON"}
-
       </button>
 
     </div>
 
   );
+
 }
