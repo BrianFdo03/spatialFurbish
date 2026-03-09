@@ -1,5 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, ContactShadows } from "@react-three/drei";
+import { useRef } from "react";
 
 import Floor from "./Floor";
 import DraggableItem from "./DraggableItem";
@@ -19,7 +20,6 @@ export default function SceneCanvas({
   backWallColor,
   leftWallColor,
   rightWallColor,
-  frameColor,
   cushionColor,
   fabricType,
   setIsDragging,
@@ -28,6 +28,8 @@ export default function SceneCanvas({
   showVase,
   showTable
 }) {
+
+  const objectsRef = useRef([]);
 
   return (
 
@@ -73,36 +75,28 @@ export default function SceneCanvas({
         {/* BACK WALL */}
 
         <mesh position={[0, roomHeight / 2, -roomDepth / 2]} receiveShadow>
-
           <boxGeometry args={[roomWidth, roomHeight, 0.2]} />
-
           <meshStandardMaterial color={backWallColor} />
-
         </mesh>
 
         {/* LEFT WALL */}
 
         <mesh position={[-roomWidth / 2, roomHeight / 2, 0]} receiveShadow>
-
           <boxGeometry args={[0.2, roomHeight, roomDepth]} />
-
           <meshStandardMaterial color={leftWallColor} />
-
         </mesh>
 
-        {/* GLB MODEL */}
-
-        {/* GLB MODEL */}
+        {/* GLB FURNITURE */}
 
         <DraggableItem
           roomWidth={roomWidth}
           roomDepth={roomDepth}
           initialPosition={[0, 0, 0]}
           setIsDragging={setIsDragging}
+          objectsRef={objectsRef}
         >
 
           <GLBFurniture
-            frameColor={frameColor}
             cushionColor={cushionColor}
             fabricType={fabricType}
           />
@@ -118,6 +112,7 @@ export default function SceneCanvas({
             roomDepth={roomDepth}
             initialPosition={[0, 1.5, -roomDepth / 2 + 0.3]}
             setIsDragging={setIsDragging}
+            objectsRef={objectsRef}
           >
 
             <TV roomHeight={roomHeight} roomDepth={roomDepth} />
@@ -135,6 +130,7 @@ export default function SceneCanvas({
             roomDepth={roomDepth}
             initialPosition={[0, 0, -roomDepth / 2 + 0.3]}
             setIsDragging={setIsDragging}
+            objectsRef={objectsRef}
           >
 
             <FlowerVase />
@@ -152,6 +148,7 @@ export default function SceneCanvas({
             roomDepth={roomDepth}
             initialPosition={[0, 0, -roomDepth / 2 + 0.3]}
             setIsDragging={setIsDragging}
+            objectsRef={objectsRef}
           >
 
             <Table />
@@ -169,4 +166,5 @@ export default function SceneCanvas({
     </div>
 
   );
+
 }

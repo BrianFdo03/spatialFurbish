@@ -1,7 +1,6 @@
 import { useThree, useFrame } from "@react-three/fiber";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import * as THREE from "three";
-import { useState } from "react";
 
 export default function DraggableItem({
   children,
@@ -9,9 +8,12 @@ export default function DraggableItem({
   roomDepth,
   initialPosition,
   setIsDragging,
+  objectsRef
 }) {
 
   const groupRef = useRef();
+
+  const boundingBox = useRef(new THREE.Box3());
 
   const [selected, setSelected] = useState(false);
 
@@ -22,9 +24,7 @@ export default function DraggableItem({
   const targetPosition = useRef(new THREE.Vector3(...initialPosition));
 
   const raycaster = new THREE.Raycaster();
-
   const mouse = new THREE.Vector2();
-
   const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 
 
@@ -56,7 +56,7 @@ export default function DraggableItem({
   };
 
 
-  /* ================= ROTATE  ================= */
+  /* ================= ROTATE ================= */
 
   const rotateObject = () => {
 
@@ -67,7 +67,46 @@ export default function DraggableItem({
   };
 
 
-  /* ================= GLOBAL POINTER MOVE ================= */
+  /* ================= COLLISION CHECK ================= */
+
+  const checkCollision = (newPosition) => {
+
+    if (!groupRef.current) return false;
+
+    const newBox = boundingBox.current;
+
+    newBox.setFromObject(groupRef.current);
+
+    const offset = new THREE.Vector3(
+      newPosition.x - groupRef.current.position.x,
+      0,
+      newPosition.z - groupRef.current.position.z
+    );
+
+    newBox.translate(offset);
+
+    for (let obj of objectsRef.current) {
+
+      if (!obj.current) continue;
+
+      if (obj === groupRef) continue;
+
+      const otherBox = new THREE.Box3().setFromObject(obj.current);
+
+      if (newBox.intersectsBox(otherBox)) {
+
+        return true;
+
+      }
+
+    }
+
+    return false;
+
+  };
+
+
+  /* ================= POINTER MOVE ================= */
 
   const onPointerMove = (event) => {
 
@@ -88,14 +127,18 @@ export default function DraggableItem({
     if (!intersectPoint) return;
 
     const maxX = roomWidth / 2 - 1;
-
     const maxZ = roomDepth / 2 - 1;
 
     const newX = THREE.MathUtils.clamp(intersectPoint.x, -maxX, maxX);
-
     const newZ = THREE.MathUtils.clamp(intersectPoint.z, -maxZ, maxZ);
 
-    targetPosition.current.set(newX, targetPosition.current.y, newZ);
+    const newPosition = new THREE.Vector3(newX, targetPosition.current.y, newZ);
+
+    if (!checkCollision(newPosition)) {
+
+      targetPosition.current.copy(newPosition);
+
+    }
 
   };
 
@@ -105,18 +148,16 @@ export default function DraggableItem({
   useEffect(() => {
 
     window.addEventListener("pointermove", onPointerMove);
-
     window.addEventListener("pointerup", stopDrag);
 
     return () => {
 
       window.removeEventListener("pointermove", onPointerMove);
-
       window.removeEventListener("pointerup", stopDrag);
 
     };
 
-  }, []);
+  }, [objectsRef]);
 
 
   /* ================= SMOOTH MOVEMENT ================= */
@@ -130,6 +171,25 @@ export default function DraggableItem({
   });
 
 
+  /* ================= REGISTER OBJECT ================= */
+
+  useEffect(() => {
+
+    if (!groupRef.current || !objectsRef) return;
+
+    objectsRef.current.push(groupRef);
+
+    return () => {
+
+      objectsRef.current = objectsRef.current.filter(
+        (obj) => obj !== groupRef
+      );
+
+    };
+
+  }, [objectsRef]);
+
+
   /* ================= RENDER ================= */
 
   return (
@@ -141,7 +201,6 @@ export default function DraggableItem({
         onPointerDown(e);
         setSelected(true);
       }}
-      
     >
 
       {children}
