@@ -48,15 +48,15 @@ export default function FloorPlanEditor() {
     const [items, dispatch] = useReducer(reducer, [])
     const [selectedId, setSelectedId] = useState<string | null>(null)
     const [roomProps, setRoomProps] = useState<RoomProps>({
-        wallColor: "#F1EADB",
-        wallTexture: "none",
-        floorColor: "#DCD5C9",
-        floorTexture: "none",
+        wallColor: "#ffffff",
+        wallTexture: "wall-1",
+        floorColor: "#ffffff",
+        floorTexture: "floor-1",
         wallHeight: 3,
     })
 
     const rawRoom = searchParams.get("room") ?? "square"
-    const roomType = (["square", "rectangle", "l-shape", "square-large", "rectangle-large", "l-shape-large"].includes(rawRoom) ? rawRoom : "square") as RoomType
+    const roomType = (["square", "rectangle", "l-shape", "u-shape", "t-shape", "circular"].includes(rawRoom) ? rawRoom : "square") as RoomType
 
     const selectedItem = items.find(i => i.instanceId === selectedId) || null
 

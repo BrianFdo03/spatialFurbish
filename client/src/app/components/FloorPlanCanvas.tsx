@@ -15,19 +15,18 @@ const ROOM_METERS: Record<RoomType, { w: number; d: number }> = {
     square: { w: 10, d: 10 },
     rectangle: { w: 14, d: 9 },
     "l-shape": { w: 14, d: 12 },
-    "square-large": { w: 20, d: 20 },
-    "rectangle-large": { w: 28, d: 18 },
-    "l-shape-large": { w: 28, d: 24 },
+    "u-shape": { w: 14, d: 12 },
+    "t-shape": { w: 14, d: 12 },
+    circular: { w: 12, d: 12 },
 }
 
-// Preferred scale (pixels per meter) for each room type to fit screens
 const ROOM_SCALES: Record<RoomType, number> = {
     square: 40,
     rectangle: 40,
     "l-shape": 40,
-    "square-large": 30, // Scaled down
-    "rectangle-large": 30, // Scaled down
-    "l-shape-large": 25, // Scaled down significantly to fit
+    "u-shape": 40,
+    "t-shape": 35,
+    circular: 40,
 }
 
 export default function FloorPlanCanvas({
@@ -100,10 +99,14 @@ export default function FloorPlanCanvas({
                     height: `${pixelHeight}px`,
                     backgroundColor: "#DCD5C9",
                     border: "2px solid #B0A093",
-                    borderRadius: roomType === "l-shape" ? "0" : "8px",
-                    clipPath: (roomType === "l-shape" || roomType === "l-shape-large")
+                    borderRadius: roomType === "circular" ? "50%" : roomType === "l-shape" || roomType === "u-shape" || roomType === "t-shape" ? "0" : "8px",
+                    clipPath: roomType === "l-shape"
                         ? "polygon(0 0, 100% 0, 100% 50%, 50% 50%, 50% 100%, 0 100%)"
-                        : "none"
+                        : roomType === "u-shape"
+                            ? "polygon(0 0, 30% 0, 30% 70%, 70% 70%, 70% 0, 100% 0, 100% 100%, 0 100%)"
+                            : roomType === "t-shape"
+                                ? "polygon(0 0, 100% 0, 100% 30%, 65% 30%, 65% 100%, 35% 100%, 35% 30%, 0 30%)"
+                                : "none"
                 }}
             >
                 {items.map((item) => (

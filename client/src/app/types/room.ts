@@ -1,4 +1,10 @@
-export type TextureType = "none" | "wood" | "brick" | "tile" | "wallpaper"
+export type TextureType =
+    | "wall-1"
+    | "wall-2"
+    | "wall-3"
+    | "floor-1"
+    | "floor-2"
+    | "floor-3"
 
 export interface RoomProps {
     wallColor: string

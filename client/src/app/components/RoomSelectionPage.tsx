@@ -52,41 +52,59 @@ const rooms: {
             ),
         },
         {
-            type: "square-large",
-            label: "Grand Square",
-            desc: "A massive, open-plan space for ultimate creative freedom",
-            dimensions: "20 × 20 m",
-            icon: (
-                <svg viewBox="0 0 100 100" width="80" height="80" fill="none">
-                    <rect x="8" y="8" width="84" height="84" rx="4" stroke="currentColor" strokeWidth="6" />
-                    <rect x="30" y="30" width="40" height="40" rx="2" stroke="currentColor" strokeWidth="2" strokeDasharray="6 6" opacity="0.3" />
-                </svg>
-            ),
-        },
-        {
-            type: "rectangle-large",
-            label: "Double Suite",
-            desc: "Extensive longitudinal space, ideal for large gatherings",
-            dimensions: "28 × 18 m",
-            icon: (
-                <svg viewBox="0 0 140 90" width="100" height="64" fill="none">
-                    <rect x="8" y="8" width="124" height="74" rx="4" stroke="currentColor" strokeWidth="6" />
-                    <line x1="70" y1="8" x2="70" y2="82" stroke="currentColor" strokeWidth="2" strokeDasharray="6 6" opacity="0.3" />
-                </svg>
-            ),
-        },
-        {
-            type: "l-shape-large",
-            label: "L-Grand",
-            desc: "Our largest floor plan with unique zoning opportunities",
-            dimensions: "16+12 × 24+12 m",
+            type: "u-shape",
+            label: "U-Shape",
+            desc: "A wraparound layout with a center opening, perfect for courtyards",
+            dimensions: "14 × 12 m",
             icon: (
                 <svg viewBox="0 0 100 100" width="80" height="80" fill="none">
                     <polyline
-                        points="8,8 8,92 92,92 92,55 55,55 55,8 8,8"
+                        points="15,15 15,85 85,85 85,15 65,15 65,55 35,55 35,15 15,15"
                         stroke="currentColor"
-                        strokeWidth="6"
+                        strokeWidth="5"
                         strokeLinejoin="round"
+                    />
+                </svg>
+            ),
+        },
+        {
+            type: "t-shape",
+            label: "T-Shape",
+            desc: "A symmetric cross-style layout with great zoning potential",
+            dimensions: "14 × 12 m",
+            icon: (
+                <svg viewBox="0 0 100 100" width="80" height="80" fill="none">
+                    <polyline
+                        points="15,15 85,15 85,45 65,45 65,85 35,85 35,45 15,45 15,15"
+                        stroke="currentColor"
+                        strokeWidth="5"
+                        strokeLinejoin="round"
+                    />
+                </svg>
+            ),
+        },
+        {
+            type: "circular",
+            label: "Circular",
+            desc: "A modern rotunda design for unique, organic interior spaces",
+            dimensions: "12 m Diameter",
+            icon: (
+                <svg viewBox="0 0 100 100" width="80" height="80" fill="none">
+                    <circle
+                        cx="50"
+                        cy="50"
+                        r="38"
+                        stroke="currentColor"
+                        strokeWidth="5"
+                    />
+                    <circle
+                        cx="50"
+                        cy="50"
+                        r="12"
+                        stroke="currentColor"
+                        strokeWidth="1"
+                        strokeDasharray="5 5"
+                        opacity="0.4"
                     />
                 </svg>
             ),

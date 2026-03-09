@@ -1,6 +1,6 @@
 import React from "react";
 
-export type RoomType = "square" | "rectangle" | "l-shape" | "square-large" | "rectangle-large" | "l-shape-large";
+export type RoomType = "square" | "rectangle" | "l-shape" | "u-shape" | "t-shape" | "circular";
 
 interface RoomSelectorProps {
     selected: RoomType;
@@ -44,38 +44,56 @@ const rooms: { type: RoomType; label: string; icon: React.ReactNode; desc: strin
         ),
     },
     {
-        type: "square-large",
-        label: "Grand Square",
-        desc: "Massive 20×20m open space",
-        icon: (
-            <svg viewBox="0 0 60 60" width="44" height="44" fill="none">
-                <rect x="5" y="5" width="50" height="50" rx="3" stroke="currentColor" strokeWidth="4" />
-                <rect x="15" y="15" width="30" height="30" rx="2" stroke="currentColor" strokeWidth="1" strokeDasharray="4 4" opacity="0.4" />
-            </svg>
-        ),
-    },
-    {
-        type: "rectangle-large",
-        label: "Double Suite",
-        desc: "Expansive 28×18m floor plan",
-        icon: (
-            <svg viewBox="0 0 80 50" width="54" height="34" fill="none">
-                <rect x="5" y="5" width="70" height="40" rx="3" stroke="currentColor" strokeWidth="4" />
-                <line x1="40" y1="5" x2="40" y2="45" stroke="currentColor" strokeWidth="1" strokeDasharray="4 4" opacity="0.4" />
-            </svg>
-        ),
-    },
-    {
-        type: "l-shape-large",
-        label: "L-Grand",
-        desc: "Extensive 28×24m corner layout",
+        type: "u-shape",
+        label: "U-Shape",
+        desc: "Wraparound layout with center courtyard",
         icon: (
             <svg viewBox="0 0 60 60" width="44" height="44" fill="none">
                 <polyline
-                    points="5,5 5,55 55,55 55,35 30,35 30,5 5,5"
+                    points="10,10 10,50 50,50 50,10 35,10 35,35 25,35 25,10 10,10"
                     stroke="currentColor"
-                    strokeWidth="4"
+                    strokeWidth="3"
                     strokeLinejoin="round"
+                />
+            </svg>
+        ),
+    },
+    {
+        type: "t-shape",
+        label: "T-Shape",
+        desc: "Symmetric cross-style layout",
+        icon: (
+            <svg viewBox="0 0 60 60" width="44" height="44" fill="none">
+                <polyline
+                    points="10,10 50,10 50,25 35,25 35,50 25,50 25,25 10,25 10,10"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinejoin="round"
+                />
+            </svg>
+        ),
+    },
+    {
+        type: "circular",
+        label: "Circular",
+        desc: "Modern rotunda style design",
+        icon: (
+            <svg viewBox="0 0 60 60" width="44" height="44" fill="none">
+                <circle
+                    cx="30"
+                    cy="30"
+                    r="22"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                />
+                <circle
+                    cx="30"
+                    cy="30"
+                    r="8"
+                    stroke="currentColor"
+                    strokeWidth="1"
+                    strokeDasharray="4 4"
+                    opacity="0.4"
                 />
             </svg>
         ),

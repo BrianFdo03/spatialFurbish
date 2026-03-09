@@ -1,5 +1,5 @@
 import type { PlacedItem } from "../types/furniture"
-import type { RoomProps } from "../types/room"
+import type { RoomProps, TextureType } from "../types/room"
 
 interface PropertiesPanelProps {
     selectedItem: PlacedItem | null
@@ -10,12 +10,28 @@ interface PropertiesPanelProps {
 }
 
 const COLORS = [
+    { name: "Off White", value: "#F1EADB" },
+    { name: "Soft Grey", value: "#DCD5C9" },
+    { name: "Warm Beige", value: "#E8DDD0" },
     { name: "Blue", value: "#3B82F6" },
     { name: "Dark Blue", value: "#1E40AF" },
     { name: "Orange", value: "#F97316" },
     { name: "Yellow", value: "#EAB308" },
     { name: "Green", value: "#22C55E" },
     { name: "Purple", value: "#A855F7" },
+    { name: "Dark Grey", value: "#4A4A4A" },
+]
+
+const WALL_TEXTURES = [
+    { id: "wall-1", name: "Cream Plaster" },
+    { id: "wall-2", name: "Brown Concrete" },
+    { id: "wall-3", name: "Grey Brick" },
+]
+
+const FLOOR_TEXTURES = [
+    { id: "floor-1", name: "Tan Tiles" },
+    { id: "floor-2", name: "Natural Wood" },
+    { id: "floor-3", name: "Grey Wood" },
 ]
 
 export default function PropertiesPanel({
@@ -33,30 +49,32 @@ export default function PropertiesPanel({
 
                     {/* Wall Customization */}
                     <div className="space-y-4">
-                        <h3 className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Wall Styling</h3>
-                        <div className="flex flex-wrap gap-4">
-                            {COLORS.map((c) => (
+                        <h3 className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Wall Texture</h3>
+                        <div className="grid grid-cols-1 gap-2 mt-2">
+                            {WALL_TEXTURES.map((t) => (
                                 <button
-                                    key={c.value}
-                                    className={`w-9 h-9 rounded-full border-2 transition-all cursor-pointer hover:scale-110 ${roomProps.wallColor === c.value ? "ring-2 ring-offset-2 ring-accent border-white" : "border-black/5"}`}
-                                    style={{ backgroundColor: c.value }}
-                                    onClick={() => onUpdateRoom({ wallColor: c.value })}
-                                />
+                                    key={t.id}
+                                    onClick={() => onUpdateRoom({ wallTexture: t.id as TextureType })}
+                                    className={`px-3 py-2 text-xs font-bold rounded-lg border transition-all cursor-pointer ${roomProps.wallTexture === t.id ? "bg-accent text-white border-accent shadow-sm" : "bg-bg-deep text-[#5A5248] border-border hover:bg-white"}`}
+                                >
+                                    {t.name}
+                                </button>
                             ))}
                         </div>
                     </div>
 
                     {/* Floor Customization */}
                     <div className="space-y-4">
-                        <h3 className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Floor Styling</h3>
-                        <div className="flex flex-wrap gap-4">
-                            {COLORS.map((c) => (
+                        <h3 className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Floor Texture</h3>
+                        <div className="grid grid-cols-1 gap-2 mt-2">
+                            {FLOOR_TEXTURES.map((t) => (
                                 <button
-                                    key={c.value}
-                                    className={`w-9 h-9 rounded-md border-2 transition-all cursor-pointer hover:scale-110 ${roomProps.floorColor === c.value ? "ring-2 ring-offset-2 ring-accent border-white" : "border-black/5"}`}
-                                    style={{ backgroundColor: c.value }}
-                                    onClick={() => onUpdateRoom({ floorColor: c.value })}
-                                />
+                                    key={t.id}
+                                    onClick={() => onUpdateRoom({ floorTexture: t.id as TextureType })}
+                                    className={`px-3 py-2 text-xs font-bold rounded-lg border transition-all cursor-pointer ${roomProps.floorTexture === t.id ? "bg-accent text-white border-accent shadow-sm" : "bg-bg-deep text-[#5A5248] border-border hover:bg-white"}`}
+                                >
+                                    {t.name}
+                                </button>
                             ))}
                         </div>
                     </div>
