@@ -97,7 +97,13 @@ export default function FloorPlanEditor() {
                     />
                 ) : (
                     <div className="flex-1 relative">
-                        <RoomCanvas roomProps={roomProps} items={items} />
+                        <RoomCanvas 
+                            roomProps={roomProps} 
+                            items={items} 
+                            selectedId={selectedId}
+                            onSelectItem={setSelectedId}
+                            onUpdateItem={handleUpdate}
+                        />
                         <div className="absolute top-4 left-4 z-10 p-3 bg-white/80 backdrop-blur-md rounded-xl border border-border shadow-lg max-w-[200px]">
                             <p className="text-xs font-bold text-accent mb-1 uppercase tracking-wider">3D Real-time View</p>
                             <p className="text-[10px] text-text-muted">Interactive walk-through of your current layout.</p>

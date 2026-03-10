@@ -5,11 +5,13 @@ const oldChairModel = new URL('../../assets/Furniture/Chair.glb', import.meta.ur
 interface FurnitureProps {
     position: [number, number, number]
     rotation?: [number, number, number]
+    onPointerDown?: (e: any) => void
 }
 
 export default function FurnitureItem({
     position,
-    rotation = [0, 0, 0]
+    rotation = [0, 0, 0],
+    onPointerDown
 }: FurnitureProps) {
     const { scene } = useGLTF(oldChairModel)
     
@@ -26,6 +28,7 @@ export default function FurnitureItem({
             position={position} 
             rotation={rotation}
             scale={[1.5, 1.5, 1.5]}
+            onPointerDown={onPointerDown}
         >
             {/* Offset the primitive by -bottomY to ground it */}
             <primitive object={clonedScene} position={[0, -bottomY, 0]} />

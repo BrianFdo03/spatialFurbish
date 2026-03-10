@@ -1,6 +1,5 @@
 "use client"
-
-import { useMemo, Suspense } from "react"
+import { useMemo, Suspense, useState, useEffect } from "react"
 import { useSearchParams } from "react-router-dom"
 import { Canvas } from "@react-three/fiber"
 import { OrbitControls, useTexture, Environment } from "@react-three/drei"
@@ -236,7 +235,70 @@ const ROOM_SCALES: Record<RoomType, number> = {
     circular: 40,
 }
 
-function RoomContent({ roomType, roomProps, items }: { roomType: RoomType, roomProps: RoomProps, items: PlacedItem[] }) {
+function RoomContent({ 
+    roomType, 
+    roomProps, 
+    items,
+    selectedId,
+    onSelectItem,
+    onUpdateItem
+}: { 
+    roomType: RoomType, 
+    roomProps: RoomProps, 
+    items: PlacedItem[],
+    selectedId: string | null,
+    onSelectItem: (id: string | null) => void,
+    onUpdateItem: (id: string, updates: Partial<PlacedItem>) => void
+}) {
+
+    
+    const roomDim = ROOM_METERS[roomType]
+    const roomScale = ROOM_SCALES[roomType]
+
+    // Keyboard Controls
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (!selectedId) return
+            
+            const selectedItem = items.find(i => i.instanceId === selectedId)
+            if (!selectedItem) return
+
+            const MOVE_STEP = 5 // pixels
+            const ROT_STEP = 15 // degrees
+
+            let nextX = selectedItem.x
+            let nextY = selectedItem.y
+            let nextRotation = selectedItem.rotation
+
+            switch (e.key) {
+                case "ArrowLeft":
+                    nextX -= MOVE_STEP
+                    break
+                case "ArrowRight":
+                    nextX += MOVE_STEP
+                    break
+                case "ArrowUp":
+                    nextY -= MOVE_STEP
+                    break
+                case "ArrowDown":
+                    nextY += MOVE_STEP
+                    break
+                case "r":
+                case "R":
+                    nextRotation = e.shiftKey ? (nextRotation - ROT_STEP) % 360 : (nextRotation + ROT_STEP) % 360
+                    break
+                default:
+                    return // No match
+            }
+
+            e.preventDefault()
+            onUpdateItem(selectedId, { x: nextX, y: nextY, rotation: nextRotation })
+        }
+
+        window.addEventListener("keydown", handleKeyDown)
+        return () => window.removeEventListener("keydown", handleKeyDown)
+    }, [selectedId, items, onUpdateItem])
+
     const textures = useTexture({
         "wall-1": wall1Img,
         "wall-2": wall2Img,
@@ -249,9 +311,6 @@ function RoomContent({ roomType, roomProps, items }: { roomType: RoomType, roomP
     const wallTex = textures[roomProps.wallTexture as keyof typeof textures] || null
     const floorTex = textures[roomProps.floorTexture as keyof typeof textures] || null
 
-    const roomDim = ROOM_METERS[roomType]
-    const roomScale = ROOM_SCALES[roomType]
-
     return (
         <>
             <ambientLight intensity={1.5} />
@@ -259,26 +318,47 @@ function RoomContent({ roomType, roomProps, items }: { roomType: RoomType, roomP
             <pointLight position={[-5, 5, -5]} intensity={1} />
             <Environment preset="city" />
             <gridHelper args={[50, 50, "#1e293b", "#0f172a"]} position={[0, -1.5, 0]} />
+            
+            {/* Click floor to deselect */}
+            <mesh 
+                rotation={[-Math.PI / 2, 0, 0]} 
+                position={[0, -1.41, 0]} 
+                onPointerDown={(e) => {
+                    e.stopPropagation()
+                    onSelectItem(null)
+                }}
+            >
+                <planeGeometry args={[100, 100]} />
+                <meshStandardMaterial transparent opacity={0} />
+            </mesh>
+
             <RoomMesh type={roomType} props={roomProps} wallTex={wallTex} floorTex={floorTex} />
             
             {items.map((item) => {
+
+                
                 // Map top-left 2D pixels to centered 3D meters
                 const x3d = (item.x + (item.w * roomScale) / 2) / roomScale - (roomDim.w / 2)
                 const z3d = (item.y + (item.d * roomScale) / 2) / roomScale - (roomDim.d / 2)
                 
                 // Strict clamping to prevent wall clipping in 3D
-                // Adding a 0.2m buffer for safe distance from wall centers
                 const wallBuffer = 0.2
                 const clampedX = Math.max(-(roomDim.w/2) + wallBuffer, Math.min(roomDim.w/2 - wallBuffer, x3d))
                 const clampedZ = Math.max(-(roomDim.d/2) + wallBuffer, Math.min(roomDim.d/2 - wallBuffer, z3d))
 
-                return (
+                const furnitureComponent = (
                     <FurnitureItem 
                         key={item.instanceId}
                         position={[clampedX, -1.4, clampedZ]} 
-                        rotation={[0, - (item.rotation * Math.PI / 180), 0]} 
+                        rotation={[0, - (item.rotation * Math.PI / 180), 0]}
+                        onPointerDown={(e) => {
+                            e.stopPropagation()
+                            onSelectItem(item.instanceId)
+                        }}
                     />
                 )
+
+                return furnitureComponent
             })}
             
             <OrbitControls />
@@ -286,7 +366,19 @@ function RoomContent({ roomType, roomProps, items }: { roomType: RoomType, roomP
     )
 }
 
-export default function RoomCanvas({ roomProps, items }: { roomProps: RoomProps, items: PlacedItem[] }) {
+export default function RoomCanvas({ 
+    roomProps, 
+    items,
+    selectedId,
+    onSelectItem,
+    onUpdateItem
+}: { 
+    roomProps: RoomProps, 
+    items: PlacedItem[],
+    selectedId: string | null,
+    onSelectItem: (id: string | null) => void,
+    onUpdateItem: (id: string, updates: Partial<PlacedItem>) => void
+}) {
     const [searchParams] = useSearchParams()
     const rawRoom = searchParams.get("room") ?? "square"
     const roomType = (["square", "rectangle", "l-shape", "u-shape", "t-shape", "circular"].includes(rawRoom) ? rawRoom : "square") as RoomType
@@ -299,9 +391,48 @@ export default function RoomCanvas({ roomProps, items }: { roomProps: RoomProps,
                 style={{ width: "100%", height: "100%", background: "#0f121c" }}
             >
                 <Suspense fallback={null}>
-                    <RoomContent roomType={roomType} roomProps={roomProps} items={items} />
+                    <RoomContent 
+                        roomType={roomType} 
+                        roomProps={roomProps} 
+                        items={items} 
+                        selectedId={selectedId}
+                        onSelectItem={onSelectItem}
+                        onUpdateItem={onUpdateItem}
+                    />
                 </Suspense>
             </Canvas>
+
+            {/* Keyboard Controls Overlay */}
+            {selectedId && (
+                <div className="absolute bottom-6 right-6 z-10 p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <p className="text-xs font-bold text-accent mb-3 flex items-center gap-2">
+                        <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+                        KEYBOARD CONTROLS
+                    </p>
+                    <div className="space-y-2.5">
+                        <div className="flex items-center justify-between gap-8">
+                            <span className="text-[11px] text-text-muted font-medium">Move</span>
+                            <div className="flex gap-1">
+                                <span className="px-2 py-1 bg-white/10 rounded border border-white/10 text-[10px] text-text font-bold">↑</span>
+                                <span className="px-2 py-1 bg-white/10 rounded border border-white/10 text-[10px] text-text font-bold">↓</span>
+                                <span className="px-2 py-1 bg-white/10 rounded border border-white/10 text-[10px] text-text font-bold">←</span>
+                                <span className="px-2 py-1 bg-white/10 rounded border border-white/10 text-[10px] text-text font-bold">→</span>
+                            </div>
+                        </div>
+                        <div className="flex items-center justify-between gap-8">
+                            <span className="text-[11px] text-text-muted font-medium">Rotate</span>
+                            <div className="flex gap-1 items-center">
+                                <span className="px-2 py-1 bg-white/10 rounded border border-white/10 text-[10px] text-text font-bold uppercase">R</span>
+                                <span className="text-[10px] text-text-muted">/</span>
+                                <span className="px-2 py-1 bg-white/10 rounded border border-white/10 text-[10px] text-text font-bold flex items-center gap-1">
+                                    <span className="text-[8px] opacity-60">SHIFT</span>
+                                    <span>R</span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
