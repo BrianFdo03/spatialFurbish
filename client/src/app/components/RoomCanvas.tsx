@@ -1,8 +1,11 @@
 "use client"
-import { useMemo, Suspense, useState, useEffect } from "react"
+import { useMemo, Suspense, useEffect } from "react"
 import { useSearchParams } from "react-router-dom"
 import { Canvas } from "@react-three/fiber"
 import { OrbitControls, useTexture, Environment } from "@react-three/drei"
+import { XR, createXRStore, XRButton } from "@react-three/xr"
+
+const store = createXRStore()
 import * as THREE from "three"
 import FurnitureItem from "./FurnitureItem"
 import type { RoomType } from "./RoomSelector"
@@ -241,17 +244,17 @@ function RoomContent({
     items,
     selectedId,
     onSelectItem,
-    onUpdateItem
+    onUpdateItem,
+    isVR
 }: { 
     roomType: RoomType, 
     roomProps: RoomProps, 
     items: PlacedItem[],
     selectedId: string | null,
     onSelectItem: (id: string | null) => void,
-    onUpdateItem: (id: string, updates: Partial<PlacedItem>) => void
+    onUpdateItem: (id: string, updates: Partial<PlacedItem>) => void,
+    isVR?: boolean
 }) {
-
-    
     const roomDim = ROOM_METERS[roomType]
     const roomScale = ROOM_SCALES[roomType]
 
@@ -317,7 +320,7 @@ function RoomContent({
             <directionalLight position={[10, 10, 5]} intensity={2} />
             <pointLight position={[-5, 5, -5]} intensity={1} />
             <Environment preset="city" />
-            <gridHelper args={[50, 50, "#1e293b", "#0f172a"]} position={[0, -1.5, 0]} />
+            {!isVR && <gridHelper args={[50, 50, "#1e293b", "#0f172a"]} position={[0, -1.5, 0]} />}
             
             {/* Click floor to deselect */}
             <mesh 
@@ -335,8 +338,6 @@ function RoomContent({
             <RoomMesh type={roomType} props={roomProps} wallTex={wallTex} floorTex={floorTex} />
             
             {items.map((item) => {
-
-                
                 // Map top-left 2D pixels to centered 3D meters
                 const x3d = (item.x + (item.w * roomScale) / 2) / roomScale - (roomDim.w / 2)
                 const z3d = (item.y + (item.d * roomScale) / 2) / roomScale - (roomDim.d / 2)
@@ -346,7 +347,7 @@ function RoomContent({
                 const clampedX = Math.max(-(roomDim.w/2) + wallBuffer, Math.min(roomDim.w/2 - wallBuffer, x3d))
                 const clampedZ = Math.max(-(roomDim.d/2) + wallBuffer, Math.min(roomDim.d/2 - wallBuffer, z3d))
 
-                const furnitureComponent = (
+                return (
                     <FurnitureItem 
                         key={item.instanceId}
                         position={[clampedX, -1.4, clampedZ]} 
@@ -357,11 +358,9 @@ function RoomContent({
                         }}
                     />
                 )
-
-                return furnitureComponent
             })}
             
-            <OrbitControls />
+            <OrbitControls makeDefault />
         </>
     )
 }
@@ -371,13 +370,15 @@ export default function RoomCanvas({
     items,
     selectedId,
     onSelectItem,
-    onUpdateItem
+    onUpdateItem,
+    isVR
 }: { 
     roomProps: RoomProps, 
     items: PlacedItem[],
     selectedId: string | null,
     onSelectItem: (id: string | null) => void,
-    onUpdateItem: (id: string, updates: Partial<PlacedItem>) => void
+    onUpdateItem: (id: string, updates: Partial<PlacedItem>) => void,
+    isVR?: boolean
 }) {
     const [searchParams] = useSearchParams()
     const rawRoom = searchParams.get("room") ?? "square"
@@ -385,25 +386,39 @@ export default function RoomCanvas({
 
     return (
         <div className="w-full h-full relative">
+            {isVR && (
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+                    <XRButton 
+                        store={store}
+                        mode="immersive-vr"
+                        className="px-10 py-5 bg-accent text-white rounded-3xl font-black text-xl shadow-2xl hover:scale-105 active:scale-95 transition-all animate-bounce"
+                    >
+                        ENTER VR SPACE
+                    </XRButton>
+                </div>
+            )}
             <Canvas
                 key={roomType + JSON.stringify(roomProps)}
                 camera={{ position: cameraPositions[roomType], fov: 60 }}
                 style={{ width: "100%", height: "100%", background: "#0f121c" }}
             >
-                <Suspense fallback={null}>
-                    <RoomContent 
-                        roomType={roomType} 
-                        roomProps={roomProps} 
-                        items={items} 
-                        selectedId={selectedId}
-                        onSelectItem={onSelectItem}
-                        onUpdateItem={onUpdateItem}
-                    />
-                </Suspense>
+                <XR store={store}>
+                    <Suspense fallback={null}>
+                        <RoomContent 
+                            roomType={roomType} 
+                            roomProps={roomProps} 
+                            items={items} 
+                            selectedId={selectedId}
+                            onSelectItem={onSelectItem}
+                            onUpdateItem={onUpdateItem}
+                            isVR={isVR}
+                        />
+                    </Suspense>
+                </XR>
             </Canvas>
 
             {/* Keyboard Controls Overlay */}
-            {selectedId && (
+            {selectedId && !isVR && (
                 <div className="absolute bottom-6 right-6 z-10 p-4 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <p className="text-xs font-bold text-accent mb-3 flex items-center gap-2">
                         <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />

@@ -43,7 +43,7 @@ function reducer(state: PlacedItem[], action: Action): PlacedItem[] {
 
 export default function FloorPlanEditor() {
     const [searchParams] = useSearchParams()
-    const [view, setView] = useState<"2d" | "3d">("2d")
+    const [view, setView] = useState<"2d" | "3d" | "vr">("2d")
     const [title, setTitle] = useState("Untitled Design")
     const [items, dispatch] = useReducer(reducer, [])
     const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -103,10 +103,17 @@ export default function FloorPlanEditor() {
                             selectedId={selectedId}
                             onSelectItem={setSelectedId}
                             onUpdateItem={handleUpdate}
+                            isVR={view === "vr"}
                         />
                         <div className="absolute top-4 left-4 z-10 p-3 bg-white/80 backdrop-blur-md rounded-xl border border-border shadow-lg max-w-[200px]">
-                            <p className="text-xs font-bold text-accent mb-1 uppercase tracking-wider">3D Real-time View</p>
-                            <p className="text-[10px] text-text-muted">Interactive walk-through of your current layout.</p>
+                            <p className="text-xs font-bold text-accent mb-1 uppercase tracking-wider">
+                                {view === "3d" ? "3D Real-time View" : "Immersive VR View"}
+                            </p>
+                            <p className="text-[10px] text-text-muted">
+                                {view === "3d" 
+                                    ? "Interactive walk-through of your current layout." 
+                                    : "Enter VR to experience your space in full scale."}
+                            </p>
                         </div>
                     </div>
                 )}

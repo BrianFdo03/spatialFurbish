@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom"
 interface EditorTopBarProps {
     title: string
     onTitleChange: (t: string) => void
-    view: "2d" | "3d"
-    onViewChange: (v: "2d" | "3d") => void
+    view: "2d" | "3d" | "vr"
+    onViewChange: (v: "2d" | "3d" | "vr") => void
     onUndo: () => void
     onSave: () => void
 }
@@ -41,9 +41,9 @@ export default function EditorTopBar({
 
             </div>
 
-            {/* Center — 2D / 3D toggle */}
+            {/* Center — 2D / 3D / VR toggle */}
             <div className="flex items-center bg-bg-deep p-1.5 rounded-full shadow-inner h-[42px]">
-                {(["2d", "3d"] as const).map(v => (
+                {(["2d", "3d", "vr"] as const).map(v => (
                     <button
                         key={v}
                         onClick={() => onViewChange(v)}
@@ -60,13 +60,22 @@ export default function EditorTopBar({
                                 </svg>
                                 <span>2D Layout</span>
                             </>
-                        ) : (
+                        ) : v === "3d" ? (
                             <>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                     <path d="M12 3L21 8.5V15.5L12 21L3 15.5V8.5L12 3Z" strokeWidth="2.5" strokeLinejoin="round" />
                                     <path d="M12 3v18M3 8.5l9 6 9-6" strokeWidth="2.5" />
                                 </svg>
                                 <span>3D View</span>
+                            </>
+                        ) : (
+                            <>
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                    <path d="M3 12h18M3 12v3a2 2 0 0 0 2 2h2m0-5V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v5m0 0h2m-2 0v3a2 2 0 0 1-2 2h-2" strokeWidth="2.5" strokeLinecap="round" />
+                                    <circle cx="8" cy="12" r="1.5" fill="currentColor" />
+                                    <circle cx="16" cy="12" r="1.5" fill="currentColor" />
+                                </svg>
+                                <span>VR Experience</span>
                             </>
                         )}
                     </button>
