@@ -150,7 +150,10 @@ export default function Configurator() {
 
           <SceneCanvas
 
+          viewMode={viewMode}
+
             sceneObjects={sceneObjects}
+            
             lightOn={lightOn}
             roomWidth={roomWidth}
             roomDepth={roomDepth}

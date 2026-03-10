@@ -1,94 +1,121 @@
 .rightSidebar{
-width:320px;
+width:340px;
 background:#F3EFE6;
-padding:24px;
+padding:26px;
 display:flex;
 flex-direction:column;
-gap:24px;
+gap:22px;
 overflow-y:auto;
 height:100%;
-border-left:1px solid #ddd;
-font-family:sans-serif;
+border-left:1px solid #e0dbd0;
+font-family:Inter,sans-serif;
+color: #2c2c2c;
 }
 
 .sidebarTitle{
 margin:0;
 font-size:20px;
+font-weight:600;
+color:#2c2c2c;
 }
 
-.section{
+/* cards */
+
+.card{
+background:white;
+padding:14px;
+border-radius:10px;
 display:flex;
 flex-direction:column;
-gap:8px;
+gap:10px;
+box-shadow:0 2px 8px rgba(0,0,0,0.06);
 }
 
+/* titles */
+
 .sectionTitle{
-font-size:14px;
+font-size:13px;
 font-weight:600;
-color:#555;
+color:#6b6b6b;
 }
+
+/* dropdown */
 
 .dropdown{
 width:100%;
-padding:8px;
-border-radius:6px;
-border:1px solid #ccc;
+padding:9px;
+border-radius:8px;
+border:1px solid #ddd;
 background:white;
-color: #000;
+font-size:13px;
+color: #2c2c2c;
 }
+
+/* sliders */
 
 .slider{
 width:100%;
+accent-color:#7B8B6F;
 }
 
-.colorPicker{
-width:100%;
-height:40px;
-margin-top:8px;
-}
+/* colors */
 
 .colorRow{
 display:flex;
-gap:12px;
+gap:10px;
+flex-wrap:wrap;
 }
 
 .colorSwatch{
-width:36px;
-height:36px;
+width:34px;
+height:34px;
 border-radius:50%;
 cursor:pointer;
-box-shadow:0 2px 6px rgba(0,0,0,0.2);
+border:2px solid transparent;
+transition:0.2s;
 }
+
+.colorSwatch:hover{
+transform:scale(1.1);
+border-color:#555;
+}
+
+/* rotation */
 
 .rotationRow{
 display:flex;
-gap:10px;
+gap:8px;
+flex-wrap:wrap;
 }
 
 .greenButton{
 background:#7B8B6F;
 border:none;
-padding:8px 12px;
+padding:7px 12px;
 border-radius:6px;
 color:white;
 cursor:pointer;
+font-size:12px;
 }
 
 .greenButton:hover{
-background:#66785c;
+background:#64755a;
 }
 
-.lightButton{
-background:#900909;
-color:white;
-padding:10px;
-border-radius:8px;
+/* delete */
+
+.deleteBtn{
+background:#e05353;
 border:none;
+color:white;
+padding:6px 10px;
+border-radius:6px;
 cursor:pointer;
+font-size:12px;
 }
 
-.lightButton:hover{
-background:#c68112;
+.deleteBtn:hover{
+background:#c94545;
 }
 
 .furnitureHeader{
@@ -97,9 +124,32 @@ justify-content:space-between;
 align-items:center;
 }
 
-.deleteBtn{
-background:#f6caca;
-padding:6px;
-border-radius:6px;
+/* checkbox */
+
+.checkboxRow{
+display:flex;
+gap:8px;
+align-items:center;
+font-size:13px;
+}
+
+/* lights */
+
+.lightButton{
+padding:12px;
+border-radius:10px;
+border:none;
 cursor:pointer;
+font-weight:600;
+font-size:14px;
+}
+
+.lightButton.on{
+background:#6c7a5c;
+color:white;
+}
+
+.lightButton.off{
+background:#b33a3a;
+color:white;
 }

@@ -15,19 +15,44 @@ import Table from "../objects/Table";
 
 /* ================= CAMERA CONTROLLER ================= */
 
-function CameraController() {
+function CameraController({ viewMode }) {
 
-  const { camera } = useThree();
+  const { camera, controls } = useThree();
 
   useEffect(() => {
 
-    camera.position.set(9, 7, 9);
-    camera.lookAt(0, 0, 0);
+    if (viewMode === "2D") {
 
-  }, [camera]);
+      /* Bird-eye camera */
+
+      camera.position.set(0, 25, 0);
+      camera.up.set(0, 0, -1);   // ensures correct orientation
+      camera.lookAt(0, 0, 0);
+
+      if (controls) {
+        controls.target.set(0, 0, 0);
+        controls.update();
+      }
+
+    } 
+    else {
+
+      /* Normal 3D view */
+
+      camera.position.set(7, 6, 7);
+      camera.up.set(0, 1, 0);
+      camera.lookAt(0, 0, 0);
+
+      if (controls) {
+        controls.target.set(0, 0, 0);
+        controls.update();
+      }
+
+    }
+
+  }, [viewMode, camera, controls]);
 
   return null;
-
 }
 
 
@@ -35,13 +60,17 @@ function CameraController() {
 
 export default function SceneCanvas({
 
+  viewMode,
   sceneObjects,
+
   lightOn,
   roomWidth,
   roomDepth,
   roomHeight,
+
   floorType,
   floorColor,
+
   backWallColor,
   leftWallColor,
   rightWallColor,
@@ -57,6 +86,7 @@ export default function SceneCanvas({
 
   selectedObject,
   setSelectedObject,
+
   selectedType,
   setSelectedType,
 
@@ -73,22 +103,24 @@ export default function SceneCanvas({
         shadows
         camera={{ fov: 60 }}
         style={{ width: "100%", height: "100%" }}
-        onPointerMissed={()=>{
-          setSelectedObject(null)
-          setSelectedType(null)
-          setSelectedObjectRef(null)
+
+        onPointerMissed={() => {
+
+          setSelectedObject(null);
+          setSelectedType(null);
+          setSelectedObjectRef(null);
+
         }}
       >
 
-        <CameraController />
-
+        <CameraController viewMode={viewMode} />
 
         {/* ================= LIGHT ================= */}
 
         {lightOn && (
 
           <directionalLight
-            position={[8,10,8]}
+            position={[8, 10, 8]}
             intensity={1.3}
             castShadow
             shadow-mapSize-width={2048}
@@ -100,15 +132,19 @@ export default function SceneCanvas({
         <ambientLight intensity={0.5} />
 
 
-        {/* ================= CONTACT SHADOW ================= */}
+        {/* ================= SHADOW ================= */}
 
-        <ContactShadows
-          position={[0, 0.01, 0]}
-          opacity={0.6}
-          scale={50}
-          blur={2}
-          far={20}
-        />
+        {viewMode === "3D" && (
+
+          <ContactShadows
+            position={[0, 0.01, 0]}
+            opacity={0.6}
+            scale={50}
+            blur={2}
+            far={20}
+          />
+
+        )}
 
 
         {/* ================= FLOOR ================= */}
@@ -119,86 +155,66 @@ export default function SceneCanvas({
           floorType={floorType}
           floorColor={floorColor}
 
-          onClick={()=>{
+          onClick={() => {
 
-            setSelectedObject(null)
-            setSelectedType(null)
-            setSelectedObjectRef(null)
+            setSelectedObject(null);
+            setSelectedType(null);
+            setSelectedObjectRef(null);
+
           }}
         />
 
 
         {/* ================= BACK WALL ================= */}
 
-        <mesh
-          position={[0, roomHeight / 2, -roomDepth / 2]}
-          receiveShadow
+        {viewMode === "3D" && (
 
-          onClick={()=>{
+          <mesh
+            position={[0, roomHeight / 2, -roomDepth / 2]}
+            receiveShadow
 
-            setSelectedObject(null)
-            setSelectedType(null)
-            setSelectedObjectRef(null)
-          }}
+            onClick={() => {
 
-        >
+              setSelectedObject(null);
+              setSelectedType(null);
+              setSelectedObjectRef(null);
 
-          <boxGeometry args={[roomWidth, roomHeight, 0.2]} />
+            }}
+          >
 
-          <meshStandardMaterial color={backWallColor} />
+            <boxGeometry args={[roomWidth, roomHeight, 0.2]} />
 
-        </mesh>
+            <meshStandardMaterial color={backWallColor} />
+
+          </mesh>
+
+        )}
 
 
         {/* ================= LEFT WALL ================= */}
 
-        <mesh
-          position={[-roomWidth / 2, roomHeight / 2, 0]}
-          receiveShadow
+        {viewMode === "3D" && (
 
-          onClick={()=>{
+          <mesh
+            position={[-roomWidth / 2, roomHeight / 2, 0]}
+            receiveShadow
 
-            setSelectedObject(null)
-            setSelectedType(null)
-            setSelectedObjectRef(null)
-          }}
+            onClick={() => {
 
-        >
+              setSelectedObject(null);
+              setSelectedType(null);
+              setSelectedObjectRef(null);
 
-          <boxGeometry args={[0.2, roomHeight, roomDepth]} />
+            }}
+          >
 
-          <meshStandardMaterial color={leftWallColor} />
+            <boxGeometry args={[0.2, roomHeight, roomDepth]} />
 
-        </mesh>
+            <meshStandardMaterial color={leftWallColor} />
 
+          </mesh>
 
-
-        {/* ================= CHAIR =================
-
-        <DraggableItem
-          roomWidth={roomWidth}
-          roomDepth={roomDepth}
-          initialPosition={[0, 0, 0]}
-          setIsDragging={setIsDragging}
-          objectsRef={objectsRef}
-
-          setSelectedObjectRef={setSelectedObjectRef}
-
-          onClick={() => {
-
-            setSelectedObject("chair");
-            setSelectedType("furniture");
-
-          }}
-
-        >
-
-          <GLBFurniture
-            cushionColor={cushionColor}
-            fabricType={fabricType}
-          />
-
-        </DraggableItem> */}
+        )}
 
 
         {/* ================= DYNAMIC FURNITURE ================= */}
@@ -215,11 +231,16 @@ export default function SceneCanvas({
 
             <DraggableItem
               key={obj.id}
+
               roomWidth={roomWidth}
               roomDepth={roomDepth}
-              initialPosition={[0, 0, 0]}
+
+              initialPosition={[0, furniture.yOffset || 0, 0]}
+
               setIsDragging={setIsDragging}
+
               objectsRef={objectsRef}
+
               setSelectedObjectRef={setSelectedObjectRef}
 
               userData={{ id: obj.id }}
@@ -233,124 +254,66 @@ export default function SceneCanvas({
 
             >
 
+              {furniture.component === "TV" && (
+              <TV roomHeight={roomHeight} roomDepth={roomDepth} />
+              )}
+
+              {furniture.component === "Vase" && (
+              <FlowerVase />
+              )}
+
+              {furniture.component === "Table" && (
+              <Table />
+              )}
+
+              {furniture.model && (
               <GLBFurniture
-                modelPath={furniture.model}
-                scale={furniture.scale}
-                yOffset={furniture.yOffset}
-                cushionColor={obj.cushionColor}
-                fabricType={obj.fabricType}
+              modelPath={furniture.model}
+              scale={furniture.scale}
+              yOffset={furniture.yOffset}
+              cushionColor={obj.cushionColor}
+              fabricType={obj.fabricType}
               />
+              )}
 
             </DraggableItem>
 
           );
 
-})}
+        })}
 
 
-
-        {/* ================= TV ================= */}
-
-        {showTV && (
-
-          <DraggableItem
-            roomWidth={roomWidth}
-            roomDepth={roomDepth}
-            initialPosition={[0, 1.5, -roomDepth / 2 + 0.3]}
-            setIsDragging={setIsDragging}
-            objectsRef={objectsRef}
-
-            setSelectedObjectRef={setSelectedObjectRef}
-
-            onClick={() => {
-
-              setSelectedObject("tv");
-              setSelectedType("furniture");
-
-            }}
-
-          >
-
-            <TV roomHeight={roomHeight} roomDepth={roomDepth} />
-
-          </DraggableItem>
-
-        )}
-
-
-
-        {/* ================= VASE ================= */}
-
-        {showVase && (
-
-          <DraggableItem
-            roomWidth={roomWidth}
-            roomDepth={roomDepth}
-            initialPosition={[0, 0, -roomDepth / 2 + 0.3]}
-            setIsDragging={setIsDragging}
-            objectsRef={objectsRef}
-
-            setSelectedObjectRef={setSelectedObjectRef}
-
-            onClick={() => {
-
-              setSelectedObject("vase");
-              setSelectedType("furniture");
-
-            }}
-
-          >
-
-            <FlowerVase />
-
-          </DraggableItem>
-
-        )}
-
-
-
-        {/* ================= TABLE ================= */}
-
-        {showTable && (
-
-          <DraggableItem
-            roomWidth={roomWidth}
-            roomDepth={roomDepth}
-            initialPosition={[0, 0, -roomDepth / 2 + 0.3]}
-            setIsDragging={setIsDragging}
-            objectsRef={objectsRef}
-
-            setSelectedObjectRef={setSelectedObjectRef}
-
-            onClick={() => {
-
-              setSelectedObject("table");
-              setSelectedType("furniture");
-
-            }}
-
-          >
-
-            <Table />
-
-          </DraggableItem>
-
-        )}
-
-        
-
-
+       
 
         {/* ================= CONTROLS ================= */}
 
         <OrbitControls
-          enabled={!isDragging}
-          target={[0, 0, 0]}
-          minDistance={4}
-          maxDistance={15}
-          maxPolarAngle={Math.PI / 2.05}
-        />
 
+          makeDefault
+
+          enabled={!isDragging}
+
+          target={[0, 0, 0]}
+
+          /* Disable rotation in 2D */
+
+          enableRotate={viewMode === "3D"}
+
+          enablePan={true}
+
+          enableZoom={true}
+
+          /* lock vertical rotation */
+
+          minPolarAngle={viewMode === "2D" ? Math.PI / 2 : 0}
+          maxPolarAngle={viewMode === "2D" ? Math.PI / 2 : Math.PI / 2.05}
+
+          /* zoom limits */
+
+          minDistance={viewMode === "2D" ? 10 : 4}
+          maxDistance={viewMode === "2D" ? 40 : 15}
+
+        />
 
       </Canvas>
 

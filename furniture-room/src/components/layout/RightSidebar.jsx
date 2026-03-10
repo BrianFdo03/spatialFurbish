@@ -56,13 +56,9 @@ export default function RightSidebar({
 
 }) {
 
-  /* ================= GET SELECTED OBJECT ================= */
-
   const selectedFurniture = sceneObjects.find(
     obj => obj.id === selectedObjectRef?.current?.userData?.id
   );
-
-
 
   return (
 
@@ -75,12 +71,12 @@ export default function RightSidebar({
 
 <>
 
-<h2 className="sidebarTitle">Room Configurator</h2>
+<h2 className="sidebarTitle">Room Settings</h2>
 
 
 {/* ROOM TYPE */}
 
-<div className="section">
+<div className="card">
 
 <div className="sectionTitle">Room Type</div>
 
@@ -104,11 +100,11 @@ className="dropdown"
 
 {/* ROOM SIZE */}
 
-<div className="section">
+<div className="card">
 
 <div className="sectionTitle">Room Size</div>
 
-<label>Width: {roomWidth}m</label>
+<label>Width {roomWidth}m</label>
 <input
 type="range"
 min="5"
@@ -118,7 +114,7 @@ onChange={(e)=>setRoomWidth(Number(e.target.value))}
 className="slider"
 />
 
-<label>Depth: {roomDepth}m</label>
+<label>Depth {roomDepth}m</label>
 <input
 type="range"
 min="5"
@@ -128,7 +124,7 @@ onChange={(e)=>setRoomDepth(Number(e.target.value))}
 className="slider"
 />
 
-<label>Height: {roomHeight}m</label>
+<label>Height {roomHeight}m</label>
 <input
 type="range"
 min="3"
@@ -144,9 +140,9 @@ className="slider"
 
 {/* FLOOR */}
 
-<div className="section">
+<div className="card">
 
-<div className="sectionTitle">Floor Type</div>
+<div className="sectionTitle">Floor</div>
 
 <select
 value={floorType}
@@ -178,70 +174,21 @@ className="colorPicker"
 
 {/* WALL COLORS */}
 
-<div className="section">
+<div className="card">
 
 <div className="sectionTitle">Wall Colors</div>
 
 <div className="colorRow">
 
-<input
-type="color"
-value={backWallColor}
-onChange={(e)=>setBackWallColor(e.target.value)}
-/>
-
-<input
-type="color"
-value={leftWallColor}
-onChange={(e)=>setLeftWallColor(e.target.value)}
-/>
-
-<input
-type="color"
-value={rightWallColor}
-onChange={(e)=>setRightWallColor(e.target.value)}
-/>
+<input type="color" value={backWallColor} onChange={(e)=>setBackWallColor(e.target.value)}/>
+<input type="color" value={leftWallColor} onChange={(e)=>setLeftWallColor(e.target.value)}/>
+<input type="color" value={rightWallColor} onChange={(e)=>setRightWallColor(e.target.value)}/>
 
 </div>
 
 </div>
 
 
-
-{/* EXISTING OBJECTS */}
-
-<div className="section">
-
-<div className="sectionTitle">Existing Items</div>
-
-<label>
-<input
-type="checkbox"
-checked={showTV}
-onChange={()=>setShowTV(!showTV)}
-/>
- TV
-</label>
-
-<label>
-<input
-type="checkbox"
-checked={showVase}
-onChange={()=>setShowVase(!showVase)}
-/>
- Flower Vase
-</label>
-
-<label>
-<input
-type="checkbox"
-checked={showTable}
-onChange={()=>setShowTable(!showTable)}
-/>
- Table
-</label>
-
-</div>
 
 </>
 
@@ -259,8 +206,7 @@ onChange={()=>setShowTable(!showTable)}
 
 <h3>{selectedObject}</h3>
 
-
-<div
+<button
 className="deleteBtn"
 onClick={()=>{
 
@@ -270,8 +216,6 @@ const id = selectedObjectRef.current.userData.id;
 
 removeFurniture(id);
 
-/* clear selection after delete */
-
 setSelectedObject(null);
 setSelectedType(null);
 
@@ -279,14 +223,16 @@ setSelectedType(null);
 
 }}
 >
-🗑
-</div>
+Delete
+</button>
 
 </div>
 
 
 
-{/* COLOR SWATCHES */}
+<div className="card">
+
+<div className="sectionTitle">Color</div>
 
 <div className="colorRow">
 
@@ -297,33 +243,25 @@ key={color}
 className="colorSwatch"
 style={{background:color}}
 onClick={()=>
-updateFurniture(
-selectedFurniture.id,
-"cushionColor",
-color
-)
+updateFurniture(selectedFurniture.id,"cushionColor",color)
 }
 />
 ))}
 
 </div>
 
+</div>
 
 
-{/* FABRIC TYPE */}
 
-<div className="section">
+<div className="card">
 
-<div className="sectionTitle">Fabric Type</div>
+<div className="sectionTitle">Fabric</div>
 
 <select
 value={selectedFurniture.fabricType}
 onChange={(e)=>
-updateFurniture(
-selectedFurniture.id,
-"fabricType",
-e.target.value
-)
+updateFurniture(selectedFurniture.id,"fabricType",e.target.value)
 }
 className="dropdown"
 >
@@ -337,9 +275,7 @@ className="dropdown"
 
 
 
-{/* ROTATION */}
-
-<div className="section">
+<div className="card">
 
 <div className="sectionTitle">Rotation</div>
 
@@ -360,7 +296,7 @@ THREE.MathUtils.degToRad(deg)
 
 }}
 >
-{deg}
+{deg}°
 </button>
 ))}
 
@@ -378,10 +314,10 @@ THREE.MathUtils.degToRad(deg)
 
 <button
 onClick={()=>setLightOn(!lightOn)}
-className="lightButton"
+className={`lightButton ${lightOn ? "on" : "off"}`}
 >
 
-{lightOn ? "Lights OFF" : "Lights ON"}
+{lightOn ? "Lights ON" : "Lights OFF"}
 
 </button>
 

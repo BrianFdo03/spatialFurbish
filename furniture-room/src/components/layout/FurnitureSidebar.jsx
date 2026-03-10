@@ -14,7 +14,8 @@ export default function FurnitureSidebar({ addFurniture }) {
     "Sofas",
     "Beds",
     "Storage",
-    "Lighting"
+    "Lighting",
+    "Others"
   ];
 
   /* FILTER + SEARCH */

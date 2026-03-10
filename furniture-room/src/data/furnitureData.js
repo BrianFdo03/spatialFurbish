@@ -46,6 +46,35 @@ export const furnitureCatalog = [
   thumb: "/thumbs/old_cupboard.png",
   scale: 0.6,
   yOffset: 0
+},
+{
+  id: "tv",
+  name: "TV",
+  type: "Others",
+  size: "1.2m × 0.2m",
+  price: 250,
+  component: "TV",
+  yOffset:1.2
+},
+
+{
+  id: "vase",
+  name: "Flower Vase",
+  type: "Others",
+  size: "0.3m × 0.3m",
+  price: 40,
+  component: "Vase",
+  yOffset:0.15
+},
+
+{
+  id: "table",
+  name: "Side Table",
+  type: "Others",
+  size: "0.6m × 0.6m",
+  price: 90,
+  component: "Table",
+  yOffset:0.35
 }
 
 ];
