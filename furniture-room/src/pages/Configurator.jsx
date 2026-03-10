@@ -53,6 +53,37 @@ export default function Configurator() {
 
   const [selectedObjectRef, setSelectedObjectRef] = useState(null);
 
+  const [sceneObjects, setSceneObjects] = useState([]);
+
+  
+
+  const addFurniture = (type) => {
+
+    setSceneObjects(prev => [
+
+      ...prev,
+
+      {
+        id: Date.now(),
+        type: type,
+        cushionColor: "#ffffff",
+        fabricType: "fabric1"
+      }
+
+    ]);
+
+  };
+
+  const updateFurniture = (id, key, value) => {
+
+    setSceneObjects(prev =>
+      prev.map(obj =>
+        obj.id === id ? { ...obj, [key]: value } : obj
+      )
+    );
+
+  };
+
   // ================= ROOM PRESETS =================
 
   useEffect(() => {
@@ -103,13 +134,15 @@ export default function Configurator() {
       <div style={{ display: "flex", flex: 1, height: "100%" }}>
 
         {/* LEFT SIDEBAR */}
-        <FurnitureSidebar />
+        <FurnitureSidebar addFurniture={addFurniture} />
 
         {/* CENTER CANVAS */}
 
         <div style={{ flex: 1, height: "100%" }}>
 
           <SceneCanvas
+
+            sceneObjects={sceneObjects}
             lightOn={lightOn}
             roomWidth={roomWidth}
             roomDepth={roomDepth}
@@ -197,6 +230,9 @@ export default function Configurator() {
           selectedObjectRef={selectedObjectRef}
 
           setSelectedObject={setSelectedObject}
+
+          sceneObjects={sceneObjects}
+          updateFurniture={updateFurniture}
         />
 
       </div>

@@ -30,12 +30,6 @@ export default function RightSidebar({
   rightWallColor,
   setRightWallColor,
 
-  cushionColor,
-  setCushionColor,
-
-  fabricType,
-  setFabricType,
-
   showTV,
   setShowTV,
 
@@ -51,11 +45,22 @@ export default function RightSidebar({
   selectedObject,
   selectedType,
 
-  selectedObjectRef
+  selectedObjectRef,
+
+  sceneObjects,
+  updateFurniture
 
 }) {
 
-return (
+  /* ================= GET SELECTED OBJECT ================= */
+
+  const selectedFurniture = sceneObjects.find(
+    obj => obj.id === selectedObjectRef?.current?.userData?.id
+  );
+
+
+
+  return (
 
 <div className="rightSidebar">
 
@@ -242,7 +247,7 @@ onChange={()=>setShowTable(!showTable)}
 
 {/* ================= FURNITURE SETTINGS ================= */}
 
-{selectedType === "furniture" && (
+{selectedType === "furniture" && selectedFurniture && (
 
 <>
 
@@ -264,9 +269,15 @@ onChange={()=>setShowTable(!showTable)}
 .map((color)=>(
 <div
 key={color}
-onClick={()=>setCushionColor(color)}
 className="colorSwatch"
 style={{background:color}}
+onClick={()=>
+updateFurniture(
+selectedFurniture.id,
+"cushionColor",
+color
+)
+}
 />
 ))}
 
@@ -281,8 +292,14 @@ style={{background:color}}
 <div className="sectionTitle">Fabric Type</div>
 
 <select
-value={fabricType}
-onChange={(e)=>setFabricType(e.target.value)}
+value={selectedFurniture.fabricType}
+onChange={(e)=>
+updateFurniture(
+selectedFurniture.id,
+"fabricType",
+e.target.value
+)
+}
 className="dropdown"
 >
 

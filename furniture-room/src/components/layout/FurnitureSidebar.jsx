@@ -1,9 +1,11 @@
 import { useState } from "react";
 import "./FurnitureSidebar.css";
+import { furnitureCatalog } from "../../data/furnitureData";
 
-export default function FurnitureSidebar() {
+export default function FurnitureSidebar({ addFurniture }) {
 
   const [activeFilter, setActiveFilter] = useState("All");
+  const [search, setSearch] = useState("");
 
   const filters = [
     "All",
@@ -15,43 +17,19 @@ export default function FurnitureSidebar() {
     "Lighting"
   ];
 
-  const furniture = [
-    {
-      name: "3-Seat Sofa",
-      size: "2.2m × 0.9m",
-      icon: "🛋",
-      type: "Sofas"
-    },
-    {
-      name: "Bookshelf",
-      size: "0.8m × 0.3m",
-      icon: "📚",
-      type: "Storage"
-    },
-    {
-      name: "Coffee Table",
-      size: "1.2m × 0.6m",
-      icon: "🪑",
-      type: "Tables"
-    },
-    {
-      name: "Desk",
-      size: "1.4m × 0.7m",
-      icon: "🖥",
-      type: "Tables"
-    },
-    {
-      name: "Dining Chair",
-      size: "0.5m × 0.5m",
-      icon: "🪑",
-      type: "Chairs"
-    }
-  ];
+  /* FILTER + SEARCH */
 
-  const filteredFurniture =
-    activeFilter === "All"
-      ? furniture
-      : furniture.filter((f) => f.type === activeFilter);
+  const filteredFurniture = furnitureCatalog.filter((item) => {
+
+    const matchFilter =
+      activeFilter === "All" || item.type === activeFilter;
+
+    const matchSearch =
+      item.name.toLowerCase().includes(search.toLowerCase());
+
+    return matchFilter && matchSearch;
+
+  });
 
   return (
 
@@ -63,7 +41,9 @@ export default function FurnitureSidebar() {
 
       <input
         className="searchInput"
-        placeholder="Search..."
+        placeholder="Search furniture..."
+        value={search}
+        onChange={(e)=>setSearch(e.target.value)}
       />
 
       {/* FILTER BUTTONS */}
@@ -90,13 +70,16 @@ export default function FurnitureSidebar() {
 
       <div className="furnitureList">
 
-        {filteredFurniture.map((item, index) => (
+        {filteredFurniture.map((item) => (
 
           <FurnitureItem
-            key={index}
+            key={item.id}
             name={item.name}
             size={item.size}
-            icon={item.icon}
+            price={item.price}
+            thumb={item.thumb}
+            model={item.id}
+            addFurniture={addFurniture}
           />
 
         ))}
@@ -109,15 +92,23 @@ export default function FurnitureSidebar() {
 }
 
 
-function FurnitureItem({ name, size, icon }) {
+/* ================= CARD ================= */
+
+function FurnitureItem({ name, size, price, thumb, model, addFurniture }) {
 
   return (
 
-    <div className="furnitureItem">
+    <div
+      className="furnitureItem"
+      onClick={() => addFurniture(model)}
+    >
 
-      <div className="furnitureIcon">
-        {icon}
-      </div>
+      <img
+        src={thumb}
+        alt={name}
+        className="furnitureThumb"
+        onError={(e)=>{e.target.src="/thumbs/placeholder.png"}}
+      />
 
       <div className="furnitureInfo">
 
@@ -127,6 +118,10 @@ function FurnitureItem({ name, size, icon }) {
 
         <div className="furnitureSize">
           {size}
+        </div>
+
+        <div className="furniturePrice">
+          {price}
         </div>
 
       </div>

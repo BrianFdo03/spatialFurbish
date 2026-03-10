@@ -10,7 +10,8 @@ export default function DraggableItem({
   setIsDragging,
   objectsRef,
   onClick,
-  setSelectedObjectRef
+  setSelectedObjectRef,
+  userData
 }) {
 
   const groupRef = useRef();
@@ -184,6 +185,7 @@ export default function DraggableItem({
     <group
       ref={groupRef}
       position={initialPosition}
+      userData={userData}
 
       onPointerDown={(e) => {
 

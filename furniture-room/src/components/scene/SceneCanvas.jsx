@@ -6,6 +6,8 @@ import Floor from "./Floor";
 import DraggableItem from "./DraggableItem";
 import GLBFurniture from "../furniture/GLBFurniture";
 
+import { furnitureCatalog } from "../../data/furnitureData";
+
 import TV from "../objects/TV";
 import FlowerVase from "../objects/FlowerVase";
 import Table from "../objects/Table";
@@ -19,7 +21,7 @@ function CameraController() {
 
   useEffect(() => {
 
-    camera.position.set(7, 6, 7);
+    camera.position.set(9, 7, 9);
     camera.lookAt(0, 0, 0);
 
   }, [camera]);
@@ -33,6 +35,7 @@ function CameraController() {
 
 export default function SceneCanvas({
 
+  sceneObjects,
   lightOn,
   roomWidth,
   roomDepth,
@@ -42,9 +45,6 @@ export default function SceneCanvas({
   backWallColor,
   leftWallColor,
   rightWallColor,
-
-  cushionColor,
-  fabricType,
 
   setIsDragging,
   isDragging,
@@ -88,7 +88,7 @@ export default function SceneCanvas({
         {lightOn && (
 
           <directionalLight
-            position={[8, 10, 8]}
+            position={[8,10,8]}
             intensity={1.3}
             castShadow
             shadow-mapSize-width={2048}
@@ -173,7 +173,7 @@ export default function SceneCanvas({
 
 
 
-        {/* ================= CHAIR ================= */}
+        {/* ================= CHAIR =================
 
         <DraggableItem
           roomWidth={roomWidth}
@@ -198,7 +198,54 @@ export default function SceneCanvas({
             fabricType={fabricType}
           />
 
-        </DraggableItem>
+        </DraggableItem> */}
+
+
+        {/* ================= DYNAMIC FURNITURE ================= */}
+
+        {sceneObjects.map((obj) => {
+
+          const furniture = furnitureCatalog.find(
+            f => f.id === obj.type
+          );
+
+          if (!furniture) return null;
+
+          return (
+
+            <DraggableItem
+              key={obj.id}
+              roomWidth={roomWidth}
+              roomDepth={roomDepth}
+              initialPosition={[0, 0, 0]}
+              setIsDragging={setIsDragging}
+              objectsRef={objectsRef}
+              setSelectedObjectRef={setSelectedObjectRef}
+
+              userData={{ id: obj.id }}
+
+              onClick={() => {
+
+                setSelectedObject(obj.type);
+                setSelectedType("furniture");
+
+              }}
+
+            >
+
+              <GLBFurniture
+                modelPath={furniture.model}
+                scale={furniture.scale}
+                yOffset={furniture.yOffset}
+                cushionColor={obj.cushionColor}
+                fabricType={obj.fabricType}
+              />
+
+            </DraggableItem>
+
+          );
+
+})}
 
 
 

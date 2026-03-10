@@ -1,31 +1,57 @@
 import { useGLTF } from "@react-three/drei";
 import { useLoader } from "@react-three/fiber";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
 export default function GLBFurniture({
+  modelPath,
+  scale = 1,
+  yOffset = 0,
   cushionColor,
-  fabricType,
+  fabricType
 }) {
 
-  const gltf = useGLTF("/models/old_chair.glb");
+  const groupRef = useRef();
+
+  const gltf = useGLTF(modelPath);
 
   const fabric1 = useLoader(THREE.TextureLoader, "/textures/fabric1.jpg");
   const fabric2 = useLoader(THREE.TextureLoader, "/textures/fabric2.jpg");
 
 
-  /* ================= FLOOR ALIGNMENT ================= */
 
-  useEffect(() => {
+  /* ================= MODEL NORMALIZATION ================= */
 
-    const box = new THREE.Box3().setFromObject(gltf.scene);
-    const size = new THREE.Vector3();
 
-    box.getSize(size);
+    useEffect(() => {
 
-    gltf.scene.position.y = size.y / 2;
+      const model = gltf.scene;
 
-  }, [gltf]);
+      // reset transforms first
+      model.position.set(0,0,0);
+
+      // apply scale first
+      model.scale.setScalar(scale);
+
+      // compute bounding box AFTER scaling
+      const box = new THREE.Box3().setFromObject(model);
+
+      const size = new THREE.Vector3();
+      const center = new THREE.Vector3();
+
+      box.getSize(size);
+      box.getCenter(center);
+
+      // center horizontally
+      model.position.x = -center.x;
+      model.position.z = -center.z;
+
+      // place bottom on floor
+      const bottom = box.min.y;
+      model.position.y = -bottom;
+
+    }, [gltf, scale]);
+
 
 
   /* ================= MATERIAL CUSTOMIZATION ================= */
@@ -49,7 +75,7 @@ export default function GLBFurniture({
       child.material = new THREE.MeshStandardMaterial({
         color: cushionColor,
         map: selectedFabric,
-        roughness: 0.7,
+        roughness: 0.7
       });
 
     });
@@ -57,10 +83,17 @@ export default function GLBFurniture({
   }, [gltf, cushionColor, fabricType, fabric1, fabric2]);
 
 
+
   return (
-    <group scale={2}>
+
+    <group 
+    ref={groupRef}
+      scale={scale}
+      position={[0,yOffset,0]}
+    >
       <primitive object={gltf.scene} />
     </group>
+
   );
 
 }
