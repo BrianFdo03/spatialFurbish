@@ -73,6 +73,11 @@ export default function SceneCanvas({
         shadows
         camera={{ fov: 60 }}
         style={{ width: "100%", height: "100%" }}
+        onPointerMissed={()=>{
+          setSelectedObject(null)
+          setSelectedType(null)
+          setSelectedObjectRef(null)
+        }}
       >
 
         <CameraController />
@@ -114,13 +119,12 @@ export default function SceneCanvas({
           floorType={floorType}
           floorColor={floorColor}
 
-          onClick={() => {
+          onClick={()=>{
 
-            setSelectedObject("floor");
-            setSelectedType("room");
-
+            setSelectedObject(null)
+            setSelectedType(null)
+            setSelectedObjectRef(null)
           }}
-
         />
 
 
@@ -130,11 +134,11 @@ export default function SceneCanvas({
           position={[0, roomHeight / 2, -roomDepth / 2]}
           receiveShadow
 
-          onClick={() => {
+          onClick={()=>{
 
-            setSelectedObject("back wall");
-            setSelectedType("room");
-
+            setSelectedObject(null)
+            setSelectedType(null)
+            setSelectedObjectRef(null)
           }}
 
         >
@@ -152,11 +156,11 @@ export default function SceneCanvas({
           position={[-roomWidth / 2, roomHeight / 2, 0]}
           receiveShadow
 
-          onClick={() => {
+          onClick={()=>{
 
-            setSelectedObject("left wall");
-            setSelectedType("room");
-
+            setSelectedObject(null)
+            setSelectedType(null)
+            setSelectedObjectRef(null)
           }}
 
         >
@@ -285,6 +289,8 @@ export default function SceneCanvas({
           </DraggableItem>
 
         )}
+
+        
 
 
 
