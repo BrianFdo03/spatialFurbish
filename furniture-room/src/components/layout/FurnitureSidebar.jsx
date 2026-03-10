@@ -98,17 +98,15 @@ function FurnitureItem({ name, size, price, thumb, model, addFurniture }) {
 
   return (
 
-    <div
-      className="furnitureItem"
-      onClick={() => addFurniture(model)}
-    >
+    <div className="furnitureItem">
 
-      <img
-        src={thumb}
-        alt={name}
-        className="furnitureThumb"
-        onError={(e)=>{e.target.src="/thumbs/placeholder.png"}}
-      />
+      <div className="furnitureImageContainer">
+        <img
+          src={thumb}
+          alt={name}
+          className="furnitureThumb"
+        />
+      </div>
 
       <div className="furnitureInfo">
 
@@ -116,17 +114,22 @@ function FurnitureItem({ name, size, price, thumb, model, addFurniture }) {
           {name}
         </div>
 
-        <div className="furnitureSize">
-          {size}
-        </div>
-
-        <div className="furniturePrice">
-          {price}
+        <div className="furnitureMeta">
+          <span className="furnitureSize">{size}</span>
+          <span className="furniturePrice">${price}</span>
         </div>
 
       </div>
 
+      <button
+        className="addFurnitureBtn"
+        onClick={() => addFurniture(model)}
+      >
+        Add
+      </button>
+
     </div>
 
   );
+
 }

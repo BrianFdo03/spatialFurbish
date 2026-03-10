@@ -45,10 +45,14 @@ export default function RightSidebar({
   selectedObject,
   selectedType,
 
+  setSelectedObject,
+  setSelectedType,
+
   selectedObjectRef,
 
   sceneObjects,
-  updateFurniture
+  updateFurniture,
+  removeFurniture
 
 }) {
 
@@ -255,7 +259,28 @@ onChange={()=>setShowTable(!showTable)}
 
 <h3>{selectedObject}</h3>
 
-<div className="deleteBtn">🗑</div>
+
+<div
+className="deleteBtn"
+onClick={()=>{
+
+if(selectedObjectRef?.current){
+
+const id = selectedObjectRef.current.userData.id;
+
+removeFurniture(id);
+
+/* clear selection after delete */
+
+setSelectedObject(null);
+setSelectedType(null);
+
+}
+
+}}
+>
+🗑
+</div>
 
 </div>
 

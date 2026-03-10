@@ -84,6 +84,14 @@ export default function Configurator() {
 
   };
 
+  const removeFurniture = (id) => {
+
+  setSceneObjects(prev =>
+    prev.filter(obj => obj.id !== id)
+  );
+
+};
+
   // ================= ROOM PRESETS =================
 
   useEffect(() => {
@@ -232,7 +240,12 @@ export default function Configurator() {
           setSelectedObject={setSelectedObject}
 
           sceneObjects={sceneObjects}
+
           updateFurniture={updateFurniture}
+          
+          
+          setSelectedType={setSelectedType}
+          removeFurniture={removeFurniture}
         />
 
       </div>
