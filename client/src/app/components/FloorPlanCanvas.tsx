@@ -64,13 +64,69 @@ export default function FloorPlanCanvas({
         const handleMouseMove = (e: MouseEvent) => {
             if (!isDragging || !selectedId) return
 
+            const item = items.find(i => i.instanceId === selectedId)
+            if (!item) return
+
             const dx = e.clientX - dragStartPos.current.x
             const dy = e.clientY - dragStartPos.current.y
 
-            onUpdateItem(selectedId, {
-                x: itemStartPos.current.x + dx,
-                y: itemStartPos.current.y + dy,
-            })
+            let newX = itemStartPos.current.x + dx
+            let newY = itemStartPos.current.y + dy
+
+            const itemW_px = item.w * roomScale
+            const itemD_px = item.d * roomScale
+
+            // Boundary validation
+            const checkCollision = (tx: number, ty: number) => {
+                const wallMargin = 0.1 * roomScale // 10cm margin for 20cm thick walls
+                
+                // Main bounding box (with margin)
+                if (tx < wallMargin || ty < wallMargin || tx + itemW_px > pixelWidth - wallMargin || ty + itemD_px > pixelHeight - wallMargin) return false
+
+                if (roomType === "l-shape") {
+                    // Cutout: top-right area (x > 50%, y < 50%)
+                    if (tx + itemW_px > (pixelWidth * 0.5) - wallMargin && ty < (pixelHeight * 0.5) + wallMargin) return false
+                }
+
+                if (roomType === "u-shape") {
+                    // Cutout: top-center area (30% < x < 70%, y < 70%)
+                    const cutoutL = (pixelWidth * 0.3) + wallMargin
+                    const cutoutR = (pixelWidth * 0.7) - wallMargin
+                    const cutoutB = (pixelHeight * 0.7) - wallMargin // Fixed: cutout is top, so boundary is at 70% from top
+                    if (tx + itemW_px > cutoutL - (2 * wallMargin) && tx < cutoutR + (2 * wallMargin) && ty < cutoutB + wallMargin) {
+                        // More precise check for the "inner" part of the U
+                        if (tx + itemW_px > cutoutL && tx < cutoutR && ty < cutoutB) return false
+                    }
+                }
+
+                if (roomType === "t-shape") {
+                    // Inner corners need margin
+                    const stemL = (pixelWidth * 0.35) + wallMargin
+                    const stemR = (pixelWidth * 0.65) - wallMargin
+                    const barB = (pixelHeight * 0.3) - wallMargin
+                    if ((tx < stemL && ty + itemD_px > barB) || (tx + itemW_px > stemR && ty + itemD_px > barB)) return false
+                }
+
+                if (roomType === "circular") {
+                    const cx = pixelWidth / 2
+                    const cy = pixelHeight / 2
+                    const r = (pixelWidth / 2) - wallMargin
+                    const corners = [
+                        [tx, ty],
+                        [tx + itemW_px, ty],
+                        [tx, ty + itemD_px],
+                        [tx + itemW_px, ty + itemD_px]
+                    ]
+                    return corners.every(([cx_p, cy_p]) => Math.sqrt((cx_p - cx) ** 2 + (cy_p - cy) ** 2) <= r)
+                }
+
+                return true
+            }
+
+            // Only update if within bounds
+            if (checkCollision(newX, newY)) {
+                onUpdateItem(selectedId, { x: newX, y: newY })
+            }
         }
 
         const handleMouseUp = () => {

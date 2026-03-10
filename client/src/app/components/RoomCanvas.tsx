@@ -3,19 +3,20 @@
 import { useMemo, Suspense } from "react"
 import { useSearchParams } from "react-router-dom"
 import { Canvas } from "@react-three/fiber"
-import { OrbitControls, useTexture } from "@react-three/drei"
+import { OrbitControls, useTexture, Environment } from "@react-three/drei"
 import * as THREE from "three"
 import FurnitureItem from "./FurnitureItem"
 import type { RoomType } from "./RoomSelector"
 import type { RoomProps } from "../types/room"
+import type { PlacedItem } from "../types/furniture"
 
 // Assets
-import wall1Img from "../../assets/Wall 1.jpeg"
-import wall2Img from "../../assets/Wall 2.jpeg"
-import wall3Img from "../../assets/Wall 3.jpg"
-import floor1Img from "../../assets/Floor 1.jpeg"
-import floor2Img from "../../assets/Floor 2.jpeg"
-import floor3Img from "../../assets/Floor 3.jpg"
+import wall1Img from "../../assets/WallTextures/Wall 1.jpeg"
+import wall2Img from "../../assets/WallTextures/Wall 2.jpeg"
+import wall3Img from "../../assets/WallTextures/Wall 3.jpg"
+import floor1Img from "../../assets/FloorTextures/Floor 1.jpeg"
+import floor2Img from "../../assets/FloorTextures/Floor 2.jpeg"
+import floor3Img from "../../assets/FloorTextures/Floor 3.jpg"
 
 // --- Helper components ---
 
@@ -105,7 +106,7 @@ function LShapeRoom({ props, wallTex, floorTex }: { props: RoomProps, wallTex?: 
             <Wall position={[1, (wallHeight / 2) - 1.5, -3]} scale={[0.2, wallHeight, 6]} texture={wallTex} />
             <Wall position={[4, (wallHeight / 2) - 1.5, 0]} scale={[6, wallHeight, 0.2]} texture={wallTex} />
             <Wall position={[7, (wallHeight / 2) - 1.5, 3]} scale={[0.2, wallHeight, 6]} texture={wallTex} />
-            <Wall position={[2, (wallHeight / 2) - 1.5, 6]} scale={[10, wallHeight, 0.2]} texture={wallTex} />
+            <Wall position={[0, (wallHeight / 2) - 1.5, 6]} scale={[14, wallHeight, 0.2]} texture={wallTex} />
         </group>
     )
 }
@@ -156,8 +157,8 @@ function TShapeRoom({ props, wallTex, floorTex }: { props: RoomProps, wallTex?: 
             {/* Exterior Walls */}
             <Wall position={[0, (wallHeight / 2) - 1.5, -6]} scale={[14, wallHeight, 0.2]} texture={wallTex} />
             <Wall position={[-7, (wallHeight / 2) - 1.5, -3]} scale={[0.2, wallHeight, 6]} texture={wallTex} />
-            <Wall position={[-3.5, (wallHeight / 2) - 1.5, 0]} scale={[7, wallHeight, 0.2]} texture={wallTex} />
-            <Wall position={[3.5, (wallHeight / 2) - 1.5, 0]} scale={[7, wallHeight, 0.2]} texture={wallTex} />
+            <Wall position={[-5, (wallHeight / 2) - 1.5, 0]} scale={[4, wallHeight, 0.2]} texture={wallTex} />
+            <Wall position={[5, (wallHeight / 2) - 1.5, 0]} scale={[4, wallHeight, 0.2]} texture={wallTex} />
             <Wall position={[7, (wallHeight / 2) - 1.5, -3]} scale={[0.2, wallHeight, 6]} texture={wallTex} />
             <Wall position={[-3, (wallHeight / 2) - 1.5, 3]} scale={[0.2, wallHeight, 6]} texture={wallTex} />
             <Wall position={[3, (wallHeight / 2) - 1.5, 3]} scale={[0.2, wallHeight, 6]} texture={wallTex} />
@@ -176,7 +177,7 @@ function CircularRoom({ props, wallTex, floorTex }: { props: RoomProps, wallTex?
     return (
         <group>
             {/* Rotunda Floor */}
-            <mesh position={[0, -1.4, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            <mesh position={[0, -1.4, 0]}>
                 <cylinderGeometry args={[radius, radius, 0.2, segments]} />
                 <meshStandardMaterial color="#ffffff" map={floorTex || null} />
             </mesh>
@@ -217,7 +218,25 @@ const cameraPositions: Record<RoomType, [number, number, number]> = {
     circular: [15, 15, 15],
 }
 
-function RoomContent({ roomType, roomProps }: { roomType: RoomType, roomProps: RoomProps }) {
+const ROOM_METERS: Record<RoomType, { w: number; d: number }> = {
+    square: { w: 10, d: 10 },
+    rectangle: { w: 14, d: 9 },
+    "l-shape": { w: 14, d: 12 },
+    "u-shape": { w: 14, d: 12 },
+    "t-shape": { w: 14, d: 12 },
+    circular: { w: 12, d: 12 },
+}
+
+const ROOM_SCALES: Record<RoomType, number> = {
+    square: 40,
+    rectangle: 40,
+    "l-shape": 40,
+    "u-shape": 40,
+    "t-shape": 35,
+    circular: 40,
+}
+
+function RoomContent({ roomType, roomProps, items }: { roomType: RoomType, roomProps: RoomProps, items: PlacedItem[] }) {
     const textures = useTexture({
         "wall-1": wall1Img,
         "wall-2": wall2Img,
@@ -230,20 +249,44 @@ function RoomContent({ roomType, roomProps }: { roomType: RoomType, roomProps: R
     const wallTex = textures[roomProps.wallTexture as keyof typeof textures] || null
     const floorTex = textures[roomProps.floorTexture as keyof typeof textures] || null
 
+    const roomDim = ROOM_METERS[roomType]
+    const roomScale = ROOM_SCALES[roomType]
+
     return (
         <>
-            <ambientLight intensity={0.6} />
-            <directionalLight position={[5, 8, 5]} intensity={1} />
+            <ambientLight intensity={1.5} />
+            <directionalLight position={[10, 10, 5]} intensity={2} />
+            <pointLight position={[-5, 5, -5]} intensity={1} />
+            <Environment preset="city" />
             <gridHelper args={[50, 50, "#1e293b", "#0f172a"]} position={[0, -1.5, 0]} />
             <RoomMesh type={roomType} props={roomProps} wallTex={wallTex} floorTex={floorTex} />
-            <FurnitureItem position={[0, 0.5, 0]} />
-            <FurnitureItem position={[3, 0.5, 1]} />
+            
+            {items.map((item) => {
+                // Map top-left 2D pixels to centered 3D meters
+                const x3d = (item.x + (item.w * roomScale) / 2) / roomScale - (roomDim.w / 2)
+                const z3d = (item.y + (item.d * roomScale) / 2) / roomScale - (roomDim.d / 2)
+                
+                // Strict clamping to prevent wall clipping in 3D
+                // Adding a 0.2m buffer for safe distance from wall centers
+                const wallBuffer = 0.2
+                const clampedX = Math.max(-(roomDim.w/2) + wallBuffer, Math.min(roomDim.w/2 - wallBuffer, x3d))
+                const clampedZ = Math.max(-(roomDim.d/2) + wallBuffer, Math.min(roomDim.d/2 - wallBuffer, z3d))
+
+                return (
+                    <FurnitureItem 
+                        key={item.instanceId}
+                        position={[clampedX, -1.4, clampedZ]} 
+                        rotation={[0, - (item.rotation * Math.PI / 180), 0]} 
+                    />
+                )
+            })}
+            
             <OrbitControls />
         </>
     )
 }
 
-export default function RoomCanvas({ roomProps }: { roomProps: RoomProps }) {
+export default function RoomCanvas({ roomProps, items }: { roomProps: RoomProps, items: PlacedItem[] }) {
     const [searchParams] = useSearchParams()
     const rawRoom = searchParams.get("room") ?? "square"
     const roomType = (["square", "rectangle", "l-shape", "u-shape", "t-shape", "circular"].includes(rawRoom) ? rawRoom : "square") as RoomType
@@ -256,7 +299,7 @@ export default function RoomCanvas({ roomProps }: { roomProps: RoomProps }) {
                 style={{ width: "100%", height: "100%", background: "#0f121c" }}
             >
                 <Suspense fallback={null}>
-                    <RoomContent roomType={roomType} roomProps={roomProps} />
+                    <RoomContent roomType={roomType} roomProps={roomProps} items={items} />
                 </Suspense>
             </Canvas>
         </div>
