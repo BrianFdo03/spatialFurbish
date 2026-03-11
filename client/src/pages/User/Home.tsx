@@ -242,7 +242,7 @@ export function Home() {
 
       {/* Hero Section */}
       <section className="relative pt-20">
-        <div className="max-w-7xl mx-auto px-6 py-12 md:py-24 grid md:grid-cols-2 gap-12 items-center">
+        <div className="max-w-7xl mx-auto px-6 py-8 md:py-16 grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-8 order-2 md:order-1">
             <h1 className="text-5xl md:text-7xl font-serif font-bold leading-tight text-[#44403c]">
               {data.hero.headline.split(",").map((part, i) => (
@@ -276,7 +276,7 @@ export function Home() {
             <img
               src={data.hero.image}
               alt="Skincare Collection"
-              className="w-full h-[500px] object-contain drop-shadow-2xl relative z-10"
+              className="w-full h-[400px] object-contain drop-shadow-2xl relative z-10"
             />
           </div>
         </div>
