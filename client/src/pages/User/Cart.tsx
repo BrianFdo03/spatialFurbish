@@ -121,21 +121,20 @@ export function Cart() {
       </main>
 
       <Footer
-        brand="LUMIÈRE"
+        brand="SpatialFurbish"
         data={{
-          brand_description:
-            "Natural skincare designed for balance, simplicity, and care.",
-          links: [
-            { label: "All Products", href: "/shop" },
-            { label: "Best Sellers", href: "/shop" },
-            { label: "New Arrivals", href: "/shop" },
+          brand_description: "Visualizing Comfort, Precisely Modeled",
+          social_links: [
+            { platform: "facebook", url: "#" },
+            { platform: "instagram", url: "#" },
+            { platform: "youtube", url: "#" }
           ],
-          contact: {
-            email: "hello@lumiere.com",
-            phone: "+1 (555) 123-4567",
-          },
-          copyright:
-            "© 2025 Lumière Skincare. All rights reserved.",
+          links: [
+            { label: "Privacy", href: "#" },
+            { label: "Trends", href: "#" },
+            { label: "Contact", href: "#" }
+          ],
+          copyright: "© 2026 SpatialFurbish furnitures. All rights reserved.",
         }}
       />
     </>

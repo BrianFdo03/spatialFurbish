@@ -4,7 +4,15 @@ import { Navbar } from "../../components/User/Navbar";
 import { Footer } from "../../components/User/Footer";
 import { ProductCard } from "../../components/Dashboard/ProductCard";
 import { Button } from "@/components/ui/button";
-import { Armchair, Utensils, BedDouble, Presentation, Wrench, ArrowRight } from "lucide-react";
+import { 
+  ArrowRight,
+  Home as HomeIcon,
+  Box,
+  Maximize,
+  Palette,
+  Save,
+  Users
+} from "lucide-react";
 import { productAPI } from "@/services/api";
 import { useSocket } from "@/context/SocketContext";
 const data = {
@@ -18,23 +26,82 @@ const data = {
   hero: {
     headline: "Visualizing Comfort,Precisely Modeled",
     subheadline:
-      "Create immersive 2D and 3D room layouts for customers using real-time scaling and shading tools.",
-    cta_primary: "Shop Collection",
-    cta_secondary: "Our Story",
+      "Powerful tools to envision furniture through intense design for any space.",
+    cta_primary: "Explore",
+    cta_secondary: "Pricing",
     image:
       "https://i.pinimg.com/736x/66/93/00/6693007955898bfed8b66b75bd3e6ea1.jpg",
   },
-  ferniture_types: [
-    { label: "Living Room", icon: "Armchair" },
-    { label: "Dining Area", icon: "Utensils" },
-    { label: "BedRoom Sets", icon: "BedDouble" },
-    { label: "Office Space", icon: "Presentation" },
-    { label: "Custom Layouts", icon: "Wrench" },
-  ],
   best_sellers: {
     title: "Best Sellers",
     description: "Our most loved products, chosen by you.",
     view_all_text: "View all products",
+  },
+  features: {
+    title: "Design with Precision",
+    subtitle: "Powerful tools to envision Furniture through intense design for any space.",
+    items: [
+      {
+        title: "Room Customization",
+        description: "Explore rooms dimensions, layouts and colors for a realistic design.",
+        icon: "home"
+      },
+      {
+        title: "3D Visualization",
+        description: "Experience 3D view fully designed to ensure everything fits and aligns.",
+        icon: "box"
+      },
+      {
+        title: "Perfect Scaling",
+        description: "Auto Precision in every foot with perfectly ensuring accurate details.",
+        icon: "maximize"
+      },
+      {
+        title: "Furniture Customization",
+        description: "Personalise colors, textures, and finishes for every space.",
+        icon: "palette"
+      },
+      {
+        title: "Save & Edit Designs",
+        description: "Store your designs securely and edit anytime with ease.",
+        icon: "save"
+      },
+      {
+        title: "Designer Accounts",
+        description: "Reliable access for designers to manage and create stunning layouts.",
+        icon: "users"
+      }
+    ]
+  },
+  process: {
+    title: "Streamlined Design Process",
+    subtitle: "Transform your ideas into reality in four simple steps.",
+    steps: [
+      {
+        number: 1,
+        title: "Enter Room Details",
+        description: "Input dimension, shapes, and colors to create your perfect layout.",
+        image: "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        number: 2,
+        title: "Create 2D Design",
+        description: "Arrange furniture from our catalog in an intuitive 2D interface.",
+        image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?q=80&w=1158&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        number: 3,
+        title: "View in 3D",
+        description: "Experience your room in realistic 3D view.",
+        image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      },
+      {
+        number: 4,
+        title: "Customize & Refine",
+        description: "Tweak colors, textures, and scaling to perfect it as a perfect fit.",
+        image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=1200&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+      }
+    ]
   },
   categories: {
     title: "Shop by Category",
@@ -62,27 +129,29 @@ const data = {
     ],
   },
   footer: {
-    brand_description: "Visualizing Comfort, Precisely Modeled.",
-    links: [
-      { label: "All Products", href: "#" },
-      { label: "Best Sellers", href: "#" },
-      { label: "New Arrivals", href: "#" },
+    brand_description: "Visualizing Comfort, Precisely Modeled",
+    social_links: [
+      { platform: "facebook", url: "#" },
+      { platform: "instagram", url: "#" },
+      { platform: "youtube", url: "#" }
     ],
-    contact: {
-      email: "hello@spatialfurbish.com",
-      phone: "+1 (555) 123-4567",
-    },
+    links: [
+      { label: "Privacy", href: "#" },
+      { label: "Trends", href: "#" },
+      { label: "Contact", href: "#" }
+    ],
     copyright: "© 2026 SpatialFurbish furnitures. All rights reserved.",
   },
 };
 
-// Map string icon names to actual components
-const iconMap: Record<string, React.ElementType> = {
-  Armchair,
-  Utensils,
-  BedDouble,
-  Presentation,
-  Wrench,
+// Feature icon mapping
+const featureIconMap: Record<string, React.ElementType> = {
+  home: HomeIcon,
+  box: Box,
+  maximize: Maximize,
+  palette: Palette,
+  save: Save,
+  users: Users,
 };
 
 export function Home() {
@@ -213,35 +282,8 @@ export function Home() {
         </div>
       </section>
 
-      {/* Skin Types Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 text-center">
-            {data.ferniture_types.map((type) => {
-              const Icon = iconMap[type.icon] || Wrench;
-              return (
-                <div
-                  key={type.label}
-                  className="flex flex-col items-center space-y-4 group cursor-pointer"
-                >
-                  <div className="w-20 h-20 rounded-full bg-[#fcfaf8] flex items-center justify-center group-hover:bg-[#f5f5f0] transition-colors duration-300">
-                    <Icon
-                      className="w-8 h-8 text-stone-400 group-hover:text-stone-600 transition-colors"
-                      strokeWidth={1.5}
-                    />
-                  </div>
-                  <span className="font-bold text-sm text-stone-800">
-                    {type.label}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
       {/* Best Sellers Section */}
-      <section className="py-24 bg-[#fcfaf8]">
+      <section className="py-24 bg-white">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-end mb-12">
             <div>
@@ -299,8 +341,89 @@ export function Home() {
         </div>
       </section>
 
-      {/* Categories Section */}
+      {/* Features Section - Design with Precision */}
+      <section className="py-24 bg-[#fcfaf8]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-6">
+            <p className="text-sm uppercase tracking-wide text-stone-500 mb-3">Features</p>
+            <h2 className="text-4xl font-serif font-bold text-stone-900 mb-4">
+              {data.features.title}
+            </h2>
+            <p className="text-stone-600 max-w-2xl mx-auto">
+              {data.features.subtitle}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-16">
+            {data.features.items.map((feature, index) => {
+              const Icon = featureIconMap[feature.icon];
+              return (
+                <div
+                  key={index}
+                  className="bg-white p-8 rounded-lg hover:shadow-lg transition-shadow duration-300"
+                >
+                  <div className="w-12 h-12 bg-[#FFFBEB] rounded-lg flex items-center justify-center mb-6">
+                    <Icon className="w-6 h-6 text-[#B45309]" strokeWidth={2} />
+                  </div>
+                  <h3 className="text-xl font-bold text-stone-900 mb-3">
+                    {feature.title}
+                  </h3>
+                  <p className="text-stone-600 text-sm leading-relaxed">
+                    {feature.description}
+                  </p>
+                 
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Streamlined Design Process Section */}
       <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <p className="text-sm uppercase tracking-wide text-stone-500 mb-3">How it Works</p>
+            <h2 className="text-4xl font-serif font-bold text-stone-900 mb-4">
+              {data.process.title}
+            </h2>
+            <p className="text-stone-600 max-w-2xl mx-auto">
+              {data.process.subtitle}
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {data.process.steps.map((step) => (
+              <div key={step.number} className="space-y-4">
+                <div className="flex items-start space-x-4">
+                  <div className="flex-shrink-0 w-10 h-10 bg-stone-900 text-white rounded-full flex items-center justify-center font-bold">
+                    {step.number}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-stone-900 mb-2">
+                      {step.title}
+                    </h3>
+                    <p className="text-stone-600 text-sm">
+                      {step.description}
+                    </p>
+                  </div>
+                </div>
+                {/* Process step image */}
+                <div className="aspect-video bg-stone-100 rounded-lg overflow-hidden">
+                  <img 
+                    src={step.image} 
+                    alt={step.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Categories Section */}
+      <section className="py-24 bg-[#F7F0E6]">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="text-3xl font-serif font-bold text-center mb-16">
             {data.categories.title}
