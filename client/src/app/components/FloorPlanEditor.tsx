@@ -53,6 +53,7 @@ export default function FloorPlanEditor() {
         floorColor: "#ffffff",
         floorTexture: "floor-1",
         wallHeight: 3,
+        lightsOn: true,
     })
 
     const rawRoom = searchParams.get("room") ?? "square"

@@ -79,6 +79,32 @@ export default function PropertiesPanel({
                         </div>
                     </div>
 
+                    {/* Lighting Control */}
+                    <div className="space-y-4 pt-4 border-t border-border/50">
+                        <div className="flex items-center gap-2">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" className="text-accent">
+                                <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41m12.72-12.72l-1.41 1.41M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10z" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                            <h3 className="text-[11px] font-bold uppercase tracking-widest text-text-muted">Room Lighting</h3>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 mt-2">
+                            <button
+                                onClick={() => onUpdateRoom({ lightsOn: true })}
+                                className={`flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-bold rounded-xl border transition-all cursor-pointer ${roomProps.lightsOn ? "bg-accent text-white border-accent shadow-md" : "bg-bg-deep text-text-muted border-border hover:bg-white"}`}
+                            >
+                                <span className={`w-1.5 h-1.5 rounded-full ${roomProps.lightsOn ? "bg-white animate-pulse" : "bg-text-muted opacity-40"}`} />
+                                Lights On
+                            </button>
+                            <button
+                                onClick={() => onUpdateRoom({ lightsOn: false })}
+                                className={`flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-bold rounded-xl border transition-all cursor-pointer ${!roomProps.lightsOn ? "bg-slate-800 text-white border-slate-700 shadow-md" : "bg-bg-deep text-text-muted border-border hover:bg-white"}`}
+                            >
+                                <span className={`w-1.5 h-1.5 rounded-full ${!roomProps.lightsOn ? "bg-blue-400" : "bg-text-muted opacity-40"}`} />
+                                Dark Mode
+                            </button>
+                        </div>
+                    </div>
+
                     {/* Wall Height */}
                     <div className="space-y-2">
                         <div className="flex justify-between text-[11px] font-semibold text-text-muted">

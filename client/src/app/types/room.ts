@@ -12,4 +12,5 @@ export interface RoomProps {
     floorColor: string
     floorTexture: TextureType
     wallHeight: number
+    lightsOn: boolean
 }

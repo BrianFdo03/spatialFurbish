@@ -311,13 +311,33 @@ function RoomContent({
     const wallTex = textures[roomProps.wallTexture as keyof typeof textures] || null
     const floorTex = textures[roomProps.floorTexture as keyof typeof textures] || null
 
+    const { lightsOn } = roomProps
+
     return (
         <>
+<<<<<<< Updated upstream
             <ambientLight intensity={1.5} />
             <directionalLight position={[10, 10, 5]} intensity={2} />
             <pointLight position={[-5, 5, -5]} intensity={1} />
             <Environment preset="city" />
             <gridHelper args={[50, 50, "#1e293b", "#0f172a"]} position={[0, -1.5, 0]} />
+=======
+            <ambientLight 
+                intensity={lightsOn ? 1.5 : 0.4} 
+                color={lightsOn ? "#ffffff" : "#4f5b93"} 
+            />
+            <directionalLight 
+                position={[10, 10, 5]} 
+                intensity={lightsOn ? 2 : 0.3} 
+                color={lightsOn ? "#ffffff" : "#2a3b5a"}
+            />
+            <pointLight 
+                position={[-5, 5, -5]} 
+                intensity={lightsOn ? 1 : 0.1} 
+            />
+            <Environment preset={lightsOn ? "city" : "night"} />
+            {!isVR && <gridHelper args={[50, 50, "#1e293b", "#0f172a"]} position={[0, -1.5, 0]} />}
+>>>>>>> Stashed changes
             
             {/* Click floor to deselect */}
             <mesh 
@@ -351,6 +371,7 @@ function RoomContent({
                         key={item.instanceId}
                         position={[clampedX, -1.4, clampedZ]} 
                         rotation={[0, - (item.rotation * Math.PI / 180), 0]}
+                        isSelected={item.instanceId === selectedId}
                         onPointerDown={(e) => {
                             e.stopPropagation()
                             onSelectItem(item.instanceId)
@@ -385,6 +406,20 @@ export default function RoomCanvas({
 
     return (
         <div className="w-full h-full relative">
+<<<<<<< Updated upstream
+=======
+            {isVR && (
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 pointer-events-none">
+                    <XRButton 
+                        store={store}
+                        mode="immersive-vr"
+                        className="px-10 py-5 bg-accent text-white rounded-3xl font-black text-xl shadow-2xl hover:scale-105 active:scale-95 transition-all animate-bounce pointer-events-auto"
+                    >
+                        ENTER VR SPACE
+                    </XRButton>
+                </div>
+            )}
+>>>>>>> Stashed changes
             <Canvas
                 key={roomType + JSON.stringify(roomProps)}
                 camera={{ position: cameraPositions[roomType], fov: 60 }}
