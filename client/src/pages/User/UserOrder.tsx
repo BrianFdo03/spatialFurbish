@@ -36,11 +36,11 @@ export function UserOrder() {
       case "Processing":
         return "bg-gray-500";
       case "Success":
-        return "bg-blue-500";
+        return "bg-green-500";
       case "Shipped":
         return "bg-purple-500";
       case "Delivered":
-        return "bg-green-500";
+        return "bg-blue-500";
       case "Cancelled":
         return "bg-red-500";
       default:
@@ -51,7 +51,7 @@ export function UserOrder() {
   return (
     <>
       <Navbar
-        brand="LUMIÈRE"
+        brand="SpatialFurbish"
         links={[
           { label: "Home", href: "/" },
           { label: "Shop", href: "/shop" },
@@ -155,7 +155,7 @@ export function UserOrder() {
       </main>
 
       <Footer
-        brand="LUMIÈRE"
+        brand="SpatialFurbish"
         data={{
           brand_description:
             "Natural skincare designed for balance, simplicity, and care.",

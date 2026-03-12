@@ -240,15 +240,47 @@ export const userAPI = {
 };
 
 // Payment API functions
+// export const paymentAPI = {
+//   // Notify backend to simulate payment and trigger socket
+//   notify: async (payload: {
+//     merchant_id: string;
+//     order_id: string;
+//     payment_id: string;
+//     payhere_amount: string;
+//     payhere_currency: string;
+//     status_code: number;
+//   }) => {
+//     return fetchAPI("/payment/notify", {
+//       method: "POST",
+//       body: JSON.stringify(payload),
+//     });
+//   },
+// };
 export const paymentAPI = {
-  createHash: async (data: {
+  // Notify backend to simulate payment and trigger socket
+  notify: async (payload: {
+    merchant_id: string;
     order_id: string;
-    amount: number;
-    currency: string;
+    payment_id: string;
+    payhere_amount: string;
+    payhere_currency: string;
+    status_code: number;
   }) => {
-    return fetchAPI("/payment/create-hash", {
+    const response = await fetch(`${API_URL}/payment/notify`, {
       method: "POST",
-      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
     });
+
+    // Instead of parsing JSON, just check status
+    if (!response.ok) {
+      throw new Error(`Payment notify failed with status ${response.status}`);
+    }
+
+    // You can optionally get text if you want
+    // const text = await response.text();
+    // console.log("Notify response:", text);
+
+    return; // no data returned
   },
 };

@@ -6,10 +6,8 @@ import { orderAPI, paymentAPI } from "@/services/api";
 import toast from "react-hot-toast";
 
 export function PlaceOrder() {
-  const formRef = React.useRef<HTMLFormElement>(null);
-  const { subtotal, shippingFee, total, cart } = useCart();
+  const { subtotal, shippingFee, total, cart, clearCart } = useCart();
   const [loading, setLoading] = useState(false);
-  const [payHereData, setPayHereData] = useState<any>(null);
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -82,7 +80,7 @@ export function PlaceOrder() {
 
       // For PayHere, we need a unique temporary ID if creating order first
       // But ideally we create the order in DB to get the real ID
-      const tempPaymentId = "PENDING_PAYHERE";
+      const tempPaymentId = "PAYHERE";
 
       let orderResponse;
       const orderPayload = {
@@ -91,6 +89,8 @@ export function PlaceOrder() {
         total: `$${total.toFixed(2)}`,
         paymentId: tempPaymentId,
         paymentMethod: "PayHere",
+        status: "Success", // mark order success immediately
+        paymentStatus: "Success",
         items: cart.map((item) => ({
           productId: item.id,
           name: item.name,
@@ -112,45 +112,23 @@ export function PlaceOrder() {
         orderResponse.order || orderResponse.data || orderResponse;
       const orderId = newOrder.orderId || newOrder._id;
 
-      if (!orderId) {
-        throw new Error("Failed to retrieve Order ID from server");
-      }
+      if (!orderId) throw new Error("Failed to get order ID");
 
-      // 2. Generate Hash for PayHere
-      const hashResponse = await paymentAPI.createHash({
+      // Call /notify to simulate payment and trigger socket
+      await paymentAPI.notify({
+        merchant_id: tempPaymentId,
         order_id: orderId,
-        amount: total,
-        currency: "USD",
+        payment_id: tempPaymentId,
+        payhere_amount: total.toFixed(2),
+        payhere_currency: "USD",
+        status_code: 2, // 2 = Success
       });
 
-      // 3. Populate Form Data
-      setPayHereData({
-        merchant_id: hashResponse.merchant_id,
-        return_url: `${window.location.origin}/user-order`, // Success Page
-        cancel_url: `${window.location.origin}/cart`, // Cancel Page
-        notify_url: "https://api.lumierecosmetics.site/api/payment/notify",
-        // "http://ec2-54-169-103-14.ap-southeast-1.compute.amazonaws.com:3000/api/payment/notify",
-        order_id: orderId,
-        items: "Lumiere Skincare Products",
-        currency: "USD",
-        amount: hashResponse.amount, // Use the EXACT string from server
-        first_name: formData.firstName,
-        last_name: formData.lastName,
-        email: formData.email,
-        phone: formData.phone,
-        address: formData.street,
-        city: formData.city,
-        country: formData.country,
-        hash: hashResponse.hash,
-      });
+      // Clear cart (using your CartContext)
+      await clearCart();
 
-      // 4. Submit Form (allow small delay for state update)
-      toast.loading("Redirecting to PayHere...");
-      setTimeout(() => {
-        formRef.current?.submit();
-      }, 100);
-      // Don't clear cart yet, wait for success return
-      return;
+      // Redirect to user orders page
+      window.location.href = "/user-order";
     } catch (error: any) {
       console.error(error);
       toast.error(error.message || "Failed to place order.");
@@ -161,7 +139,7 @@ export function PlaceOrder() {
   return (
     <>
       <Navbar
-        brand="LUMIÈRE"
+        brand="SpatialFurbish"
         links={[
           { label: "Home", href: "/" },
           { label: "Shop", href: "/shop" },
@@ -307,78 +285,10 @@ export function PlaceOrder() {
             </div>
           </div>
         </div>
-        {/* Hidden PayHere Form */}
-        <form
-          ref={formRef}
-          method="post"
-          action="https://sandbox.payhere.lk/pay/checkout"
-          style={{ display: "none" }}
-        >
-          <input
-            type="hidden"
-            name="merchant_id"
-            value={payHereData?.merchant_id || ""}
-          />
-          <input
-            type="hidden"
-            name="return_url"
-            value={payHereData?.return_url || ""}
-          />
-          <input
-            type="hidden"
-            name="cancel_url"
-            value={payHereData?.cancel_url || ""}
-          />
-          <input
-            type="hidden"
-            name="notify_url"
-            value={payHereData?.notify_url || ""}
-          />
-          <input
-            type="hidden"
-            name="order_id"
-            value={payHereData?.order_id || ""}
-          />
-          <input type="hidden" name="items" value={payHereData?.items || ""} />
-          <input
-            type="hidden"
-            name="currency"
-            value={payHereData?.currency || ""}
-          />
-          <input
-            type="hidden"
-            name="amount"
-            value={payHereData?.amount || ""}
-          />
-          <input
-            type="hidden"
-            name="first_name"
-            value={payHereData?.first_name || ""}
-          />
-          <input
-            type="hidden"
-            name="last_name"
-            value={payHereData?.last_name || ""}
-          />
-          <input type="hidden" name="email" value={payHereData?.email || ""} />
-          <input type="hidden" name="phone" value={payHereData?.phone || ""} />
-          <input
-            type="hidden"
-            name="address"
-            value={payHereData?.address || ""}
-          />
-          <input type="hidden" name="city" value={payHereData?.city || ""} />
-          <input
-            type="hidden"
-            name="country"
-            value={payHereData?.country || ""}
-          />
-          <input type="hidden" name="hash" value={payHereData?.hash || ""} />
-        </form>
       </main>
 
       <Footer
-        brand="LUMIÈRE"
+        brand="SpatialFurbish"
         data={{
           brand_description:
             "Natural skincare designed for balance, simplicity, and care.",
@@ -388,7 +298,7 @@ export function PlaceOrder() {
             { label: "New Arrivals", href: "/shop" },
           ],
           contact: {
-            email: "hello@lumiere.com",
+            email: "hello@spatialfurbish.com",
             phone: "+1 (555) 123-4567",
           },
           copyright: "© 2025 Lumière Skincare. All rights reserved.",

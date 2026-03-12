@@ -26,7 +26,6 @@ const data = {
   },
 };
 
-
 export function Shop() {
   const [searchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
@@ -35,8 +34,8 @@ export function Shop() {
 
   // Get category and search query from URL query parameters
   useEffect(() => {
-    const category = searchParams.get('category');
-    const search = searchParams.get('search');
+    const category = searchParams.get("category");
+    const search = searchParams.get("search");
 
     if (category) {
       setCategoryFilter(category);
@@ -47,9 +46,9 @@ export function Shop() {
 
     // Scroll to the products section when a category is selected
     if (category) {
-      const productsSection = document.querySelector('main section');
+      const productsSection = document.querySelector("main section");
       if (productsSection) {
-        productsSection.scrollIntoView({ behavior: 'instant', block: 'start' });
+        productsSection.scrollIntoView({ behavior: "instant", block: "start" });
       }
     }
   }, [searchParams]);
@@ -71,7 +70,7 @@ export function Shop() {
   return (
     <>
       <Navbar
-        brand="LUMIÈRE"
+        brand="SpatialFurbish"
         links={[
           { label: "Home", href: "/" },
           { label: "Shop", href: "/Shop" },
@@ -95,11 +94,11 @@ export function Shop() {
 
         <div className="relative z-10 max-w-7xl mx-auto px-6 h-full flex items-center">
           <div className="max-w-md text-white">
-            <h1 className="font-serif text-4xl mb-4">
-              Shop Collection
-            </h1>
+            <h1 className="font-serif text-4xl mb-4">Shop Collection</h1>
             <p className="text-sm leading-relaxed">
-              expolere our complete range of precision furniture models.Engieered to help you visualize,scale and perfect evry room layout with ease.
+              expolere our complete range of precision furniture
+              models.Engieered to help you visualize,scale and perfect evry room
+              layout with ease.
             </p>
           </div>
         </div>
@@ -112,8 +111,10 @@ export function Shop() {
             Revered Formulations
           </span>
 
-
-          <ProductGrid searchQuery={searchQuery} initialCategory={categoryFilter} />
+          <ProductGrid
+            searchQuery={searchQuery}
+            initialCategory={categoryFilter}
+          />
         </section>
       </main>
 

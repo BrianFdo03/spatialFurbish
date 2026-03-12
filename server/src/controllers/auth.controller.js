@@ -72,12 +72,12 @@ const signup = async (req, res) => {
     }
 
     // 5️⃣ Determine role based on email domain
-    if (normalizedEmail.endsWith("lumiere.admin.com")) {
+    if (normalizedEmail.endsWith("spfurbish.admin.com")) {
       role = "admin";
       verified = false;
       approvalMessage =
         "Signup received. Sent for approval. Full access will be granted after approval.";
-    } else if (normalizedEmail.endsWith("lumiere.staff.com")) {
+    } else if (normalizedEmail.endsWith("spfurbish.staff.com")) {
       role = "staff";
       verified = false;
       approvalMessage =

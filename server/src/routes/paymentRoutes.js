@@ -4,61 +4,11 @@ const crypto = require("crypto");
 const Order = require("../models/Order");
 
 /* -------------------------------------------------------
-   ROUTE 1: CREATE HASH (Frontend calls this before payment)
--------------------------------------------------------- */
-router.post("/create-hash", async (req, res) => {
-  try {
-    const { order_id, amount, currency } = req.body;
-
-    const merchant_id = process.env.PAYHERE_MERCHANT_ID;
-    const merchant_secret = process.env.PAYHERE_MERCHANT_SECRET;
-
-    if (!merchant_id || !merchant_secret) {
-      return res.status(500).json({
-        error: "PayHere credentials not configured",
-      });
-    }
-
-    // PayHere requires amount formatted to 2 decimals
-    const formattedAmount = Number(amount).toFixed(2);
-
-    // Hash merchant secret
-    const hashedSecret = crypto
-      .createHash("md5")
-      .update(merchant_secret)
-      .digest("hex")
-      .toUpperCase();
-
-    // Final hash string
-    const hashString =
-      merchant_id + order_id + formattedAmount + currency + hashedSecret;
-
-    const hash = crypto
-      .createHash("md5")
-      .update(hashString)
-      .digest("hex")
-      .toUpperCase();
-
-    return res.json({
-      merchant_id,
-      amount: formattedAmount,
-      hash,
-    });
-  } catch (err) {
-    console.error("❌ Hash generation failed:", err);
-    res.status(500).json({ error: "Failed to generate hash" });
-  }
-});
-
-/* -------------------------------------------------------
    ROUTE 2: PAYHERE NOTIFY URL (SERVER CALLBACK)
 -------------------------------------------------------- */
 router.post("/notify", async (req, res) => {
   console.log("🔥🔥🔥 PAYHERE NOTIFY HIT 🔥🔥🔥");
-  console.log("HEADERS:", req.headers);
-  console.log("BODY:", req.body);
-
-  res.status(200).send("OK");
+  // console.log("BODY:", req.body);
 
   try {
     if (!req.body || Object.keys(req.body).length === 0) {
@@ -66,45 +16,7 @@ router.post("/notify", async (req, res) => {
       return;
     }
 
-    const {
-      merchant_id,
-      order_id,
-      payment_id,
-      payhere_amount,
-      payhere_currency,
-      status_code,
-      md5sig,
-    } = req.body;
-
-    const merchant_secret = process.env.PAYHERE_MERCHANT_SECRET;
-
-    /* -------------------------------
-       VERIFY PAYHERE SIGNATURE
-    -------------------------------- */
-    const localMd5Secret = crypto
-      .createHash("md5")
-      .update(merchant_secret)
-      .digest("hex")
-      .toUpperCase();
-
-    const verificationString =
-      merchant_id +
-      order_id +
-      payhere_amount +
-      payhere_currency +
-      status_code +
-      localMd5Secret;
-
-    const generatedSig = crypto
-      .createHash("md5")
-      .update(verificationString)
-      .digest("hex")
-      .toUpperCase();
-
-    if (generatedSig !== md5sig) {
-      console.error("⛔ PayHere signature mismatch");
-      return;
-    }
+    const { order_id, status_code, payment_id } = req.body;
 
     /* -------------------------------
        FIND ORDER
@@ -158,6 +70,7 @@ router.post("/notify", async (req, res) => {
     }
 
     console.log(`✅ PayHere update: ${order.orderId} → ${order.paymentStatus}`);
+    res.status(200).send("OK");
   } catch (err) {
     console.error("🔥 PayHere notify error:", err);
   }
