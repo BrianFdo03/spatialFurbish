@@ -222,7 +222,7 @@ const updateProfile = async (req, res) => {
     if (req.body.fullName) updates.fullName = req.body.fullName;
 
     if (req.body.profilePic) {
-      const uploadResponse = await cloudinary.uploader.upload(
+      const uploadResponse = await cloudinary.uploader.uploadImage(
         req.body.profilePic,
       );
       updates.profilePic = uploadResponse.secure_url;

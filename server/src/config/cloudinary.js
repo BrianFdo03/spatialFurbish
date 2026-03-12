@@ -19,14 +19,24 @@ if (
   console.log("✅ Cloudinary configuration present.");
 }
 
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
+const imageStorage = new CloudinaryStorage({
+  cloudinary,
   params: {
-    folder: "products",
+    folder: "spatialFurbish/products/images",
     allowed_formats: ["jpg", "png", "jpeg", "webp"],
   },
 });
 
-const upload = multer({ storage: storage });
+const modelStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "spatialFurbish/products/models",
+    resource_type: "raw",
+    allowed_formats: ["glb", "gltf", "obj", "fbx"],
+  },
+});
 
-module.exports = { upload, cloudinary };
+const uploadImage = multer({ storage: imageStorage });
+const uploadModel = multer({ storage: modelStorage });
+
+module.exports = { uploadImage, uploadModel, cloudinary };

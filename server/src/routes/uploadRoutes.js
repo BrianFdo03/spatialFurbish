@@ -1,39 +1,74 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const { upload } = require('../config/cloudinary');
+const { uploadImage, uploadModel } = require("../config/cloudinary");
 
-router.post('/', (req, res) => {
-    upload.single('image')(req, res, (err) => {
-        if (err) {
-            console.error('Cloudinary Upload Error:', err);
-            return res.status(500).json({
-                success: false,
-                message: 'Image upload failed',
-                error: err.message
-            });
-        }
+router.post("/", (req, res) => {
+  uploadImage.single("image")(req, res, (err) => {
+    if (err) {
+      console.error("Cloudinary Upload Error:", err);
+      return res.status(500).json({
+        success: false,
+        message: "Image upload failed",
+        error: err.message,
+      });
+    }
 
-        try {
-            if (!req.file) {
-                return res.status(400).json({ success: false, message: 'No file uploaded' });
-            }
+    try {
+      if (!req.file) {
+        return res
+          .status(400)
+          .json({ success: false, message: "No file uploaded" });
+      }
 
-            console.log('Upload successful:', req.file.path);
+      console.log("Upload successful:", req.file.path);
 
-            res.json({
-                success: true,
-                message: 'Image uploaded successfully',
-                imageUrl: req.file.path
-            });
-        } catch (error) {
-            console.error('Route Handler Error:', error);
-            res.status(500).json({
-                success: false,
-                message: 'Internal server error',
-                error: error.message
-            });
-        }
-    });
+      res.json({
+        success: true,
+        message: "Image uploaded successfully",
+        imageUrl: req.file.path,
+      });
+    } catch (error) {
+      console.error("Route Handler Error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  });
+});
+
+// MODEL UPLOAD (TEST)
+router.post("/model", (req, res) => {
+  uploadModel.single("model")(req, res, (err) => {
+    if (err) {
+      console.error("Model upload error:", err);
+      return res.status(500).json({ success: false, error: err.message });
+    }
+
+    try {
+      if (!req.file) {
+        return res
+          .status(400)
+          .json({ success: false, message: "No model uploaded" });
+      }
+
+      console.log("Model uploaded:", req.file.path);
+
+      res.json({
+        success: true,
+        message: "Model uploaded successfully",
+        modelUrl: req.file.path,
+      });
+    } catch (error) {
+      console.error("Route Handler Error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  });
 });
 
 module.exports = router;
