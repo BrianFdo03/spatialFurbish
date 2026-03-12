@@ -38,6 +38,44 @@ router.post("/", (req, res) => {
   });
 });
 
+// Mutiple Images Upload
+router.post("/images", (req, res) => {
+  uploadImage.array("images", 5)(req, res, (err) => {
+    if (err) {
+      console.error("Cloudinary Upload Error:", err);
+      return res.status(500).json({
+        success: false,
+        message: "Images upload failed",
+        error: err.message,
+      });
+    }
+
+    try {
+      if (!req.files || req.files.length === 0) {
+        return res
+          .status(400)
+          .json({ success: false, message: "No files uploaded" });
+      }
+
+      const imageUrls = req.files.map((file) => file.path);
+      console.log("Upload successful:", req.file.path);
+
+      res.json({
+        success: true,
+        message: "Images uploaded successfully",
+        imageUrls: imageUrls,
+      });
+    } catch (error) {
+      console.error("Route Handler Error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Internal server error",
+        error: error.message,
+      });
+    }
+  });
+});
+
 // MODEL UPLOAD (TEST)
 router.post("/model", (req, res) => {
   uploadModel.single("model")(req, res, (err) => {
