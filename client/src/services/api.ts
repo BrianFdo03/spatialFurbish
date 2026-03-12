@@ -141,6 +141,66 @@ export const uploadAPI = {
 
     return data;
   },
+
+  // Upload mutiple images
+  uploadImages: async (files: File[]) => {
+    const formData = new FormData();
+
+    files.forEach((file) => {
+      formData.append("images", file);
+    });
+
+    const response = await fetch(`${API_URL}/upload/images`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Upload failed");
+    }
+
+    return data;
+  },
+
+  // Upload texture
+  uploadTexture: async (file: File) => {
+    const formData = new FormData();
+    formData.append("texture", file);
+
+    const response = await fetch(`${API_URL}/upload/texture`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Upload failed");
+    }
+
+    return data;
+  },
+
+  // Upload Model
+  uploadProductModel: async (file: File) => {
+    const formData = new FormData();
+    formData.append("productModel", file);
+
+    const response = await fetch(`${API_URL}/upload/model`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Upload failed");
+    }
+
+    return data;
+  },
 };
 
 // Order API functions
@@ -282,5 +342,37 @@ export const paymentAPI = {
     // console.log("Notify response:", text);
 
     return; // no data returned
+  },
+};
+
+// Texture API functions
+export const textureAPI = {
+  // Get all textures
+  getAll: async () => {
+    return fetchAPI("/textures");
+  },
+  // Get single texture
+  getById: async (id: string) => {
+    return fetchAPI(`/textures/${id}`);
+  },
+  // Create texture
+  create: async (textureData: any) => {
+    return fetchAPI("/textures", {
+      method: "POST",
+      body: JSON.stringify(textureData),
+    });
+  },
+  // Update texture
+  update: async (id: string, textureData: any) => {
+    return fetchAPI(`/textures/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(textureData),
+    });
+  },
+  // Delete texture
+  delete: async (id: string) => {
+    return fetchAPI(`/textures/${id}`, {
+      method: "DELETE",
+    });
   },
 };

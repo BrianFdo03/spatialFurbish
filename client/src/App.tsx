@@ -20,6 +20,7 @@ import { ROLES } from "./constants/roles";
 
 import { Contact } from "./pages/User/Contact";
 import Profile from "./pages/User/Profile"; //Ravindu
+import { TexturesPage } from "./pages/Admin/Textures";
 
 export default function App() {
   return (
@@ -64,6 +65,15 @@ export default function App() {
         element={
           <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF]}>
             <CategoriesPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/textures"
+        element={
+          <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.STAFF]}>
+            <TexturesPage />
           </ProtectedRoute>
         }
       />

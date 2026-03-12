@@ -27,6 +27,14 @@ const imageStorage = new CloudinaryStorage({
   },
 });
 
+const textureStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "spatialFurbish/products/textures",
+    allowed_formats: ["jpg", "png", "jpeg", "webp"],
+  },
+});
+
 const modelStorage = new CloudinaryStorage({
   cloudinary,
   params: {
@@ -37,6 +45,7 @@ const modelStorage = new CloudinaryStorage({
 });
 
 const uploadImage = multer({ storage: imageStorage });
+const uploadTexture = multer({ storage: textureStorage });
 const uploadModel = multer({ storage: modelStorage });
 
-module.exports = { uploadImage, uploadModel, cloudinary };
+module.exports = { uploadImage, uploadModel, uploadTexture, cloudinary };

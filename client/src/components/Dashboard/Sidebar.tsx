@@ -1,8 +1,9 @@
 // src/components/Sidebar.tsx
 import { useLogout } from "@/hooks/useLogout";
+import { GiRolledCloth } from "react-icons/gi";
 import {
   LayoutDashboard,
-  Package,
+  Sofa,
   FolderOpen,
   ShoppingCart,
   Users,
@@ -18,8 +19,9 @@ export function Sidebar() {
 
   const navItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-    { icon: Package, label: "Products", path: "/products" },
+    { icon: Sofa, label: "Products", path: "/products" },
     { icon: FolderOpen, label: "Categories", path: "/categories" },
+    { icon: GiRolledCloth, label: "Textures", path: "/textures" },
     { icon: ShoppingCart, label: "Orders", path: "/orders" },
     { icon: Users, label: "Users", path: "/customers" },
     // discussed not to add reviews page now

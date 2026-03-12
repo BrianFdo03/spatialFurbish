@@ -16,6 +16,7 @@ const cartRoutes = require("./routes/cart.route");
 const dashboardRoutes = require("./routes/dashboard.route");
 const userRoutes = require("./routes/user.route");
 const profileRoutes = require("./routes/profile.routes");
+const textureRoutes = require("./routes/texture.route");
 
 const connectDB = require("./config/database");
 
@@ -67,6 +68,7 @@ app.use("/api/cart", cartRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/profile", profileRoutes);
+app.use("/api/textures", textureRoutes);
 
 // Test route
 app.get("/", (req, res) => {
