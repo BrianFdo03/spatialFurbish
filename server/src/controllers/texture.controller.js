@@ -3,7 +3,7 @@ const { protectRoute } = require("../middleware/auth.middleware");
 
 const getAllTextures = async (req, res) => {
   try {
-    const textures = await Texture.find({ isActive: true }).sort({
+    const textures = await Texture.find().sort({
       createdAt: -1,
     }); // Newest first
 
@@ -47,7 +47,19 @@ const getTextureByID = async (req, res) => {
 
 const createTexture = async (req, res) => {
   try {
-    const texture = new Texture(req.body);
+    const lastTexture = await Texture.findOne().sort({ textureId: -1 });
+
+    let nextId = 1;
+
+    if (lastTexture) {
+      nextId = lastTexture.textureId + 1;
+    }
+
+    const texture = new Texture({
+      ...req.body,
+      textureId: nextId,
+    });
+
     await texture.save();
 
     res.status(201).json({
@@ -62,6 +74,8 @@ const createTexture = async (req, res) => {
     //   io.emit("texture:created", texture);
     // }
   } catch (error) {
+    console.error("CREATE TEXTURE ERROR:", error);
+
     res.status(400).json({
       success: false,
       message: "Error creating texture",

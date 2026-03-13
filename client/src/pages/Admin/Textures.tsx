@@ -45,7 +45,7 @@ export function TexturesPage() {
   // Form state
   const [formData, setFormData] = useState({
     name: "",
-    texture: "", // Single image for now to keep it simple
+    texture: "", // Single texture for now to keep it simple
   });
 
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -106,7 +106,7 @@ export function TexturesPage() {
     }));
   };
 
-  // Handle image upload
+  // Handle texture upload
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -120,14 +120,14 @@ export function TexturesPage() {
         texture: response.textureUrl,
       }));
     } catch (err) {
-      alert("Failed to upload image");
+      alert("Failed to upload texture");
       console.error(err);
     } finally {
       setUploading(false);
     }
   };
 
-  // Remove uploaded image
+  // Remove uploaded texture
   const handleRemoveImage = () => {
     setFormData((prev) => ({
       ...prev,
@@ -150,7 +150,7 @@ export function TexturesPage() {
     setEditingTexture(texture);
     setFormData({
       name: texture.name,
-      texture: texture.images?.[0] || "", // Take first image
+      texture: texture.texture || "", // Take first texture
     });
     setOpen(true);
   };
@@ -162,7 +162,7 @@ export function TexturesPage() {
     try {
       const textureData = {
         name: formData.name,
-        textures: formData.texture ? [formData.texture] : [], // Backend expects array
+        texture: formData.texture ? formData.texture : "", // Backend expects array
       };
 
       if (editingTexture) {
@@ -201,7 +201,7 @@ export function TexturesPage() {
               <DialogDescription className="text-stone-500">
                 {editingTexture
                   ? "Update the texture details below."
-                  : "Add a new item to your inventory. Click save when you're done."}
+                  : "Add a new texture to your inventory. Click save when you're done."}
               </DialogDescription>
             </DialogHeader>
 
@@ -216,7 +216,7 @@ export function TexturesPage() {
                       id="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="e.g., Night Cream"
+                      placeholder="e.g., Velvet Fabric"
                       className="bg-stone-50 border-stone-200 focus-visible:ring-[#788F76]"
                       required
                     />
@@ -225,7 +225,7 @@ export function TexturesPage() {
 
                 {/* Image Upload */}
                 <div className="grid gap-2">
-                  <Label htmlFor="image" className="text-stone-700">
+                  <Label htmlFor="texture" className="text-stone-700">
                     Texture Image
                   </Label>
                   <div className="flex items-center gap-4">
@@ -382,12 +382,15 @@ export function TexturesPage() {
                       key={texture._id}
                       className="hover:bg-stone-50/50"
                     >
+                      <TableCell className="text-stone-600">
+                        {texture.textureId.toString().padStart(3, "0")}
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-stone-100 rounded-md flex items-center justify-center text-stone-400 text-xs overflow-hidden">
                             {texture.texture && texture.texture.length > 0 ? (
                               <img
-                                src={texture.texture[0]}
+                                src={texture.texture}
                                 alt={texture.name}
                                 className="w-full h-full object-cover"
                               />
