@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { textureAPI, categoryAPI, uploadAPI } from "@/services/api";
+import { textureAPI, uploadAPI } from "@/services/api";
 import { Layout } from "@/components/Dashboard/Layout";
 import {
   Table,

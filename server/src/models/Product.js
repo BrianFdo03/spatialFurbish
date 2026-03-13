@@ -24,9 +24,20 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    allowedColors: [
+      {
+        type: String,
+      },
+    ],
+
+    allowedTextures: [
+      {
+        type: String,
+      },
+    ],
     images: [
       {
-        type: String, //hope to add images as URL s
+        type: String,
       },
     ],
     stock: {
