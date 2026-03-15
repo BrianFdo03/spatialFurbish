@@ -32,7 +32,8 @@ const productSchema = new mongoose.Schema(
 
     allowedTextures: [
       {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Texture",
       },
     ],
     images: [

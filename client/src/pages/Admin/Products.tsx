@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { productAPI, categoryAPI, uploadAPI } from "@/services/api";
+import { productAPI, categoryAPI, uploadAPI, textureAPI } from "@/services/api";
 import { ModelViewer } from "@/components/ui/ModelViewer";
 import { Layout } from "@/components/Dashboard/Layout";
 import {
@@ -35,17 +35,20 @@ import {
   Loader2,
   X,
 } from "lucide-react";
+import { ColorPickerDialog } from "@/components/ui/ColorPickerDialog";
 
 export function ProductsPage() {
   // 1. STATE MANAGEMENT
   const [products, setProducts] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
+  const [textures, setTextures] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState<boolean>(false);
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
   const [uploadingImages, setUploadingImages] = useState<boolean>(false);
   const [uploadingModel, setUploadingModel] = useState<boolean>(false);
+  const [colorPickerOpen, setColorPickerOpen] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -55,6 +58,8 @@ export function ProductsPage() {
     category: "",
     stock: "",
     images: [] as string[],
+    allowedColors: [] as string[],
+    allowedTextures: [] as string[],
     productModel: "", // For 3D model
   });
 
@@ -67,6 +72,7 @@ export function ProductsPage() {
   useEffect(() => {
     loadProducts();
     loadCategories();
+    loadTextures();
   }, []);
 
   const loadProducts = async () => {
@@ -87,6 +93,15 @@ export function ProductsPage() {
     try {
       const response = await categoryAPI.getAll();
       setCategories(response.data);
+    } catch (err: any) {
+      console.error("Failed to load categories", err);
+    }
+  };
+
+  const loadTextures = async () => {
+    try {
+      const response = await textureAPI.getAll();
+      setTextures(response.data);
     } catch (err: any) {
       console.error("Failed to load categories", err);
     }
@@ -209,6 +224,56 @@ export function ProductsPage() {
     }));
   };
 
+  // Handle allowed colors
+  const handleAddColor = (color: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      allowedColors: prev.allowedColors.includes(color)
+        ? prev.allowedColors
+        : [...prev.allowedColors, color],
+    }));
+  };
+
+  const handleRemoveColor = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      allowedColors: prev.allowedColors.filter((_, i) => i !== index),
+    }));
+  };
+
+  // Handle allowed textures
+  // Add a new empty texture selector
+  const handleAddTexture = () => {
+    setFormData((prev) => ({
+      ...prev,
+      allowedTextures: [...prev.allowedTextures, ""],
+    }));
+  };
+
+  // Change selected texture
+  const handleTextureChange = (index: number, textureId: string) => {
+    // handle dublicate texture selection
+    if (formData.allowedTextures.includes(textureId)) {
+      alert("This texture is already selected.");
+      return;
+    }
+    const updated = [...formData.allowedTextures];
+    updated[index] = textureId;
+
+    setFormData((prev) => ({
+      ...prev,
+      allowedTextures: updated,
+    }));
+  };
+
+  // Remove texture selector
+  const handleRemoveTexture = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      allowedTextures: prev.allowedTextures.filter((_, i) => i !== index),
+    }));
+  };
+
   // Handle cancel - reset form and close dialog
   const handleCancel = () => {
     setFormData({
@@ -218,6 +283,8 @@ export function ProductsPage() {
       category: "",
       stock: "",
       images: [],
+      allowedColors: [],
+      allowedTextures: [],
       productModel: "",
     });
     setEditingProduct(null);
@@ -233,7 +300,9 @@ export function ProductsPage() {
       price: product.price.toString(),
       category: product.category || "", // Category is now a string
       stock: product.stock.toString(),
-      images: product.images || [], // Take first image
+      images: product.images || [],
+      allowedColors: product.allowedColors || [],
+      allowedTextures: product.allowedTextures || [],
       productModel: product.productModel || "", // For 3D model
     });
     setOpen(true);
@@ -252,6 +321,8 @@ export function ProductsPage() {
         stock: parseInt(formData.stock),
         images: formData.images, // Backend expects array
         productModel: formData.productModel ? formData.productModel : "",
+        allowedColors: formData.allowedColors,
+        allowedTextures: formData.allowedTextures,
       };
 
       if (editingProduct) {
@@ -276,13 +347,19 @@ export function ProductsPage() {
     <Layout
       title="Products"
       action={
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog
+          open={open}
+          onOpenChange={(isOpen) => {
+            if (!isOpen) handleCancel();
+            else setOpen(true);
+          }}
+        >
           <DialogTrigger asChild>
             <Button className="bg-[#788F76] hover:bg-[#667c64] text-white">
               <Plus className="w-4 h-4 mr-2" /> Add Product
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[550px] bg-white text-stone-800">
+          <DialogContent className="sm:max-w-[550px] max-h-[80vh] overflow-y-auto bg-white text-stone-800">
             <DialogHeader>
               <DialogTitle className="text-xl font-serif text-stone-900">
                 {editingProduct ? "Edit Product" : "Add New Product"}
@@ -368,26 +445,6 @@ export function ProductsPage() {
                     Product Model
                   </Label>
                   <div className="flex items-center gap-4">
-                    {/* {formData.productModel ? (
-                      <div className="relative w-20 h-20 rounded-md overflow-hidden border border-stone-200 group">
-                        <img
-                          src={formData.productModel}
-                          alt="Preview"
-                          className="w-full h-full object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={handleRemoveProductModel}
-                          className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <X className="w-4 h-4 text-white" />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="w-20 h-20 bg-stone-100 rounded-md flex items-center justify-center border border-dashed border-stone-300">
-                        <ImageIcon className="w-6 h-6 text-stone-400" />
-                      </div>
-                    )} */}
                     {formData.productModel ? (
                       <div className="relative w-32 h-32 border rounded-md overflow-hidden group">
                         <ModelViewer url={formData.productModel} />
@@ -467,6 +524,122 @@ export function ProductsPage() {
                         </p>
                       )}
                     </div>
+                  </div>
+                </div>
+
+                {/* Allowed Colors */}
+                <div className="grid gap-2">
+                  <Label className="text-stone-700">Allowed Colors</Label>
+
+                  <div className="flex items-center gap-3 flex-wrap">
+                    {/* Existing Colors */}
+                    {formData.allowedColors.map((color, index) => (
+                      <div key={index} className="relative group">
+                        <div
+                          className="w-10 h-10 rounded-full border cursor-pointer"
+                          style={{ backgroundColor: color }}
+                        />
+
+                        {/* Remove button */}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveColor(index)}
+                          className="absolute inset-0 flex items-center justify-center bg-black/40 rounded-full opacity-0 group-hover:opacity-100"
+                        >
+                          <X className="w-4 h-4 text-white" />
+                        </button>
+                      </div>
+                    ))}
+
+                    {/* Add Color Button */}
+                    <button
+                      type="button"
+                      onClick={() => setColorPickerOpen(true)}
+                      className="w-10 h-10 rounded-full border border-dashed flex items-center justify-center text-stone-500 hover:bg-stone-100"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+
+                    {/* Hidden Color Picker */}
+                    <ColorPickerDialog
+                      open={colorPickerOpen}
+                      onClose={() => setColorPickerOpen(false)}
+                      onSave={(color) => handleAddColor(color)}
+                    />
+                  </div>
+                </div>
+
+                {/* Allowed Textures */}
+                <div className="grid gap-2">
+                  <Label className="text-stone-700">Allowed Textures</Label>
+
+                  <div className="flex flex-col gap-3">
+                    {formData.allowedTextures.map(
+                      (selectedTextureId, index) => {
+                        const selectedTexturesExceptCurrent =
+                          formData.allowedTextures.filter(
+                            (_, i) => i !== index,
+                          );
+
+                        const availableTextures = textures.filter(
+                          (t: any) =>
+                            !selectedTexturesExceptCurrent.includes(
+                              t._id?.toString(),
+                            ),
+                        );
+
+                        const selectedTexture = textures.find(
+                          (t: any) => t._id?.toString() === selectedTextureId,
+                        );
+
+                        return (
+                          <div key={index} className="flex items-center gap-2">
+                            {/* Dropdown */}
+                            <select
+                              value={selectedTextureId}
+                              onChange={(e) =>
+                                handleTextureChange(index, e.target.value)
+                              }
+                              className="flex-1 border border-stone-200 rounded-md px-3 py-2 text-sm bg-stone-50"
+                            >
+                              <option value="">Select Texture</option>
+
+                              {availableTextures.map((texture: any) => (
+                                <option key={texture._id} value={texture._id}>
+                                  {texture.name}
+                                </option>
+                              ))}
+                            </select>
+
+                            {/* Preview Image */}
+                            {selectedTexture && (
+                              <img
+                                src={selectedTexture.texture}
+                                className="w-10 h-10 rounded object-cover border"
+                              />
+                            )}
+
+                            {/* Remove Button */}
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveTexture(index)}
+                              className="w-8 h-8 flex items-center justify-center text-red-500"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        );
+                      },
+                    )}
+
+                    {/* Add texture button */}
+                    <button
+                      type="button"
+                      onClick={handleAddTexture}
+                      className="w-10 h-10 rounded-full border border-dashed flex items-center justify-center text-stone-500 hover:bg-stone-100"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
 
