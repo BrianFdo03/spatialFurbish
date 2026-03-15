@@ -62,7 +62,7 @@ router.post("/images", (req, res) => {
       }
 
       const imageUrls = req.files.map((file) => file.path);
-      console.log("Upload successful:", req.file.path);
+      console.log("Upload successful:", imageUrls);
 
       res.json({
         success: true,
@@ -80,7 +80,7 @@ router.post("/images", (req, res) => {
   });
 });
 
-// Texture Upload (TEST)
+// Texture Upload
 router.post("/texture", (req, res) => {
   uploadTexture.single("texture")(req, res, (err) => {
     if (err) {
@@ -117,9 +117,9 @@ router.post("/texture", (req, res) => {
   });
 });
 
-// MODEL UPLOAD (TEST)
+// MODEL UPLOAD
 router.post("/model", (req, res) => {
-  uploadModel.single("model")(req, res, (err) => {
+  uploadModel.single("productModel")(req, res, (err) => {
     if (err) {
       console.error("Model upload error:", err);
       return res.status(500).json({ success: false, error: err.message });

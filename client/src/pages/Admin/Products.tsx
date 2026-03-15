@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { productAPI, categoryAPI, uploadAPI } from "@/services/api";
+import { ModelViewer } from "@/components/ui/ModelViewer";
 import { Layout } from "@/components/Dashboard/Layout";
 import {
   Table,
@@ -43,7 +44,8 @@ export function ProductsPage() {
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState<boolean>(false);
   const [editingProduct, setEditingProduct] = useState<any | null>(null);
-  const [uploading, setUploading] = useState<boolean>(false);
+  const [uploadingImages, setUploadingImages] = useState<boolean>(false);
+  const [uploadingModel, setUploadingModel] = useState<boolean>(false);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -52,7 +54,8 @@ export function ProductsPage() {
     price: "",
     category: "",
     stock: "",
-    image: "", // Single image for now to keep it simple
+    images: [] as string[],
+    productModel: "", // For 3D model
   });
 
   // Filter state
@@ -145,32 +148,64 @@ export function ProductsPage() {
     }));
   };
 
-  // Handle image upload
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Handle Product Model upload
+  const handleProductModelUpload = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     try {
-      setUploading(true);
-      const response = await uploadAPI.uploadImage(file);
+      setUploadingModel(true);
+      const response = await uploadAPI.uploadProductModel(file);
 
       setFormData((prev) => ({
         ...prev,
-        image: response.imageUrl,
+        productModel: response.modelUrl,
       }));
     } catch (err) {
       alert("Failed to upload image");
       console.error(err);
     } finally {
-      setUploading(false);
+      setUploadingModel(false);
     }
   };
 
   // Remove uploaded image
-  const handleRemoveImage = () => {
+  const handleRemoveProductModel = () => {
     setFormData((prev) => ({
       ...prev,
-      image: "",
+      productModel: "",
+    }));
+  };
+
+  // Handle image upload
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    try {
+      setUploadingImages(true);
+      const fileArray = Array.from(files); // Converting FileList → File[]
+      const response = await uploadAPI.uploadImages(fileArray);
+
+      setFormData((prev) => ({
+        ...prev,
+        images: [...prev.images, ...response.imageUrls],
+      }));
+    } catch (err) {
+      alert("Failed to upload image");
+      console.error(err);
+    } finally {
+      setUploadingImages(false);
+    }
+  };
+
+  // Remove uploaded image
+  const handleRemoveImage = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index),
     }));
   };
 
@@ -182,7 +217,8 @@ export function ProductsPage() {
       price: "",
       category: "",
       stock: "",
-      image: "",
+      images: [],
+      productModel: "",
     });
     setEditingProduct(null);
     setOpen(false);
@@ -197,7 +233,8 @@ export function ProductsPage() {
       price: product.price.toString(),
       category: product.category || "", // Category is now a string
       stock: product.stock.toString(),
-      image: product.images?.[0] || "", // Take first image
+      images: product.images || [], // Take first image
+      productModel: product.productModel || "", // For 3D model
     });
     setOpen(true);
   };
@@ -213,7 +250,8 @@ export function ProductsPage() {
         price: parseFloat(formData.price),
         category: formData.category,
         stock: parseInt(formData.stock),
-        images: formData.image ? [formData.image] : [], // Backend expects array
+        images: formData.images, // Backend expects array
+        productModel: formData.productModel ? formData.productModel : "",
       };
 
       if (editingProduct) {
@@ -324,22 +362,22 @@ export function ProductsPage() {
                   </div>
                 </div>
 
-                {/* Image Upload */}
+                {/* Product Model Upload */}
                 <div className="grid gap-2">
-                  <Label htmlFor="image" className="text-stone-700">
-                    Product Image
+                  <Label htmlFor="productModel" className="text-stone-700">
+                    Product Model
                   </Label>
                   <div className="flex items-center gap-4">
-                    {formData.image ? (
+                    {/* {formData.productModel ? (
                       <div className="relative w-20 h-20 rounded-md overflow-hidden border border-stone-200 group">
                         <img
-                          src={formData.image}
+                          src={formData.productModel}
                           alt="Preview"
                           className="w-full h-full object-cover"
                         />
                         <button
                           type="button"
-                          onClick={handleRemoveImage}
+                          onClick={handleRemoveProductModel}
                           className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
                         >
                           <X className="w-4 h-4 text-white" />
@@ -349,17 +387,81 @@ export function ProductsPage() {
                       <div className="w-20 h-20 bg-stone-100 rounded-md flex items-center justify-center border border-dashed border-stone-300">
                         <ImageIcon className="w-6 h-6 text-stone-400" />
                       </div>
+                    )} */}
+                    {formData.productModel ? (
+                      <div className="relative w-32 h-32 border rounded-md overflow-hidden group">
+                        <ModelViewer url={formData.productModel} />
+
+                        <button
+                          type="button"
+                          onClick={handleRemoveProductModel}
+                          className="absolute top-1 right-1 bg-black/50 p-1 rounded"
+                        >
+                          <X className="w-4 h-4 text-white" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="w-20 h-20 bg-stone-100 rounded-md flex items-center justify-center border border-dashed text-slate-500 font-semibold">
+                        3D Model
+                      </div>
                     )}
                     <div className="flex-1">
                       <Input
-                        id="image"
+                        id="productModel"
                         type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        disabled={uploading}
+                        accept=".glb,.gltf,.obj,.fbx"
+                        onChange={handleProductModelUpload}
+                        disabled={uploadingModel}
                         className="bg-stone-50 border-stone-200 focus-visible:ring-[#788F76]"
                       />
-                      {uploading && (
+                      {uploadingModel && (
+                        <p className="text-xs text-stone-500 mt-1">
+                          Uploading...
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                {/* Image Upload */}
+                <div className="grid gap-2">
+                  <Label htmlFor="images" className="text-stone-700">
+                    Product Images
+                  </Label>
+                  <div className="flex flex-wrap gap-4">
+                    {formData.images.map((img, index) => (
+                      <div
+                        key={index}
+                        className="relative w-20 h-20 rounded-md overflow-hidden border border-stone-200 group"
+                      >
+                        <img
+                          src={img}
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveImage(index)}
+                          className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <X className="w-4 h-4 text-white" />
+                        </button>
+                      </div>
+                    ))}
+                    <div className="w-20 h-20 bg-stone-100 rounded-md flex items-center justify-center border border-dashed border-stone-300">
+                      <ImageIcon className="w-6 h-6 text-stone-400" />
+                    </div>
+
+                    <div className="flex-1">
+                      <Input
+                        id="images"
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleImageUpload}
+                        disabled={uploadingImages}
+                        className="bg-stone-50 border-stone-200 focus-visible:ring-[#788F76]"
+                      />
+                      {uploadingImages && (
                         <p className="text-xs text-stone-500 mt-1">
                           Uploading...
                         </p>
@@ -394,10 +496,10 @@ export function ProductsPage() {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={uploading}
+                  disabled={uploadingImages || uploadingModel}
                   className="bg-[#788F76] hover:bg-[#667c64] text-white"
                 >
-                  {uploading
+                  {uploadingImages || uploadingModel
                     ? "Uploading..."
                     : editingProduct
                       ? "Update Product"

@@ -162,7 +162,7 @@ export function TexturesPage() {
     try {
       const textureData = {
         name: formData.name,
-        texture: formData.texture ? formData.texture : "", // Backend expects array
+        texture: formData.texture ? formData.texture : "",
       };
 
       if (editingTexture) {
