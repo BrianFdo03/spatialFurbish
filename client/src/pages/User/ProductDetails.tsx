@@ -195,7 +195,7 @@ export function ProductDetails() {
               </span>
               <h1 className="font-serif text-4xl text-stone-900 mb-4">{product.name}</h1>
               <p className="text-2xl font-light text-stone-800 mb-6">
-                ${product.price.toFixed(2)}
+                ${Number(product.price).toFixed(2)}
               </p>
               
               {/* Product Dimensions */}

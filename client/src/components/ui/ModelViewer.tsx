@@ -1,7 +1,26 @@
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Center, Environment } from "@react-three/drei";
-import { useEffect } from "react";
+import { useEffect, Suspense, Component, type ReactNode } from "react";
 import * as THREE from "three";
+
+// Catches Three.js / GLTF errors so the page doesn't vanish
+class ModelErrorBoundary extends Component<{ children: ReactNode }, { hasError: boolean }> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() { return { hasError: true }; }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="w-full h-full flex items-center justify-center text-stone-400 text-sm">
+          3D model could not be loaded.
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 function GLTFModel({ url, textureUrl }: { url: string; textureUrl?: string }) {
   const { scene } = useGLTF(url);
@@ -43,17 +62,28 @@ function GLTFModel({ url, textureUrl }: { url: string; textureUrl?: string }) {
 }
 
 export function ModelViewer({ url, textureUrl }: { url: string; textureUrl?: string }) {
+  // Never render the 3D canvas if URL is empty — prevents useGLTF crash
+  if (!url) {
+    return (
+      <div className="w-full h-full flex items-center justify-center text-stone-400 text-sm">
+        No 3D model available.
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full h-full min-h-[300px]">
-      <Canvas camera={{ position: [2, 1, 3], fov: 45 }}>
-        <Environment preset="city" />
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 10]} intensity={1} />
-
-        <GLTFModel url={url} textureUrl={textureUrl} />
-
-        <OrbitControls makeDefault autoRotate autoRotateSpeed={0.5} />
-      </Canvas>
-    </div>
+    <ModelErrorBoundary>
+      <div className="w-full h-full min-h-[300px]">
+        <Canvas camera={{ position: [2, 1, 3], fov: 45 }}>
+          <Environment preset="city" />
+          <ambientLight intensity={0.5} />
+          <directionalLight position={[10, 10, 10]} intensity={1} />
+          <Suspense fallback={null}>
+            <GLTFModel url={url} textureUrl={textureUrl} />
+          </Suspense>
+          <OrbitControls makeDefault autoRotate autoRotateSpeed={0.5} />
+        </Canvas>
+      </div>
+    </ModelErrorBoundary>
   );
 }

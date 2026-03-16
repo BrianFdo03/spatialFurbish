@@ -65,6 +65,7 @@ const productSchema = new mongoose.Schema(
   },
   {
     timestamps: true, // Adds createdAt and updatedAt automatically
+    strict: false,
   },
 );
 // Create and export the model

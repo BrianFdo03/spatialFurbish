@@ -89,15 +89,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const addToCart = async (product: any, texture?: any, color?: string) => {
         if (isLoggedIn) {
             try {
-                await fetch(`http://localhost:3000/api/cart/add`, {
+                await fetch(`/api/cart/add`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("token")}`, // Assuming token auth
                     },
+                    credentials: "include",
                     body: JSON.stringify({ productId: product._id, quantity: 1, texture, color })
                 });
-                // await cartAPI.add(product._id, 1); // cartAPI doesn't directly support texture in current signature out of the box so bypassing or creating a new method
                 await fetchServerCart();
             } catch (error) {
                 console.error("Add to cart failed", error);
@@ -138,12 +137,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const removeFromCart = async (id: string, textureName?: string, color?: string) => {
         if (isLoggedIn) {
             try {
-                await fetch(`http://localhost:3000/api/cart/${id}`, {
+                await fetch(`/api/cart/${id}`, {
                     method: "DELETE",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${localStorage.getItem("token")}`
                     },
+                    credentials: "include",
                     body: JSON.stringify({ textureName, color })
                 });
                 await fetchServerCart();
@@ -173,12 +172,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 if (item) {
                     const newQuantity = item.quantity + amount;
                     if (newQuantity > 0) {
-                        await fetch(`http://localhost:3000/api/cart/update`, {
+                        await fetch(`/api/cart/update`, {
                             method: "PUT",
                             headers: {
                                 "Content-Type": "application/json",
-                                Authorization: `Bearer ${localStorage.getItem("token")}`
                             },
+                            credentials: "include",
                             body: JSON.stringify({ productId: id, quantity: newQuantity, texture: item.texture, color: item.color })
                         });
                     } else {

@@ -392,6 +392,8 @@ export function ProductsPage() {
         allowedTextures: formData.allowedTextures,
       };
 
+      console.log("SUBMITTING COLOR IMAGES Payload:", JSON.stringify(productData.colorImages));
+      
       if (editingProduct) {
         // Update existing product
         await productAPI.update(editingProduct._id, productData);
