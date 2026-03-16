@@ -29,6 +29,17 @@ const productSchema = new mongoose.Schema(
         type: String,
       },
     ],
+    colorImages: [
+      {
+        color: String,
+        imageUrl: String,
+      },
+    ],
+    sizes: [
+      {
+        type: String,
+      },
+    ],
 
     allowedTextures: [
       {

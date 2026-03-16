@@ -20,7 +20,7 @@ const getCart = async (req, res) => {
 const addToCart = async (req, res) => {
     try {
         const userId = req.user._id;
-        const { productId, quantity } = req.body;
+        const { productId, quantity, texture, color } = req.body;
 
         const product = await Product.findById(productId);
         if (!product) {
@@ -38,7 +38,12 @@ const addToCart = async (req, res) => {
         }
 
         const requestedQty = quantity || 1;
-        const itemIndex = cart.items.findIndex(p => p.productId.toString() === productId);
+        // Match item by both productId and optionally the chosen texture and color
+        const itemIndex = cart.items.findIndex(p => 
+            p.productId.toString() === productId && 
+            (texture ? (p.texture && p.texture.name === texture.name) : !p.texture) &&
+            (color ? p.color === color : !p.color)
+        );
 
         if (itemIndex > -1) {
             // Product exists in cart, update quantity
@@ -69,6 +74,8 @@ const addToCart = async (req, res) => {
                 name: product.name,
                 price: product.price,
                 image: product.images && product.images.length > 0 ? product.images[0] : "",
+                texture: texture || null,
+                color: color || null,
                 quantity: requestedQty
             });
         }
@@ -85,13 +92,20 @@ const removeFromCart = async (req, res) => {
     try {
         const userId = req.user._id;
         const { productId } = req.params;
+        const { textureName, color } = req.body; // Use body for texture/color since we added it to identify uniquely
 
         let cart = await Cart.findOne({ userId });
         if (!cart) {
             return res.status(404).json({ message: "Cart not found" });
         }
 
-        cart.items = cart.items.filter(item => item.productId.toString() !== productId);
+        cart.items = cart.items.filter(item => {
+            if (item.productId.toString() !== productId) return true;
+            if (textureName && item.texture?.name !== textureName) return true;
+            if (color && item.color !== color) return true;
+            // If it matched the productId AND the provided texture and color, filter it out
+            return false;
+        });
         await cart.save();
 
         res.status(200).json(cart);
@@ -104,14 +118,18 @@ const removeFromCart = async (req, res) => {
 const updateQuantity = async (req, res) => {
     try {
         const userId = req.user._id;
-        const { productId, quantity } = req.body;
+        const { productId, quantity, texture, color } = req.body;
 
         let cart = await Cart.findOne({ userId });
         if (!cart) {
             return res.status(404).json({ message: "Cart not found" });
         }
 
-        const itemIndex = cart.items.findIndex(p => p.productId.toString() === productId);
+        const itemIndex = cart.items.findIndex(p => 
+            p.productId.toString() === productId &&
+            (texture ? (p.texture && p.texture.name === texture.name) : !p.texture) &&
+            (color ? p.color === color : !p.color)
+        );
 
         if (itemIndex > -1) {
             // If quantity is 0 or less, remove the item

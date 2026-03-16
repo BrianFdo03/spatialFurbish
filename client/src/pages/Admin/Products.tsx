@@ -34,6 +34,7 @@ import {
   Image as ImageIcon,
   Loader2,
   X,
+  Eye,
 } from "lucide-react";
 import { ColorPickerDialog } from "@/components/ui/ColorPickerDialog";
 
@@ -49,6 +50,7 @@ export function ProductsPage() {
   const [uploadingImages, setUploadingImages] = useState<boolean>(false);
   const [uploadingModel, setUploadingModel] = useState<boolean>(false);
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
+  const [viewingProduct, setViewingProduct] = useState<any | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -59,7 +61,9 @@ export function ProductsPage() {
     stock: "",
     images: [] as string[],
     allowedColors: [] as string[],
+    sizes: [] as string[],
     allowedTextures: [] as string[],
+    colorImages: [] as { color: string; imageUrl: string }[],
     productModel: "", // For 3D model
   });
 
@@ -235,9 +239,66 @@ export function ProductsPage() {
   };
 
   const handleRemoveColor = (index: number) => {
+    const colorToRemove = formData.allowedColors[index];
     setFormData((prev) => ({
       ...prev,
       allowedColors: prev.allowedColors.filter((_, i) => i !== index),
+      colorImages: prev.colorImages.filter((mapping) => mapping.color !== colorToRemove),
+    }));
+  };
+
+  // Handle color-image mapping
+  const handleAssignColorToImage = (color: string, imageUrl: string) => {
+    setFormData((prev) => {
+      // Remove any existing mapping for this color
+      const filtered = prev.colorImages.filter((mapping) => mapping.color !== color);
+      return {
+        ...prev,
+        colorImages: [...filtered, { color, imageUrl }],
+      };
+    });
+  };
+
+  const handleRemoveColorImageMapping = (color: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      colorImages: prev.colorImages.filter((mapping) => mapping.color !== color),
+    }));
+  };
+
+  // Handle sizes
+  const [newSizeW, setNewSizeW] = useState("");
+  const [newSizeH, setNewSizeH] = useState("");
+  const [newSizeL, setNewSizeL] = useState("");
+
+  const handleAddSize = () => {
+    if (!newSizeW.trim() || !newSizeH.trim() || !newSizeL.trim()) {
+      alert("Please provide Width, Height, and Length.");
+      return;
+    }
+    const formattedSize = `W: ${newSizeW.trim()} x H: ${newSizeH.trim()} x L: ${newSizeL.trim()}`;
+    setFormData((prev) => ({
+      ...prev,
+      sizes: prev.sizes.includes(formattedSize)
+        ? prev.sizes
+        : [...prev.sizes, formattedSize],
+    }));
+    setNewSizeW(""); // Clear inputs
+    setNewSizeH("");
+    setNewSizeL("");
+  };
+
+  const handleSizeKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddSize();
+    }
+  };
+
+  const handleRemoveSize = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      sizes: prev.sizes.filter((_, i) => i !== index),
     }));
   };
 
@@ -284,7 +345,9 @@ export function ProductsPage() {
       stock: "",
       images: [],
       allowedColors: [],
+      sizes: [],
       allowedTextures: [],
+      colorImages: [],
       productModel: "",
     });
     setEditingProduct(null);
@@ -302,7 +365,9 @@ export function ProductsPage() {
       stock: product.stock.toString(),
       images: product.images || [],
       allowedColors: product.allowedColors || [],
+      sizes: product.sizes || [],
       allowedTextures: product.allowedTextures || [],
+      colorImages: product.colorImages || [],
       productModel: product.productModel || "", // For 3D model
     });
     setOpen(true);
@@ -322,6 +387,8 @@ export function ProductsPage() {
         images: formData.images, // Backend expects array
         productModel: formData.productModel ? formData.productModel : "",
         allowedColors: formData.allowedColors,
+        colorImages: formData.colorImages,
+        sizes: formData.sizes,
         allowedTextures: formData.allowedTextures,
       };
 
@@ -567,6 +634,109 @@ export function ProductsPage() {
                       onSave={(color) => handleAddColor(color)}
                     />
                   </div>
+
+                  {/* Assign Images to Colors (Only visible if we have both colors and images) */}
+                  {formData.allowedColors.length > 0 && formData.images.length > 0 && (
+                     <div className="mt-4 border border-stone-200 rounded-md p-4 bg-stone-50/50">
+                        <Label className="text-stone-700 block mb-3 text-sm">Assign Images to Colors</Label>
+                        <div className="flex flex-col gap-3">
+                           {formData.allowedColors.map((color) => {
+                              const currentMapping = formData.colorImages.find(c => c.color === color);
+                              
+                              return (
+                                 <div key={color} className="flex items-center gap-3">
+                                    <div 
+                                       className="w-8 h-8 rounded-full border" 
+                                       style={{ backgroundColor: color }}
+                                       title={color}
+                                    />
+                                    <select
+                                       value={currentMapping?.imageUrl || ""}
+                                       onChange={(e) => {
+                                          if (e.target.value === "") {
+                                             handleRemoveColorImageMapping(color);
+                                          } else {
+                                             handleAssignColorToImage(color, e.target.value);
+                                          }
+                                       }}
+                                       className="flex-1 bg-white border border-stone-200 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#788F76] text-stone-700"
+                                    >
+                                       <option value="">-- Select corresponding image --</option>
+                                       {formData.images.map((img, idx) => (
+                                          <option key={idx} value={img}>
+                                             Image {idx + 1}
+                                          </option>
+                                       ))}
+                                    </select>
+                                    {currentMapping && (
+                                       <img src={currentMapping.imageUrl} alt="preview" className="w-8 h-8 rounded object-cover border border-stone-200" />
+                                    )}
+                                 </div>
+                              )
+                           })}
+                        </div>
+                     </div>
+                  )}
+                </div>
+
+                {/* Available Sizes */}
+                <div className="grid gap-2">
+                  <Label className="text-stone-700">Available Sizes</Label>
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* Existing Sizes */}
+                    {formData.sizes.map((size, index) => (
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="flex items-center gap-1 bg-stone-100 text-stone-700 px-3 py-1 text-sm rounded-md font-normal"
+                      >
+                        {size}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSize(index)}
+                          className="ml-1 hover:text-red-500 focus:outline-none"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                    
+                    {/* Add Size Input */}
+                    <div className="flex items-center gap-2 mt-2 w-full">
+                      <Input
+                        value={newSizeW}
+                        onChange={(e) => setNewSizeW(e.target.value)}
+                        onKeyDown={handleSizeKeyDown}
+                        placeholder="W (e.g. 10)"
+                        className="bg-stone-50 border-stone-200 focus-visible:ring-[#788F76] h-8 text-sm w-24"
+                      />
+                      <span className="text-stone-500 text-sm font-medium">x</span>
+                      <Input
+                        value={newSizeH}
+                        onChange={(e) => setNewSizeH(e.target.value)}
+                        onKeyDown={handleSizeKeyDown}
+                        placeholder="H (e.g. 20)"
+                        className="bg-stone-50 border-stone-200 focus-visible:ring-[#788F76] h-8 text-sm w-24"
+                      />
+                      <span className="text-stone-500 text-sm font-medium">x</span>
+                      <Input
+                        value={newSizeL}
+                        onChange={(e) => setNewSizeL(e.target.value)}
+                        onKeyDown={handleSizeKeyDown}
+                        placeholder="L (e.g. 30)"
+                        className="bg-stone-50 border-stone-200 focus-visible:ring-[#788F76] h-8 text-sm w-24"
+                      />
+                      <Button
+                        type="button"
+                        onClick={handleAddSize}
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 px-3 text-[#788F76] hover:text-[#667c64] hover:bg-stone-100"
+                      >
+                        Add
+                      </Button>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Allowed Textures */}
@@ -749,6 +919,9 @@ export function ProductsPage() {
                     Category
                   </TableHead>
                   <TableHead className="font-medium text-stone-600">
+                    Colors
+                  </TableHead>
+                  <TableHead className="font-medium text-stone-600">
                     Price
                   </TableHead>
                   <TableHead className="font-medium text-stone-600">
@@ -806,6 +979,21 @@ export function ProductsPage() {
                       <TableCell className="text-stone-600">
                         {product.category || "General"}
                       </TableCell>
+                      <TableCell>
+                        <div className="flex -space-x-1">
+                          {product.allowedColors?.map((color: string, i: number) => (
+                            <div
+                              key={i}
+                              className="w-5 h-5 rounded-full border border-stone-200 shadow-sm"
+                              style={{ backgroundColor: color }}
+                              title={color}
+                            />
+                          ))}
+                          {(!product.allowedColors || product.allowedColors.length === 0) && (
+                            <span className="text-xs text-stone-400">None</span>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell className="font-medium text-stone-800">
                         {formatPrice(product.price)}
                       </TableCell>
@@ -842,6 +1030,15 @@ export function ProductsPage() {
                         <Button
                           variant="ghost"
                           size="icon"
+                          onClick={() => setViewingProduct(product)}
+                          className="h-8 w-8 text-stone-400 hover:text-[#788F76]"
+                          title="View"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => handleEdit(product)}
                           className="h-8 w-8 text-stone-400 hover:text-stone-600"
                         >
@@ -865,6 +1062,122 @@ export function ProductsPage() {
           )}
         </CardContent>
       </Card>
+
+      {/* View Product Modal */}
+      <Dialog open={!!viewingProduct} onOpenChange={(isOpen) => !isOpen && setViewingProduct(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-serif text-stone-900">
+              Product Details
+            </DialogTitle>
+            <DialogDescription>
+              Viewing full details for {viewingProduct?.name}
+            </DialogDescription>
+          </DialogHeader>
+
+          {viewingProduct && (
+            <div className="mt-4 grid md:grid-cols-2 gap-8">
+              {/* Left Column: Images and Model */}
+              <div className="space-y-6">
+                <div>
+                  <h3 className="font-medium text-stone-800 mb-3">Model</h3>
+                  <div className="w-full h-64 bg-stone-50 rounded-lg overflow-hidden border border-stone-200">
+                    {viewingProduct.productModel ? (
+                      <ModelViewer url={viewingProduct.productModel} />
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-stone-400 text-sm">
+                        No 3D Model available
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                {viewingProduct.images && viewingProduct.images.length > 0 && (
+                  <div>
+                    <h3 className="font-medium text-stone-800 mb-2">Images</h3>
+                    <div className="grid grid-cols-4 gap-2">
+                      {viewingProduct.images.map((img: string, i: number) => (
+                        <div key={i} className="aspect-square rounded border border-stone-200 overflow-hidden">
+                          <img src={img} alt={`Product ${i}`} className="w-full h-full object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Right Column: Information */}
+              <div className="space-y-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-stone-900 mb-1">{viewingProduct.name}</h2>
+                  <Badge variant="secondary" className="bg-stone-100 text-stone-700 hover:bg-stone-200 font-normal">
+                    {viewingProduct.category || "General"}
+                  </Badge>
+                  <span className="text-xl font-medium text-[#788F76] ml-4 block mt-2">
+                    {formatPrice(viewingProduct.price)}
+                  </span>
+                </div>
+
+                <div>
+                  <h3 className="font-medium text-stone-800 mb-1">Description</h3>
+                  <p className="text-sm text-stone-600 leading-relaxed whitespace-pre-wrap">
+                    {viewingProduct.description}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <h3 className="font-medium text-stone-800 mb-2">Stock Level</h3>
+                    <Badge variant="outline" className={`${viewingProduct.stock < 50 ? 'border-red-200 text-red-700' : 'border-emerald-200 text-emerald-700'}`}>
+                      {viewingProduct.stock} units available
+                    </Badge>
+                  </div>
+                  
+                  <div>
+                    <h3 className="font-medium text-stone-800 mb-2">Colors</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {viewingProduct.allowedColors && viewingProduct.allowedColors.length > 0 ? (
+                        viewingProduct.allowedColors.map((color: string, i: number) => (
+                          <div 
+                            key={i} 
+                            className="w-6 h-6 rounded-full border border-stone-300 shadow-sm" 
+                            style={{ backgroundColor: color }}
+                            title={color}
+                          />
+                        ))
+                      ) : (
+                        <span className="text-sm text-stone-500">None</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-medium text-stone-800 mb-2">Available Sizes</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {viewingProduct.sizes && viewingProduct.sizes.length > 0 ? (
+                      viewingProduct.sizes.map((size: string, i: number) => (
+                        <div key={i} className="px-3 py-1 bg-stone-100 border border-stone-200 rounded text-sm text-stone-700">
+                          {size}
+                        </div>
+                      ))
+                    ) : (
+                      <span className="text-sm text-stone-500">One Size</span>
+                    )}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="mt-6">
+            <Button onClick={() => setViewingProduct(null)} className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white">
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }

@@ -27,7 +27,7 @@ router.get("/", async (req, res) => {
 // URL: GET /api/products/:id
 router.get("/:id", async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).populate("allowedTextures");
 
     if (!product) {
       return res.status(404).json({

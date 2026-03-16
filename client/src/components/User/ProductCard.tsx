@@ -1,7 +1,5 @@
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { useCart } from "@/context/CartContext";
+import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { ShoppingBag } from "lucide-react";
 
 interface Product {
   _id: string;
@@ -11,89 +9,119 @@ interface Product {
   category: string;
   images: string[];
   stock: number;
+  allowedColors?: string[];
 }
 
 export function ProductCard({ product }: { product: Product }) {
-  const { addToCart } = useCart();
+  const navigate = useNavigate();
   const isOutOfStock = product.stock === 0;
 
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
+      minimumFractionDigits: 0,
     }).format(price);
 
   const imageUrl = product.images?.[0] || "/products/placeholder.png";
 
+  // Use product colors if available, otherwise show dummy premium colors
+  const colors = product.allowedColors && product.allowedColors.length > 0
+    ? product.allowedColors
+    : ["#E5E0D8", "#2C2B29", "#8C9A8B", "#C3A68F"];
+
   return (
-    <Card
+    <div
+      onClick={() => navigate(`/product/${product._id}`)}
       className={cn(
-        "group overflow-hidden rounded-xl bg-white transition-all duration-300",
-        "shadow-sm hover:shadow-xl hover:-translate-y-1",
-        isOutOfStock && "pointer-events-none opacity-80",
+        "group cursor-pointer flex flex-col gap-5",
+        isOutOfStock && "opacity-75 pointer-events-none"
       )}
     >
-      {/* IMAGE AREA */}
-      <CardContent className="p-0">
-        <div className="relative aspect-[3/4] bg-[#f4f2ed] flex items-center justify-center overflow-hidden">
-          <img
-            src={imageUrl}
-            alt={product.name}
-            className={cn(
-              "h-full w-full object-cover transition-all duration-500",
-              !isOutOfStock && "group-hover:scale-105",
-              isOutOfStock && "blur-sm",
-            )}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = "/products/placeholder.png";
-            }}
-          />
-
-          {/* CATEGORY BADGE */}
-          <span className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-stone-700 rounded-full shadow-sm">
-            {product.category}
-          </span>
-
-          {/* ADD TO CART (only if in stock) */}
-          {!isOutOfStock && (
-            <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-              <button
-                onClick={() => addToCart(product)}
-                className="w-full bg-[#1c1917] hover:bg-[#44403c] text-white text-xs py-3 uppercase tracking-widest flex items-center justify-center gap-2"
-              >
-                <ShoppingBag className="w-4 h-4" />
-                Add to cart
-              </button>
-            </div>
+      {/* Visual Container */}
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-[#F8F7F5] transition-all duration-500 ease-out group-hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)]">
+        <img
+          src={imageUrl}
+          alt={product.name}
+          className={cn(
+            "h-full w-full object-cover object-center transition-transform duration-700 ease-[0.33,1,0.68,1]",
+            !isOutOfStock && "group-hover:scale-105",
+            isOutOfStock && "grayscale opacity-80"
           )}
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = "/products/placeholder.png";
+          }}
+        />
 
-          {/* OUT OF STOCK OVERLAY */}
-          {isOutOfStock && (
-            <div className="absolute inset-0 bg-white/80 backdrop-blur-sm flex items-center justify-center">
-              <span className="text-sm font-semibold uppercase tracking-wide text-red-600">
-                Out of stock
-              </span>
+        {/* Category Badge */}
+        {product.category && (
+          <div className="absolute top-4 left-4 z-10">
+            <span className="inline-flex bg-white/95 backdrop-blur-md px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-stone-900 rounded-full shadow-sm">
+              {product.category}
+            </span>
+          </div>
+        )}
+
+        {/* Hover Action Overlay */}
+        {!isOutOfStock && (
+          <div className="absolute bottom-5 left-0 right-0 flex justify-center opacity-0 translate-y-4 transition-all duration-500 ease-out group-hover:opacity-100 group-hover:translate-y-0 z-20">
+            <span className="bg-white/95 backdrop-blur-md text-stone-900 px-6 py-2.5 rounded-full text-xs font-semibold tracking-wide shadow-[0_8px_30px_rgb(0,0,0,0.12)] transform transition-transform hover:scale-105">
+              View Details
+            </span>
+          </div>
+        )}
+
+        {/* Sold Out Overlay */}
+        {isOutOfStock && (
+          <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px] z-30 flex items-center justify-center">
+            <span className="bg-white px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-[0.2em] text-red-600 shadow-sm">
+              Sold Out
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Info Container */}
+      <div className="flex flex-col gap-2 px-1">
+        <div className="flex items-start justify-between gap-4">
+          <h3 className="font-serif text-lg text-stone-900 leading-tight group-hover:text-stone-600 transition-colors line-clamp-1">
+            {product.name}
+          </h3>
+          <span className="font-medium text-stone-900 tabular-nums bg-stone-50 px-2 py-0.5 rounded-md shadow-sm text-sm">
+            {formatPrice(product.price)}
+          </span>
+        </div>
+
+        {/* Colors Selection & Stock Warning */}
+        <div className="flex items-center justify-between mt-1">
+          <div
+            className="flex items-center gap-2"
+            onClick={(e) => e.stopPropagation()} // Prevent trigger navigation purely on swatches if clicked
+          >
+            <div className="flex -space-x-1.5 hover:space-x-1 transition-all duration-300 ease-out">
+              {colors.slice(0, 4).map((color, idx) => (
+                <div
+                  key={idx}
+                  className="w-5 h-5 rounded-full border-2 border-white shadow-sm ring-1 ring-black/5 transition-transform hover:scale-110 hover:z-10 cursor-pointer"
+                  style={{ backgroundColor: color }}
+                  title={`Color option ${idx + 1}`}
+                />
+              ))}
             </div>
+            {colors.length > 4 && (
+              <span className="text-[10px] text-stone-400 font-medium tracking-wide uppercase pl-1">
+                + More
+              </span>
+            )}
+          </div>
+
+          {!isOutOfStock && product.stock <= 10 && (
+            <span className="text-amber-700 text-[11px] font-semibold uppercase tracking-wider bg-amber-50 px-2 py-1 rounded-sm">
+              Only {product.stock} Left
+            </span>
           )}
         </div>
-      </CardContent>
-
-      {/* DETAILS */}
-      <CardFooter className="flex flex-col items-start px-4 pt-6 pb-5 space-y-1 text-xs">
-        <h3 className="font-serif text-sm">{product.name}</h3>
-
-        <p className="text-stone-600 line-clamp-2">{product.description}</p>
-
-        {product.category && (
-          <p className="text-stone-500">{product.category}</p>
-        )}
-
-        <p className="pt-2 font-medium">{formatPrice(product.price)}</p>
-
-        {!isOutOfStock && product.stock <= 10 && (
-          <p className="text-amber-600">Only {product.stock} left!</p>
-        )}
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }
