@@ -27,7 +27,7 @@ router.get("/", async (req, res) => {
 // URL: GET /api/products/:id
 router.get("/:id", async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).populate("allowedTextures");
 
     if (!product) {
       return res.status(404).json({
@@ -77,11 +77,13 @@ router.post("/", protectRoute(["admin", "staff"]), async (req, res) => {
 // URL: PUT /api/products/:id
 router.put("/:id", protectRoute(["admin", "staff"]), async (req, res) => {
   try {
+        console.log("Incoming product update payload:", req.body);
     const product = await Product.findByIdAndUpdate(
       req.params.id,
       req.body,
       { new: true, runValidators: true } // Return updated doc, validate
     );
+        console.log("Updated product colorImages:", product?.colorImages);
 
         if (!product) {
             return res.status(404).json({

@@ -1,7 +1,7 @@
 // Base URL for your API
 const API_URL =
   import.meta.env.MODE === "development"
-    ? "http://localhost:3000/api"
+    ? "/api"
     : "https://api.lumierecosmetics.site/api";
 // : "http://ec2-54-169-103-14.ap-southeast-1.compute.amazonaws.com:3000/api";
 // Generic fetch function with error handling and retry logic

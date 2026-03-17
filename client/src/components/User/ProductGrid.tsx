@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ProductCard } from "./ProductCard";
+import { ProductCard } from "../Dashboard/ProductCard";
 import { productAPI, categoryAPI } from "@/services/api";
 import { useSocket } from "@/context/SocketContext";
 

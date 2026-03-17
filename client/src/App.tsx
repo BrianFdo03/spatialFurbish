@@ -20,6 +20,7 @@ import { ROLES } from "./constants/roles";
 
 import { Contact } from "./pages/User/Contact";
 import Profile from "./pages/User/Profile"; //Ravindu
+import { ProductDetails } from "./pages/User/ProductDetails";
 import { TexturesPage } from "./pages/Admin/Textures";
 
 export default function App() {
@@ -38,6 +39,7 @@ export default function App() {
       <Route path="/Shop" element={<Shop />} />
       <Route path="/place-order" element={<PlaceOrder />} />
       <Route path="/user-order" element={<UserOrder />} />
+      <Route path="/product/:id" element={<ProductDetails />} />
 
       <Route path="/profile" element={<Profile />} />
 

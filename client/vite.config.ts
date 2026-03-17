@@ -15,5 +15,12 @@ export default defineConfig({
     watch: {
       usePolling: true, // Enable polling for file changes in Docker
     },
+    proxy: {
+      "/api": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
 });

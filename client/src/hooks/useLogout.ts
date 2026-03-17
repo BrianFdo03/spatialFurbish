@@ -28,7 +28,9 @@ export const useLogout = () => {
       navigate("/login");
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        toast.error(error.response.data.message || "Logout failed");
+        // Cast the data property because Axios defaults its type to unknown or any
+        const responseData = error.response.data as { message?: string };
+        toast.error(responseData?.message || "Logout failed");
       } else {
         toast.error("An unexpected error occurred");
       }

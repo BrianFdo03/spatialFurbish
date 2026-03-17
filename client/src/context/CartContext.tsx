@@ -6,14 +6,19 @@ export interface CartItem {
     name: string;
     price: number;
     image: string;
+    texture?: {
+        name: string;
+        image: string;
+    };
+    color?: string;
     quantity: number;
 }
 
 interface CartContextType {
     cart: CartItem[];
-    addToCart: (product: any) => Promise<void>;
-    removeFromCart: (id: string) => Promise<void>;
-    updateQuantity: (id: string, amount: number) => Promise<void>;
+    addToCart: (product: any, texture?: any, color?: string) => Promise<void>;
+    removeFromCart: (id: string, textureName?: string, color?: string) => Promise<void>;
+    updateQuantity: (id: string, amount: number, textureName?: string, color?: string) => Promise<void>;
     clearCart: () => Promise<void>;
     refreshCart: () => Promise<void>;
     subtotal: number;
@@ -69,6 +74,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 name: item.name,
                 price: item.price,
                 image: item.image,
+                texture: item.texture || undefined,
+                color: item.color || undefined,
                 quantity: item.quantity
             }));
             setCart(mappedItems);
@@ -79,20 +86,34 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const addToCart = async (product: any) => {
+    const addToCart = async (product: any, texture?: any, color?: string) => {
         if (isLoggedIn) {
             try {
-                await cartAPI.add(product._id, 1);
+                await fetch(`/api/cart/add`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "include",
+                    body: JSON.stringify({ productId: product._id, quantity: 1, texture, color })
+                });
                 await fetchServerCart();
             } catch (error) {
                 console.error("Add to cart failed", error);
             }
         } else {
             setCart((prev) => {
-                const existingItem = prev.find((item) => item.id === product._id);
+                const existingItem = prev.find((item) => 
+                    item.id === product._id && 
+                    (texture ? (item.texture && item.texture.name === texture.name) : !item.texture) &&
+                    (color ? item.color === color : !item.color)
+                );
+                
                 if (existingItem) {
                     return prev.map((item) =>
-                        item.id === product._id
+                        item.id === product._id && 
+                        (texture ? (item.texture && item.texture.name === texture.name) : !item.texture) &&
+                        (color ? item.color === color : !item.color)
                             ? { ...item, quantity: item.quantity + 1 }
                             : item
                     );
@@ -104,6 +125,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
                         name: product.name,
                         price: product.price,
                         image: product.images?.[0] || "/products/placeholder.png",
+                        texture: texture || undefined,
+                        color: color || undefined,
                         quantity: 1,
                     },
                 ];
@@ -111,30 +134,54 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const removeFromCart = async (id: string) => {
+    const removeFromCart = async (id: string, textureName?: string, color?: string) => {
         if (isLoggedIn) {
             try {
-                await cartAPI.remove(id);
+                await fetch(`/api/cart/${id}`, {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    credentials: "include",
+                    body: JSON.stringify({ textureName, color })
+                });
                 await fetchServerCart();
             } catch (error) {
                 console.error("Remove from cart failed", error);
             }
         } else {
-            setCart((prev) => prev.filter((item) => item.id !== id));
+            setCart((prev) => prev.filter((item) => {
+                if (item.id !== id) return true;
+                if (textureName && item.texture?.name !== textureName) return true;
+                if (color && item.color !== color) return true;
+                return false;
+            }));
         }
     };
 
-    const updateQuantity = async (id: string, amount: number) => {
+    const updateQuantity = async (id: string, amount: number, textureName?: string, color?: string) => {
         if (isLoggedIn) {
             try {
                 // Find current quantity to calculate new one
-                const item = cart.find(i => i.id === id);
+                const item = cart.find(i => 
+                    i.id === id && 
+                    (textureName ? (i.texture && i.texture.name === textureName) : !i.texture) &&
+                    (color ? i.color === color : !i.color)
+                );
+                
                 if (item) {
                     const newQuantity = item.quantity + amount;
                     if (newQuantity > 0) {
-                        await cartAPI.update(id, newQuantity);
+                        await fetch(`/api/cart/update`, {
+                            method: "PUT",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            credentials: "include",
+                            body: JSON.stringify({ productId: id, quantity: newQuantity, texture: item.texture, color: item.color })
+                        });
                     } else {
-                        await cartAPI.remove(id);
+                        await removeFromCart(id, textureName, color);
                     }
                     await fetchServerCart();
                 }
@@ -144,7 +191,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
         } else {
             setCart((prev) =>
                 prev.map((item) =>
-                    item.id === id
+                    item.id === id && 
+                    (textureName ? (item.texture && item.texture.name === textureName) : !item.texture) &&
+                    (color ? item.color === color : !item.color)
                         ? { ...item, quantity: Math.max(1, item.quantity + amount) }
                         : item
                 )

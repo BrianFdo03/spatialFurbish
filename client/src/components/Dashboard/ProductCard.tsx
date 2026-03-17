@@ -1,6 +1,7 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { useCart } from "@/context/CartContext";
 import { ShoppingBag } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 interface ProductCardProps {
   product: {
@@ -15,6 +16,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
+  const navigate = useNavigate();
 
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("en-US", {
@@ -28,7 +30,10 @@ export function ProductCard({ product }: ProductCardProps) {
   const isLowStock = product.stock !== undefined && product.stock <= 10;
 
   return (
-    <Card className="group relative border-none bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+    <Card 
+      onClick={() => navigate(`/product/${product._id}`)}
+      className="group relative border-none bg-white rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer"
+    >
       {/* IMAGE */}
       <CardContent className="relative p-0 aspect-[4/5] bg-[#f5f5f0] overflow-hidden">
         <img
@@ -49,7 +54,10 @@ export function ProductCard({ product }: ProductCardProps) {
         {!isOutOfStock && (
           <div className="absolute inset-x-0 bottom-0 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
             <button
-              onClick={() => addToCart(product)}
+              onClick={(e) => {
+                e.stopPropagation();
+                addToCart(product);
+              }}
               className="w-full bg-[#1c1917] hover:bg-[#44403c] text-white text-xs py-3 uppercase tracking-widest flex items-center justify-center gap-2"
             >
               <ShoppingBag className="w-4 h-4" />

@@ -29,6 +29,17 @@ const productSchema = new mongoose.Schema(
         type: String,
       },
     ],
+    colorImages: [
+      {
+        color: String,
+        imageUrl: String,
+      },
+    ],
+    sizes: [
+      {
+        type: String,
+      },
+    ],
 
     allowedTextures: [
       {
@@ -54,6 +65,7 @@ const productSchema = new mongoose.Schema(
   },
   {
     timestamps: true, // Adds createdAt and updatedAt automatically
+    strict: false,
   },
 );
 // Create and export the model
