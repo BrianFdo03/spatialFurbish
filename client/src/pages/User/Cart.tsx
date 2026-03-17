@@ -35,7 +35,10 @@ export function Cart() {
                   key={item.id}
                   className="flex items-center justify-between border-b pb-6"
                 >
-                  <div className="flex items-center gap-6">
+                  <div
+                    className="flex items-center gap-6 cursor-pointer"
+                    onClick={() => navigate(`/product/${item.id}`)}
+                  >
                     <div className="w-24 h-24 bg-[#f4f2ed] flex items-center justify-center">
                       <img
                         src={item.image}
@@ -76,7 +79,10 @@ export function Cart() {
 
                       <div className="flex items-center gap-4 mt-3">
                         <button
-                          onClick={() => updateQuantity(item.id, -1)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateQuantity(item.id, -1);
+                          }}
                           className="border px-2 py-1"
                         >
                           <Minus size={14} />
@@ -85,7 +91,10 @@ export function Cart() {
                         <span>{item.quantity}</span>
 
                         <button
-                          onClick={() => updateQuantity(item.id, 1)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            updateQuantity(item.id, 1);
+                          }}
                           className="border px-2 py-1"
                         >
                           <Plus size={14} />
@@ -100,7 +109,10 @@ export function Cart() {
                     </p>
 
                     <button
-                      onClick={() => removeFromCart(item.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFromCart(item.id);
+                      }}
                       className="text-red-500 text-sm flex items-center gap-1 mt-2"
                     >
                       <Trash2 size={14} />
