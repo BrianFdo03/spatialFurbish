@@ -1,0 +1,31 @@
+name: spatialFurbish
+
+services:
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile.dev
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./client:/app
+      - frontend-node-modules:/app/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./server:/app
+      - backend-node-modules:/app/node_modules
+    env_file:
+      - ./server/.env
+    command: npm run dev
+
+volumes:
+  frontend-node-modules:
+  backend-node-modules:
