@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 import { useMemo, Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
