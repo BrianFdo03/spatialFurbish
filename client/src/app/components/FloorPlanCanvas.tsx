@@ -1,9 +1,15 @@
 import React, { useState, useRef, useEffect } from "react"
 import type { RoomType } from "./RoomSelector"
 import type { PlacedItem } from "../types/furniture"
+import floor1Img from "../../assets/FloorTextures/Floor 1.jpeg"
+import floor2Img from "../../assets/FloorTextures/Floor 2.jpeg"
+import floor3Img from "../../assets/FloorTextures/Floor 3.jpg"
+
+import type { RoomProps } from "../types/room"
 
 interface FloorPlanCanvasProps {
     roomType: RoomType
+    roomProps: RoomProps
     items: PlacedItem[]
     selectedId: string | null
     onSelectItem: (id: string | null) => void
@@ -20,6 +26,14 @@ const ROOM_METERS: Record<RoomType, { w: number; d: number }> = {
     circular: { w: 12, d: 12 },
 }
 
+const FLOOR_TEXTURES: Record<string, string> = {
+    "floor-1": floor1Img,
+    "floor-2": floor2Img,
+    "floor-3": floor3Img,
+}
+
+
+
 const ROOM_SCALES: Record<RoomType, number> = {
     square: 40,
     rectangle: 40,
@@ -31,11 +45,14 @@ const ROOM_SCALES: Record<RoomType, number> = {
 
 export default function FloorPlanCanvas({
     roomType,
+    roomProps,
     items,
     selectedId,
     onSelectItem,
     onUpdateItem,
 }: FloorPlanCanvasProps) {
+    const floorTexture = FLOOR_TEXTURES[roomProps.floorTexture]
+
     const [isDragging, setIsDragging] = useState(false)
     const dragStartPos = useRef({ x: 0, y: 0 })
     const itemStartPos = useRef({ x: 0, y: 0 })
@@ -153,7 +170,9 @@ export default function FloorPlanCanvas({
                 style={{
                     width: `${pixelWidth}px`,
                     height: `${pixelHeight}px`,
-                    backgroundColor: "#DCD5C9",
+                    backgroundImage: `url(${floorTexture})`,
+                    backgroundSize: "120px",
+                    backgroundRepeat: "repeat",
                     border: "2px solid #B0A093",
                     borderRadius: roomType === "circular" ? "50%" : roomType === "l-shape" || roomType === "u-shape" || roomType === "t-shape" ? "0" : "8px",
                     clipPath: roomType === "l-shape"

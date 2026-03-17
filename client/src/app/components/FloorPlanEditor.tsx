@@ -91,6 +91,7 @@ export default function FloorPlanEditor() {
                 {view === "2d" ? (
                     <FloorPlanCanvas
                         roomType={roomType}
+                        roomProps={roomProps}
                         items={items}
                         selectedId={selectedId}
                         onSelectItem={setSelectedId}
