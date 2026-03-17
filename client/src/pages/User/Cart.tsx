@@ -48,7 +48,31 @@ export function Cart() {
                       <h3 className="font-serif text-lg">{item.name}</h3>
                       <p className="text-sm text-stone-600">
                         ${item.price.toFixed(2)} each
+                        
                       </p>
+
+                      {/* Selected Color */}
+                      {item.color && (
+                        <p className="text-sm text-stone-500">
+                          Color: {item.color}
+                        </p>
+                      )}
+
+                      {/* Selected Texture */}
+                      {item.texture && (
+                        <p className="text-sm text-stone-500 flex items-center gap-2">
+                          Texture: {item.texture.name}
+                          {item.texture.image && (
+                            <img
+                              src={item.texture.image}
+                              alt={item.texture.name}
+                              className="w-5 h-5 rounded"
+                            />
+                          )}
+                        </p>
+                      )}
+
+                     
 
                       <div className="flex items-center gap-4 mt-3">
                         <button
