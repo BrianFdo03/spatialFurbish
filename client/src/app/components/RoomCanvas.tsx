@@ -578,6 +578,7 @@ function RoomContent({
         const furnitureComponent = (
           <FurnitureItem
             key={item.instanceId}
+            modelUrl={item.model}   
             position={[clampedX, -1.4, clampedZ]}
             rotation={[0, -((item.rotation * Math.PI) / 180), 0]}
             isSelected={item.instanceId === selectedId}

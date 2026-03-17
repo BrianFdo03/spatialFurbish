@@ -2,8 +2,12 @@ export interface FurnitureDef {
     id: string
     name: string
     category: string
+    price: number
+    image: string
+    model: string
     w: number  // metres
     d: number  // metres
+    size: string
 }
 
 export interface PlacedItem extends FurnitureDef {
