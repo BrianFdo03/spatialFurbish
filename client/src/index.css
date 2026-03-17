@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -56,4 +57,37 @@
   body {
     @apply bg-background text-foreground;
   }
+
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #F5F0E8;
+  --color-bg-deep: #EDE7D9;
+  --color-surface: #FFFFFF;
+  --color-accent: #4A6B42;
+  --color-accent-hover: #3A5534;
+  --color-text: #2C2C2C;
+  --color-text-muted: #7A7A6E;
+  --color-border: #D8D0C4;
+  --color-danger: #D47068;
+
+  --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+@layer base {
+
+  html,
+  body,
+  #root {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    font-family: var(--font-sans);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    -webkit-font-smoothing: antialiased;
+  }
+
 }

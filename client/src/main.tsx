@@ -9,6 +9,9 @@ import { SocketProvider } from "./context/SocketContext.tsx";
 import { Toaster } from "react-hot-toast";
 
 createRoot(document.getElementById("root")!).render(
+console.log("🚀 App mounting to DOM...")
+
+createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>

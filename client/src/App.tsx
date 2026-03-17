@@ -1,3 +1,4 @@
+
 import { Routes, Route } from "react-router-dom";
 import { Dashboard } from "./pages/Admin/Dashboard";
 import { OrdersPage } from "./pages/Admin/Orders";
@@ -104,3 +105,21 @@ export default function App() {
     </Routes>
   );
 }
+
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import RoomSelectionPage from "@/components/RoomSelectionPage"
+import FloorPlanEditor from "@/components/FloorPlanEditor"
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<RoomSelectionPage />} />
+        <Route path="/editor" element={<FloorPlanEditor />} />
+      </Routes>
+    </BrowserRouter>
+  )
+}
+
+export default App
+
