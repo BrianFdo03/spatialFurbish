@@ -8,6 +8,8 @@ export interface FurnitureDef {
     w: number  // metres
     d: number  // metres
     size: string
+    allowedColors: string[]
+    allowedTextures: string[]
 }
 
 export interface PlacedItem extends FurnitureDef {
@@ -16,6 +18,7 @@ export interface PlacedItem extends FurnitureDef {
     y: number // pixels in canvas
     rotation: number // degrees
     color: string
+    texture?: string
 }
 
 export interface Furniture {

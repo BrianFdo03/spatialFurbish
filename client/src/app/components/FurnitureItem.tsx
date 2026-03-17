@@ -1,4 +1,4 @@
-import { useGLTF, Edges } from "@react-three/drei"
+import { useGLTF, Edges, useTexture } from "@react-three/drei"
 import * as THREE from "three"
 
 interface FurnitureProps {
@@ -7,6 +7,8 @@ interface FurnitureProps {
   rotation?: [number, number, number]
   onPointerDown?: (e: any) => void
   isSelected?: boolean
+  color?: string
+  texture?: string
 }
 
 export default function FurnitureItem({
@@ -14,15 +16,46 @@ export default function FurnitureItem({
   position,
   rotation = [0, 0, 0],
   onPointerDown,
-  isSelected
+  isSelected,
+  color,
+  texture
 }: FurnitureProps) {
 
   const { scene } = useGLTF(modelUrl)
+
+  const textureMap = texture ? useTexture(texture) : null
 
   if (!scene) return null
 
   // Clone scene to allow multiple instances
   const clonedScene = scene.clone()
+
+  clonedScene.traverse((child: any) => {
+
+  if(child.isMesh){
+
+    child.material = child.material.clone()
+
+    if(textureMap){
+      child.material.map = textureMap
+      child.material.needsUpdate = true
+    }
+
+    if(color){
+      child.material.color = new THREE.Color(color)
+    }
+
+  }
+
+})
+  
+  // Apply selected color to all meshes
+  clonedScene.traverse((child: any) => {
+    if (child.isMesh && child.material) {
+      child.material = child.material.clone() // prevent shared material bug
+      child.material.color = new THREE.Color(color || "#ffffff")
+  }
+})
 
   // Compute bounding box
   const box = new THREE.Box3().setFromObject(clonedScene)
@@ -43,6 +76,8 @@ export default function FurnitureItem({
     >
       {/* Ground model correctly */}
       <primitive object={clonedScene} position={[0, -bottomY, 0]} />
+
+      
 
       {/* Selection outline */}
       {isSelected && (

@@ -48,7 +48,10 @@ export default function FurniturePanel({ onAdd }: FurniturePanelProps) {
 
             // Default dimensions for 3D placement
             w: 1.2,
-            d: 1.2
+            d: 1.2,
+
+            allowedColors: p.allowedColors,
+            allowedTextures: p.allowedTextures
         }));
 
         setFurniture(mapped);

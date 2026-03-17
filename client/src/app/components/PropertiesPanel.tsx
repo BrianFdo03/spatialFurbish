@@ -1,5 +1,7 @@
 import type { PlacedItem } from "../types/furniture"
 import type { RoomProps, TextureType } from "../types/room"
+import { useEffect, useState } from "react"
+import { getTextures } from "@/services/textureService"
 
 interface PropertiesPanelProps {
     selectedItem: PlacedItem | null
@@ -9,18 +11,19 @@ interface PropertiesPanelProps {
     onUpdateRoom: (updates: Partial<RoomProps>) => void
 }
 
-const COLORS = [
-    { name: "Off White", value: "#F1EADB" },
-    { name: "Soft Grey", value: "#DCD5C9" },
-    { name: "Warm Beige", value: "#E8DDD0" },
-    { name: "Blue", value: "#3B82F6" },
-    { name: "Dark Blue", value: "#1E40AF" },
-    { name: "Orange", value: "#F97316" },
-    { name: "Yellow", value: "#EAB308" },
-    { name: "Green", value: "#22C55E" },
-    { name: "Purple", value: "#A855F7" },
-    { name: "Dark Grey", value: "#4A4A4A" },
-]
+// const COLORS = [
+//     { name: "Off White", value: "#F1EADB" },
+//     { name: "Soft Grey", value: "#DCD5C9" },
+//     { name: "Warm Beige", value: "#E8DDD0" },
+//     { name: "Blue", value: "#3B82F6" },
+//     { name: "Dark Blue", value: "#1E40AF" },
+//     { name: "Orange", value: "#F97316" },
+//     { name: "Yellow", value: "#EAB308" },
+//     { name: "Green", value: "#22C55E" },
+//     { name: "Purple", value: "#A855F7" },
+//     { name: "Dark Grey", value: "#4A4A4A" },
+// ]
+
 
 const WALL_TEXTURES = [
     { id: "wall-1", name: "Cream Plaster" },
@@ -35,12 +38,31 @@ const FLOOR_TEXTURES = [
 ]
 
 export default function PropertiesPanel({
+    
     selectedItem,
     onUpdate,
     onDelete,
     roomProps,
     onUpdateRoom,
 }: PropertiesPanelProps) {
+const [textures, setTextures] = useState<any[]>([])
+
+useEffect(() => {
+
+  const loadTextures = async () => {
+    const data = await getTextures()
+    setTextures(data)
+  }
+
+  loadTextures()
+
+}, [])
+
+const allowedTextureObjects =
+  textures.filter(t =>
+    selectedItem?.allowedTextures?.includes(t._id)
+  )
+    const colors = selectedItem?.allowedColors || []
     if (!selectedItem) {
         return (
             <aside className="w-72 shrink-0 border-l h-full overflow-y-auto shadow-sm bg-bg border-border">
@@ -152,18 +174,60 @@ export default function PropertiesPanel({
                         Finishing Color
                     </h3>
                     <div className="flex flex-wrap gap-4">
-                        {COLORS.map((c) => (
+                        {colors.map((color) => (
                             <button
-                                key={c.value}
-                                className={`w-11 h-11 rounded-full border-2 transition-all cursor-pointer hover:scale-110 ${selectedItem.color === c.value ? "ring-2 ring-offset-2 ring-accent shadow-md border-white" : "shadow-sm border-black/5"
-                                    }`}
-                                style={{ backgroundColor: c.value }}
-                                onClick={() => onUpdate({ color: c.value })}
-                                title={c.name}
+                                key={color}
+                                className={`w-11 h-11 rounded-full border-2 transition-all cursor-pointer hover:scale-110 ${
+                                    selectedItem.color === color
+                                        ? "ring-2 ring-offset-2 ring-accent shadow-md border-white"
+                                        : "shadow-sm border-black/5"
+                                }`}
+                                style={{ backgroundColor: color }}
+                                onClick={() => onUpdate({ color })}
                             />
                         ))}
                     </div>
                 </div>
+
+                {/* Textures */}
+                {allowedTextureObjects.length > 0 && (
+
+                <div className="space-y-4">
+
+                <h3 className="text-[11px] font-bold uppercase tracking-widest text-text-muted">
+                    Material Texture
+                </h3>
+
+                <div className="grid grid-cols-3 gap-3">
+
+                    {allowedTextureObjects.map((texture) => (
+
+                    <button
+                        key={texture._id}
+                        onClick={() => onUpdate({ texture: texture.texture })}
+                        className={`h-16 rounded-lg overflow-hidden border transition-all ${
+                        selectedItem.texture === texture.texture
+                            ? "border-accent ring-2 ring-accent"
+                            : "border-border"
+                        }`}
+                    >
+
+                        <img
+                        src={texture.texture}
+                        className="w-full h-full object-cover"
+                        />
+
+                    </button>
+
+                    ))}
+
+                </div>
+
+                </div>
+
+                )}
+
+                
 
                 {/* Shading */}
                 <div className="space-y-4">
