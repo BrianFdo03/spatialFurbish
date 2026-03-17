@@ -30,7 +30,7 @@ function App() {
   return (
     <Routes>
       {/* Visialization Routes */}
-      <Route path="/" element={<RoomSelectionPage />} />
+      <Route path="/visualization" element={<RoomSelectionPage />} />
       <Route path="/editor" element={<FloorPlanEditor />} />
 
       {/* Auth Routes */}
@@ -39,7 +39,7 @@ function App() {
       <Route path="/logout" element={<Logout />} />
 
       {/* User Routes */}
-      <Route path="/home" element={<Home />} />
+      <Route path="/" element={<Home />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/cart" element={<Cart />} />
