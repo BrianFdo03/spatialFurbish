@@ -116,6 +116,13 @@ export function Navbar({
 
           {/* ICONS */}
           <div className="flex items-center space-x-6">
+            {/* Room Visualizer Button */}
+            <Link
+              to="/visualization"
+              className="hidden md:block px-4 py-2 text-xs font-semibold uppercase tracking-wide text-white bg-stone-900 hover:bg-stone-800 transition rounded"
+            >
+              Room Designer
+            </Link>
             {showSearch && (
               <div className="relative" ref={searchRef}>
                 <button
