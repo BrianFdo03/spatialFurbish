@@ -301,7 +301,7 @@ export function PlaceOrder() {
             email: "hello@spatialfurbish.com",
             phone: "+1 (555) 123-4567",
           },
-          copyright: "© 2025 Lumière Skincare. All rights reserved.",
+          copyright: "© 2025 SpatialFurbish. All rights reserved.",
         }}
       />
     </>

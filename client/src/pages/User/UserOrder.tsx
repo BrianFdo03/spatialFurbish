@@ -165,10 +165,10 @@ export function UserOrder() {
             { label: "New Arrivals", href: "/shop" },
           ],
           contact: {
-            email: "hello@lumiere.com",
+            email: "hello@spfurbish.com",
             phone: "+1 (555) 123-4567",
           },
-          copyright: "© 2025 Lumière Skincare. All rights reserved.",
+          copyright: "© 2025 SpatialFurbish. All rights reserved.",
         }}
       />
     </>
