@@ -1,20 +1,21 @@
 const RoomDesign = require("../models/RoomDesign");
 const SceneObject = require("../models/SceneObject");
+const mongoose = require("mongoose");
 
 // CREATE room design — optionally with initial scene objects
 const createRoomDesign = async (req, res) => {
   try {
-    const { name, roomType, objects } = req.body;
+    const { name, roomType, objects, userId } = req.body;
 
     const design = await RoomDesign.create({
       name,
       roomType,
-      user_id: req.user._id,
+      user_id: userId,
       sceneObjects: [],
     });
 
     // If scene objects were provided
-    if (objects?.length > 0) {
+    if (sceneObjects?.length > 0) {
       const newObjects = await SceneObject.insertMany(
         objects.map((obj) => ({
           productId: obj.productId,
@@ -79,7 +80,7 @@ const getRoomDesignById = async (req, res) => {
 const updateRoomDesign = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, roomType, updatedObjects } = req.body;
+    const { name, roomType, updatedSceneObjects } = req.body;
 
     const design = await RoomDesign.findById(id);
     if (!design) {
@@ -88,24 +89,61 @@ const updateRoomDesign = async (req, res) => {
 
     if (name) design.name = name;
     if (roomType) design.roomType = roomType;
-    await design.save();
+    // await design.save();
 
     // scene object updates
-    if (updatedObjects?.length > 0) {
+    if (updatedSceneObjects?.length > 0) {
+      const sceneObjectIds = [];
+
       await Promise.all(
-        updatedObjects.map((obj) =>
-          SceneObject.findByIdAndUpdate(
-            obj._id,
-            {
-              position: obj.position,
-              rotation: obj.rotation,
-              color: obj.color,
-              texture: obj.texture,
-            },
-            { new: true },
-          ),
-        ),
+        updatedSceneObjects.map(async (obj) => {
+          if (obj.sceneObjectId && obj.productId) {
+            if (obj.sceneObjectId.toString().length == 24) {
+              // If sceneObjectId is provided, update the existing scene object
+              const existingObject = await SceneObject.findById(
+                obj.sceneObjectId,
+              );
+              if (existingObject) {
+                // Update the existing scene object
+                existingObject.position = obj.position;
+                existingObject.rotation = obj.rotation;
+                existingObject.color = obj.color;
+                existingObject.texture = obj.texture;
+                existingObject.isPlaced =
+                  obj.isPlaced ?? existingObject.isPlaced;
+                await existingObject.save();
+
+                // Ensure the scene object ID is stored in the design's sceneObjects array
+                if (!design.sceneObjects.includes(existingObject._id)) {
+                  sceneObjectIds.push(existingObject._id);
+                }
+              }
+            } else {
+              console.log(
+                `Converting UUID to ObjectId for sceneObject: ${obj.sceneObjectId}`,
+              );
+              const newSceneObject = new SceneObject({
+                productId: obj.productId, // Create using the provided productId
+                position: obj.position,
+                rotation: obj.rotation,
+                color: obj.color,
+                texture: obj.texture,
+                isPlaced: obj.isPlaced,
+                roomDesignId: design._id, // Associate with the current room design
+              });
+              await newSceneObject.save(); // Save the new scene object
+              // Add the new scene object's ID to the room design's sceneObjects array
+              console.log(`new scene object :${newSceneObject._id} `);
+              sceneObjectIds.push(newSceneObject._id);
+            }
+          } else {
+            console.error(`Invalid object data: ${JSON.stringify(obj)}`);
+            res.status(500).json({ message: "Invalid object" });
+          }
+        }),
       );
+      design.sceneObjects.push(...sceneObjectIds);
+      await design.save();
     }
 
     res.json({ message: "Room design updated successfully" });
