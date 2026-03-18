@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ProductCard } from "../Dashboard/ProductCard";
 import { productAPI, categoryAPI } from "@/services/api";
 import { useSocket } from "@/context/SocketContext";
+import { getTextures } from "@/services/textureService";
 
 interface ProductGridProps {
   searchQuery?: string;
@@ -14,16 +15,20 @@ export function ProductGrid({ searchQuery = '', initialCategory }: ProductGridPr
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const { socket } = useSocket();
+  const [textures, setTextures] = useState<any[]>([]);
 
   // Fetch products and categories from API
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const [productsRes, categoriesRes] = await Promise.all([
+        const [productsRes, categoriesRes, texturesRes] = await Promise.all([
           productAPI.getAll(),
-          categoryAPI.getAll()
+          categoryAPI.getAll(),
+          getTextures()
         ]);
+
+        setTextures(texturesRes || []);
 
         setProducts(productsRes.data || []);
         setCategories(categoriesRes.data || []);
@@ -142,7 +147,11 @@ export function ProductGrid({ searchQuery = '', initialCategory }: ProductGridPr
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-x-10 gap-y-24">
           {filtered.map((product) => (
-            <ProductCard key={product._id} product={product} />
+            <ProductCard 
+              key={product._id} 
+              product={product}
+              textures={textures}
+            />
           ))}
         </div>
       )}

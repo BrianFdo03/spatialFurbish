@@ -10,9 +10,15 @@ interface Product {
   images: string[];
   stock: number;
   allowedColors?: string[];
+  allowedTextures?: string[];
 }
 
-export function ProductCard({ product }: { product: Product }) {
+interface ProductCardProps {
+  product: Product;
+  textures: any[];
+}
+
+export function ProductCard({ product, textures }: ProductCardProps) {
   const navigate = useNavigate();
   const isOutOfStock = product.stock === 0;
 
@@ -24,6 +30,10 @@ export function ProductCard({ product }: { product: Product }) {
     }).format(price);
 
   const imageUrl = product.images?.[0] || "/products/placeholder.png";
+
+  const productTextures = textures.filter((texture) =>
+    product.allowedTextures?.includes(String(texture._id))
+  );
 
   // Use product colors if available, otherwise show dummy premium colors
   const colors = product.allowedColors && product.allowedColors.length > 0
@@ -92,36 +102,55 @@ export function ProductCard({ product }: { product: Product }) {
           </span>
         </div>
 
-        {/* Colors Selection & Stock Warning */}
-        <div className="flex items-center justify-between mt-1">
+        {/* Colors */}
+        <div className="flex items-center gap-2 mt-1">
           <div
-            className="flex items-center gap-2"
-            onClick={(e) => e.stopPropagation()} // Prevent trigger navigation purely on swatches if clicked
+            className="flex -space-x-1.5 hover:space-x-1 transition-all duration-300 ease-out"
+            onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex -space-x-1.5 hover:space-x-1 transition-all duration-300 ease-out">
-              {colors.slice(0, 4).map((color, idx) => (
-                <div
-                  key={idx}
-                  className="w-5 h-5 rounded-full border-2 border-white shadow-sm ring-1 ring-black/5 transition-transform hover:scale-110 hover:z-10 cursor-pointer"
-                  style={{ backgroundColor: color }}
-                  title={`Color option ${idx + 1}`}
-                />
-              ))}
-            </div>
-            {colors.length > 4 && (
-              <span className="text-[10px] text-stone-400 font-medium tracking-wide uppercase pl-1">
-                + More
-              </span>
-            )}
+            {colors.slice(0, 4).map((color, idx) => (
+              <div
+                key={idx}
+                className="w-5 h-5 rounded-full border-2 border-white shadow-sm ring-1 ring-black/5 transition-transform hover:scale-110 hover:z-10 cursor-pointer"
+                style={{ backgroundColor: color }}
+                title={`Color option ${idx + 1}`}
+              />
+            ))}
           </div>
 
-          {!isOutOfStock && product.stock <= 10 && (
-            <span className="text-amber-700 text-[11px] font-semibold uppercase tracking-wider bg-amber-50 px-2 py-1 rounded-sm">
-              Only {product.stock} Left
+          {colors.length > 4 && (
+            <span className="text-[10px] text-stone-400 font-medium tracking-wide uppercase pl-1">
+              + More
             </span>
           )}
         </div>
-      </div>
-    </div>
-  );
-}
+
+        {/* Texture Swatches */}
+        {productTextures.length > 0 && (
+          <div
+            className="flex items-center gap-2 mt-2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {productTextures.slice(0, 3).map((texture, idx) => (
+              <img
+                key={idx}
+                src={texture.texture}
+                alt={texture.name}
+                className="w-6 h-6 rounded border border-stone-200 object-cover shadow-sm hover:scale-110 transition-transform"
+                title={texture.name}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Stock Warning */}
+        {!isOutOfStock && product.stock <= 10 && (
+          <span className="text-amber-700 text-[11px] font-semibold uppercase tracking-wider bg-amber-50 px-2 py-1 rounded-sm mt-2 inline-block">
+            Only {product.stock} Left
+          </span>
+        )}
+
+        </div>
+        </div>
+        );
+        }
