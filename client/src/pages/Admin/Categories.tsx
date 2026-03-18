@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
@@ -28,8 +27,7 @@ export function CategoriesPage() {
 
   // Form state
   const [formData, setFormData] = useState({
-    name: '',
-    description: ''
+    name: ''
   });
 
   // Search state
@@ -70,8 +68,7 @@ export function CategoriesPage() {
   // Filter categories based on search query
   const filteredCategories = categories.filter(category => {
     const searchMatch = searchQuery === '' ||
-      category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      category.description?.toLowerCase().includes(searchQuery.toLowerCase());
+      category.name.toLowerCase().includes(searchQuery.toLowerCase());
 
     return searchMatch;
   });
@@ -88,8 +85,7 @@ export function CategoriesPage() {
   // Handle cancel - reset form and close dialog
   const handleCancel = () => {
     setFormData({
-      name: '',
-      description: ''
+      name: ''
     });
     setEditingCategory(null);
     setOpen(false);
@@ -99,8 +95,7 @@ export function CategoriesPage() {
   const handleEdit = (category: any) => {
     setEditingCategory(category);
     setFormData({
-      name: category.name,
-      description: category.description
+      name: category.name
     });
     setOpen(true);
   };
@@ -111,8 +106,7 @@ export function CategoriesPage() {
 
     try {
       const categoryData = {
-        name: formData.name,
-        description: formData.description
+        name: formData.name
       };
 
       if (editingCategory) {
@@ -125,8 +119,7 @@ export function CategoriesPage() {
 
       // Reset form and close dialog
       setFormData({
-        name: '',
-        description: ''
+        name: ''
       });
       setEditingCategory(null);
       setOpen(false);
@@ -175,18 +168,7 @@ export function CategoriesPage() {
                   />
                 </div>
 
-                {/* Description Input */}
-                <div className="grid gap-2">
-                  <Label htmlFor="description" className="text-stone-700">Description</Label>
-                  <Textarea
-                    id="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    placeholder="Describe the category..."
-                    className="bg-stone-50 border-stone-200 focus-visible:ring-[#788F76] resize-none h-24"
-                    required
-                  />
-                </div>
+
               </div>
 
               <DialogFooter>
@@ -233,7 +215,6 @@ export function CategoriesPage() {
               <TableHeader className="bg-stone-50">
                 <TableRow>
                   <TableHead className="font-medium text-stone-600">Name</TableHead>
-                  <TableHead className="font-medium text-stone-600">Description</TableHead>
                   <TableHead className="font-medium text-stone-600 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -241,7 +222,7 @@ export function CategoriesPage() {
                 {/* 5. DYNAMIC DATA MAPPING */}
                 {filteredCategories.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={3} className="text-center py-8 text-stone-500">
+                    <TableCell colSpan={2} className="text-center py-8 text-stone-500">
                       {categories.length === 0 ? 'No categories found.' : 'No categories match the search query.'}
                     </TableCell>
                   </TableRow>
@@ -249,7 +230,6 @@ export function CategoriesPage() {
                   filteredCategories.map((category) => (
                     <TableRow key={category._id} className="hover:bg-stone-50/50">
                       <TableCell className="font-semibold text-stone-800">{category.name}</TableCell>
-                      <TableCell className="text-stone-600">{category.description}</TableCell>
                       <TableCell className="text-right space-x-2">
                         <Button
                           variant="ghost"
