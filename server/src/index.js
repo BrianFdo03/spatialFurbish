@@ -17,6 +17,8 @@ const dashboardRoutes = require("./routes/dashboard.route");
 const userRoutes = require("./routes/user.route");
 const profileRoutes = require("./routes/profile.routes");
 const textureRoutes = require("./routes/texture.route");
+const sceneObjectRoutes = require("./routes/sceneObject.route");
+const roomDesignRoutes = require("./routes/roomDesign.route");
 
 const connectDB = require("./config/database");
 
@@ -69,6 +71,8 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/profile", profileRoutes);
 app.use("/api/textures", textureRoutes);
+app.use("/api/sceneObject", sceneObjectRoutes);
+app.use("/api/roomDesign", roomDesignRoutes);
 
 // Test route
 app.get("/", (req, res) => {

@@ -10,15 +10,20 @@ const roomDesignSchema = new mongoose.Schema(
     },
     user_id: {
       type: mongoose.Schema.Types.ObjectId, // Reference to User collection
-      ref: "User", // Assuming the name of the User model is 'User'
+      ref: "User",
       required: true,
     },
     sceneObjects: [
       {
         type: mongoose.Schema.Types.ObjectId, // Reference to SceneObject collection
-        ref: "SceneObject", // Assuming the name of the SceneObject model is 'SceneObject'
+        ref: "SceneObject",
       },
     ],
+    roomType: {
+      type: String,
+      required: true,
+      trim: true,
+    },
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt fields
