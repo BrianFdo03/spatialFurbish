@@ -302,15 +302,16 @@ export function ProductDetails() {
         brand="SpatialFurbish" 
         data={{
           brand_description: "Visualizing Comfort, Precisely Modeled.",
+          social_links: [
+            { platform: "facebook", url: "#" },
+            { platform: "instagram", url: "#" },
+            { platform: "youtube", url: "#" },
+          ],
           links: [
             { label: "All Products", href: "#" },
             { label: "Best Sellers", href: "#" },
             { label: "New Arrivals", href: "#" },
           ],
-          contact: {
-            email: "hello@spatialfurbish.com",
-            phone: "+1 (555) 123-4567",
-          },
           copyright: "© 2026 SpatialFurbish furnitures. All rights reserved.",
         }}
       />

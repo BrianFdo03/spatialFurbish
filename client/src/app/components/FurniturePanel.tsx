@@ -3,7 +3,7 @@ import type { FurnitureDef } from "../types/furniture"
 import { getFurnitureProducts } from "@/services/productService"
 
 
-const CATEGORIES = ["All", "Chairs", "Tables", "Sofas", "Beds", "Storage", "Lighting"]
+const CATEGORIES = ["All", "Chairs", "Tables", "Sofas", "Beds", "Storage"]
 
 interface FurniturePanelProps {
     onAdd: (def: FurnitureDef) => void
@@ -25,39 +25,39 @@ export default function FurniturePanel({ onAdd }: FurniturePanelProps) {
     const [furniture, setFurniture] = useState<FurnitureDef[]>([])
 
     useEffect(() => {
-    const loadFurniture = async () => {
-        const response = await getFurnitureProducts();
+        const loadFurniture = async () => {
+            const response = await getFurnitureProducts();
 
-        const mapped = response.data.map((p: any) => ({
+            const mapped = response.data.map((p: any) => ({
 
-            id: p._id,
-            name: p.name,
-            category: p.category,
-            price: p.price,
-            image: p.images?.[0],
-            model: p.productModel,
+                id: p._id,
+                name: p.name,
+                category: p.category,
+                price: p.price,
+                image: p.images?.[0],
+                model: p.productModel,
 
-            size: p.sizes?.[0]
-                ? p.sizes[0]
-                    .replace("W:", "")
-                    .replace("H:", "")
-                    .replace("L:", "")
-                    .replace(/x/g, "×")
-                    .trim()
-                : null,
+                size: p.sizes?.[0]
+                    ? p.sizes[0]
+                        .replace("W:", "")
+                        .replace("H:", "")
+                        .replace("L:", "")
+                        .replace(/x/g, "×")
+                        .trim()
+                    : null,
 
-            // Default dimensions for 3D placement
-            w: 1.2,
-            d: 1.2,
+                // Default dimensions for 3D placement
+                w: 1.2,
+                d: 1.2,
 
-            allowedColors: p.allowedColors,
-            allowedTextures: p.allowedTextures
-        }));
+                allowedColors: p.allowedColors,
+                allowedTextures: p.allowedTextures
+            }));
 
-        setFurniture(mapped);
-    };
+            setFurniture(mapped);
+        };
 
-    loadFurniture();
+        loadFurniture();
     }, []);
 
     const filtered = furniture.filter(f => {
@@ -115,9 +115,9 @@ export default function FurniturePanel({ onAdd }: FurniturePanelProps) {
                         {/* <div className="flex items-center justify-center w-12 h-12 rounded-2xl shrink-0 shadow-sm bg-bg-deep text-text-muted"> */}
                         <div className="w-14 h-14 rounded-xl overflow-hidden bg-white border border-border shadow-sm">
                             <img
-                            src={item.image}
-                            alt={item.name}
-                            className="w-full h-full object-cover"
+                                src={item.image}
+                                alt={item.name}
+                                className="w-full h-full object-cover"
                             />
                         </div>
                         <div className="min-w-0 flex flex-col gap-[2px]">
@@ -128,13 +128,13 @@ export default function FurniturePanel({ onAdd }: FurniturePanelProps) {
                                 {item.w}m × {item.d}m
                             </p> */}
                             {item.size && (
-                            <p className="text-[11px] text-[#B0A898]">
-                                {item.size} cm
-                            </p>
+                                <p className="text-[11px] text-[#B0A898]">
+                                    {item.size} cm
+                                </p>
                             )}
 
                             <p className="text-[11px] font-semibold text-text-muted">
-                            ${item.price}
+                                ${item.price}
                             </p>
                         </div>
                     </button>

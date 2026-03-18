@@ -12,16 +12,17 @@ const data = {
   },
   brand: "SpatialFurbish",
   footer: {
-    brand_description: "Visualizing Comfort, Precisely Modeled.",
-    links: [
-      { label: "All Products", href: "#" },
-      { label: "Best Sellers", href: "#" },
-      { label: "New Arrivals", href: "#" },
+    brand_description: "Visualizing Comfort, Precisely Modeled",
+    social_links: [
+      { platform: "facebook", url: "#" },
+      { platform: "instagram", url: "#" },
+      { platform: "youtube", url: "#" }
     ],
-    contact: {
-      email: "hello@spatialfurbish.com",
-      phone: "+1 (555) 123-4567",
-    },
+    links: [
+      { label: "Privacy", href: "#" },
+      { label: "Trends", href: "#" },
+      { label: "Contact", href: "#" }
+    ],
     copyright: "© 2026 SpatialFurbish furnitures. All rights reserved.",
   },
 };
