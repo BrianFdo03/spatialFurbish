@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 const sceneObjectSchema = new mongoose.Schema({
   productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
   position: { x: Number, y: Number },
@@ -8,4 +10,4 @@ const sceneObjectSchema = new mongoose.Schema({
   roomDesignId: { type: mongoose.Schema.Types.ObjectId, ref: "RoomDesign" },
 });
 
-const SceneObject = mongoose.model("SceneObject", sceneObjectSchema);
+module.exports = mongoose.model("SceneObject", sceneObjectSchema);
