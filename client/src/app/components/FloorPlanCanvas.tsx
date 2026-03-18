@@ -188,6 +188,7 @@ export default function FloorPlanCanvas({
                     <div
                         key={item.instanceId}
                         onMouseDown={(e) => handleMouseDown(e, item)}
+                        title={item.name}
                         className={`absolute flex items-center justify-center text-[10px] font-bold transition-shadow cursor-move ${selectedId === item.instanceId ? "z-50" : "z-10"
                             }`}
                         style={{
@@ -205,7 +206,7 @@ export default function FloorPlanCanvas({
                             border: "1px solid rgba(0,0,0,0.1)"
                         }}
                     >
-                        {item.name}
+                        {item.category}
                         {selectedId === item.instanceId && (
                             <>
                                 <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white rounded-full border-2 border-blue-500 shadow-md pointer-events-none" />

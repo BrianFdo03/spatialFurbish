@@ -229,58 +229,7 @@ const allowedTextureObjects =
 
                 
 
-                {/* Shading */}
-                <div className="space-y-4">
-                    <div className="space-y-2">
-                        <div className="flex justify-between text-[11px] font-semibold text-text-muted">
-                            <span>Roughness</span>
-                            <span>0.50</span>
-                        </div>
-                        <input type="range" className="w-full accent-accent" />
-                        <div className="flex justify-between text-[10px] uppercase font-bold tracking-wider text-[#B0A898]">
-                            <span>Shiny</span>
-                            <span>Matte</span>
-                        </div>
-                    </div>
 
-                    <div className="space-y-2">
-                        <div className="flex justify-between text-[11px] font-semibold text-text-muted">
-                            <span>Metalness</span>
-                            <span>0.00</span>
-                        </div>
-                        <input type="range" className="w-full accent-accent" />
-                        <div className="flex justify-between text-[10px] uppercase font-bold tracking-wider text-[#B0A898]">
-                            <span>Non-metal</span>
-                            <span>Metal</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Scale */}
-                <div className="space-y-3">
-                    <h3 className="text-[11px] font-bold uppercase tracking-wider text-text-muted">
-                        Scale
-                    </h3>
-                    <div className="grid grid-cols-3 gap-2">
-                        {["W", "H", "D"].map((dim) => (
-                            <div key={dim} className="space-y-1">
-                                <label className="block text-[9px] text-center font-bold text-[#B0A898]">
-                                    {dim}
-                                </label>
-                                <div className="px-2 py-1.5 rounded-lg border text-center text-xs font-semibold bg-bg-deep border-border text-[#5A5248]">
-                                    1.0
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <button className="w-full py-3 text-[11px] font-bold rounded-xl border flex items-center justify-center gap-1.5 hover:bg-white transition-all cursor-pointer shadow-sm border-border text-text-muted">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                            <path d="M1 4v6h6M23 20v-6h-6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                        Reset Scale
-                    </button>
-                </div>
 
                 {/* Rotation */}
                 <div className="space-y-3">
