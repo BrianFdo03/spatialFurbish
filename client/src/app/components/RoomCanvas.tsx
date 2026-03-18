@@ -1,5 +1,4 @@
-// "use client";
-import { useMemo, Suspense, useState, useEffect } from "react";
+import { useMemo, Suspense, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, useTexture, Environment } from "@react-three/drei";
@@ -578,7 +577,7 @@ function RoomContent({
         const furnitureComponent = (
           <FurnitureItem
             key={item.instanceId}
-            modelUrl={item.model}   
+            modelUrl={item.model}
             color={item.color}
             texture={item.texture}
             position={[clampedX, -1.4, clampedZ]}
