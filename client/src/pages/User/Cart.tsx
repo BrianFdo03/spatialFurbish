@@ -6,12 +6,13 @@ import { useCart } from "@/context/CartContext";
 
 export function Cart() {
   const navigate = useNavigate();
-  const { cart, updateQuantity, removeFromCart, subtotal, shippingFee, total } = useCart();
+  const { cart, updateQuantity, removeFromCart, subtotal, shippingFee, total } =
+    useCart();
 
   return (
     <>
       <Navbar
-        brand="LUMIÈRE"
+        brand="SpatialFurbish"
         links={[
           { label: "Home", href: "/" },
           { label: "Shop", href: "/Shop" },
@@ -51,7 +52,6 @@ export function Cart() {
                       <h3 className="font-serif text-lg">{item.name}</h3>
                       <p className="text-sm text-stone-600">
                         ${item.price.toFixed(2)} each
-                        
                       </p>
 
                       {/* Selected Color */}
@@ -74,8 +74,6 @@ export function Cart() {
                           )}
                         </p>
                       )}
-
-                     
 
                       <div className="flex items-center gap-4 mt-3">
                         <button
@@ -144,7 +142,10 @@ export function Cart() {
                 <span>${total.toFixed(2)}</span>
               </div>
 
-              <button onClick={() => navigate('/place-order')} className="w-full bg-[#8a9b82] text-white py-4 text-sm uppercase tracking-wide hover:opacity-90 transition">
+              <button
+                onClick={() => navigate("/place-order")}
+                className="w-full bg-[#8a9b82] text-white py-4 text-sm uppercase tracking-wide hover:opacity-90 transition"
+              >
                 Checkout →
               </button>
 
@@ -157,21 +158,19 @@ export function Cart() {
       </main>
 
       <Footer
-        brand="LUMIÈRE"
+        brand="SpatialFurbish"
         data={{
-          brand_description:
-            "Natural skincare designed for balance, simplicity, and care.",
+          brand_description: "Visualizing Comfort, Precisely Modeled.",
           links: [
             { label: "All Products", href: "/shop" },
             { label: "Best Sellers", href: "/shop" },
             { label: "New Arrivals", href: "/shop" },
           ],
           contact: {
-            email: "hello@lumiere.com",
+            email: "hello@spfurbish.com",
             phone: "+1 (555) 123-4567",
           },
-          copyright:
-            "© 2025 Lumière Skincare. All rights reserved.",
+          copyright: "© 2025 SpatialFurbish. All rights reserved.",
         }}
       />
     </>
