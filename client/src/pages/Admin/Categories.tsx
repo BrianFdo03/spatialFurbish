@@ -137,7 +137,7 @@ export function CategoriesPage() {
       action={
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-[#788F76] hover:bg-[#667c64] text-white">
+            <Button className="bg-black hover:bg-[#D3D3D3] text-white hover:text-black shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98]">
               <Plus className="w-4 h-4 mr-2" /> Add Category
             </Button>
           </DialogTrigger>

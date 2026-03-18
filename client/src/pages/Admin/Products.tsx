@@ -393,7 +393,7 @@ export function ProductsPage() {
       };
 
       console.log("SUBMITTING COLOR IMAGES Payload:", JSON.stringify(productData.colorImages));
-      
+
       if (editingProduct) {
         // Update existing product
         await productAPI.update(editingProduct._id, productData);
@@ -424,7 +424,7 @@ export function ProductsPage() {
           }}
         >
           <DialogTrigger asChild>
-            <Button className="bg-[#788F76] hover:bg-[#667c64] text-white">
+            <Button className="bg-black hover:bg-[#D3D3D3] text-white hover:text-black shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98]">
               <Plus className="w-4 h-4 mr-2" /> Add Product
             </Button>
           </DialogTrigger>
@@ -639,45 +639,45 @@ export function ProductsPage() {
 
                   {/* Assign Images to Colors (Only visible if we have both colors and images) */}
                   {formData.allowedColors.length > 0 && formData.images.length > 0 && (
-                     <div className="mt-4 border border-stone-200 rounded-md p-4 bg-stone-50/50">
-                        <Label className="text-stone-700 block mb-3 text-sm">Assign Images to Colors</Label>
-                        <div className="flex flex-col gap-3">
-                           {formData.allowedColors.map((color) => {
-                              const currentMapping = formData.colorImages.find(c => c.color === color);
-                              
-                              return (
-                                 <div key={color} className="flex items-center gap-3">
-                                    <div 
-                                       className="w-8 h-8 rounded-full border" 
-                                       style={{ backgroundColor: color }}
-                                       title={color}
-                                    />
-                                    <select
-                                       value={currentMapping?.imageUrl || ""}
-                                       onChange={(e) => {
-                                          if (e.target.value === "") {
-                                             handleRemoveColorImageMapping(color);
-                                          } else {
-                                             handleAssignColorToImage(color, e.target.value);
-                                          }
-                                       }}
-                                       className="flex-1 bg-white border border-stone-200 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#788F76] text-stone-700"
-                                    >
-                                       <option value="">-- Select corresponding image --</option>
-                                       {formData.images.map((img, idx) => (
-                                          <option key={idx} value={img}>
-                                             Image {idx + 1}
-                                          </option>
-                                       ))}
-                                    </select>
-                                    {currentMapping && (
-                                       <img src={currentMapping.imageUrl} alt="preview" className="w-8 h-8 rounded object-cover border border-stone-200" />
-                                    )}
-                                 </div>
-                              )
-                           })}
-                        </div>
-                     </div>
+                    <div className="mt-4 border border-stone-200 rounded-md p-4 bg-stone-50/50">
+                      <Label className="text-stone-700 block mb-3 text-sm">Assign Images to Colors</Label>
+                      <div className="flex flex-col gap-3">
+                        {formData.allowedColors.map((color) => {
+                          const currentMapping = formData.colorImages.find(c => c.color === color);
+
+                          return (
+                            <div key={color} className="flex items-center gap-3">
+                              <div
+                                className="w-8 h-8 rounded-full border"
+                                style={{ backgroundColor: color }}
+                                title={color}
+                              />
+                              <select
+                                value={currentMapping?.imageUrl || ""}
+                                onChange={(e) => {
+                                  if (e.target.value === "") {
+                                    handleRemoveColorImageMapping(color);
+                                  } else {
+                                    handleAssignColorToImage(color, e.target.value);
+                                  }
+                                }}
+                                className="flex-1 bg-white border border-stone-200 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#788F76] text-stone-700"
+                              >
+                                <option value="">-- Select corresponding image --</option>
+                                {formData.images.map((img, idx) => (
+                                  <option key={idx} value={img}>
+                                    Image {idx + 1}
+                                  </option>
+                                ))}
+                              </select>
+                              {currentMapping && (
+                                <img src={currentMapping.imageUrl} alt="preview" className="w-8 h-8 rounded object-cover border border-stone-200" />
+                              )}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
                   )}
                 </div>
 
@@ -702,7 +702,7 @@ export function ProductsPage() {
                         </button>
                       </Badge>
                     ))}
-                    
+
                     {/* Add Size Input */}
                     <div className="flex items-center gap-2 mt-2 w-full">
                       <Input
@@ -1093,7 +1093,7 @@ export function ProductsPage() {
                     )}
                   </div>
                 </div>
-                
+
                 {viewingProduct.images && viewingProduct.images.length > 0 && (
                   <div>
                     <h3 className="font-medium text-stone-800 mb-2">Images</h3>
@@ -1134,15 +1134,15 @@ export function ProductsPage() {
                       {viewingProduct.stock} units available
                     </Badge>
                   </div>
-                  
+
                   <div>
                     <h3 className="font-medium text-stone-800 mb-2">Colors</h3>
                     <div className="flex flex-wrap gap-2">
                       {viewingProduct.allowedColors && viewingProduct.allowedColors.length > 0 ? (
                         viewingProduct.allowedColors.map((color: string, i: number) => (
-                          <div 
-                            key={i} 
-                            className="w-6 h-6 rounded-full border border-stone-300 shadow-sm" 
+                          <div
+                            key={i}
+                            className="w-6 h-6 rounded-full border border-stone-300 shadow-sm"
                             style={{ backgroundColor: color }}
                             title={color}
                           />

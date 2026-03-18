@@ -1,7 +1,6 @@
 import { Layout } from "@/components/Dashboard/Layout";
 import { DashboardStats } from "@/components/Dashboard/DashboardStats";
 import { RecentOrders } from "@/components/Dashboard/RecentOrders";
-import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSocket } from "@/context/SocketContext";
@@ -83,20 +82,7 @@ export function Dashboard() {
   }, [socket, isConnected]);
 
   return (
-    <Layout
-      title="Dashboard Overview"
-      action={
-        <Button asChild>
-          <a
-            href="https://docs.google.com/spreadsheets/d/1kLs8Gc7RP-zruKhptf0rkTNszhnlrdzbZ46lQApEeEU/edit?usp=sharing"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            See Messages
-          </a>
-        </Button>
-      }
-    >
+    <Layout title="Dashboard Overview">
       <DashboardStats refreshKey={refreshKey} />
       <RecentOrders refreshKey={refreshKey} />
     </Layout>
