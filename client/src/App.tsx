@@ -26,11 +26,14 @@ import { TexturesPage } from "./pages/Admin/Textures";
 import RoomSelectionPage from "./app/components/RoomSelectionPage";
 import FloorPlanEditor from "./app/components/FloorPlanEditor";
 
+import SavedRoomsPage from "./app/components/SavedRoomsPage";
+
 function App() {
   return (
     <Routes>
       {/* Visialization Routes */}
-      <Route path="/visualization" element={<RoomSelectionPage />} />
+      <Route path="/visualization" element={<SavedRoomsPage />} />
+      <Route path="/room-selection" element={<RoomSelectionPage />} />
       <Route path="/editor" element={<FloorPlanEditor />} />
 
       {/* Auth Routes */}
