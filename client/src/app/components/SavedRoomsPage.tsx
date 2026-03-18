@@ -95,6 +95,7 @@ export default function SavedRoomsPage() {
               name={room.name}
               type={room.roomType}
               createdAt={new Date(room.createdAt).toLocaleDateString()}
+              previewImage={room.previewImage}
             />
           ))
 

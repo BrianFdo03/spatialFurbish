@@ -6,9 +6,10 @@ interface RoomCardProps {
   name: string
   type: string
   createdAt: string
+  previewImage?: string
 }
 
-export default function RoomCard({ id, name, type, createdAt }: RoomCardProps) {
+export default function RoomCard({ id, name, type, createdAt, previewImage }: RoomCardProps) {
 
   const navigate = useNavigate()
   const handleDelete = async () => {
@@ -30,9 +31,20 @@ export default function RoomCard({ id, name, type, createdAt }: RoomCardProps) {
   return (
     <div className="p-6 rounded-2xl border border-border bg-white/80 backdrop-blur-sm shadow-sm transition hover:shadow-md">
 
-      <div className="w-full h-32 bg-stone-100 rounded-lg mb-4 flex items-center justify-center text-stone-400 text-sm">
-        Preview
-      </div>
+      <div className="w-full h-32 bg-stone-100 rounded-lg mb-4 overflow-hidden">
+
+      {previewImage ? (
+        <img
+          src={previewImage}
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        <div className="flex items-center justify-center h-full text-stone-400 text-sm">
+          Preview
+        </div>
+      )}
+
+    </div>
 
       <h3 className="text-lg font-bold text-text mb-1">
         {name}

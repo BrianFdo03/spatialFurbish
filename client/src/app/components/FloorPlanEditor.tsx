@@ -282,8 +282,27 @@ export default function FloorPlanEditor() {
     setSelectedId(null);
   };
 
+  const capturePreview = (): string | undefined => {
+
+    const canvas = document.querySelector("canvas")
+
+    if (!canvas) return undefined
+
+    const ctx = (canvas as HTMLCanvasElement)
+
+    try {
+      return ctx.toDataURL("image/jpeg", 0.7)
+    } catch {
+      return undefined
+    }
+
+  }
+
   // Save: creates design + scene objects if first save, updates if already saved
   const handleSave = useCallback(async () => {
+    await new Promise(requestAnimationFrame)
+
+    const previewImage = capturePreview()
     // Log the available items to the console
     setIsSaving(true);
     try {
@@ -306,6 +325,7 @@ export default function FloorPlanEditor() {
           name: title,
           roomType,
           userId: user_id,
+          previewImage: previewImage,
           sceneObjects: objectsPayload,
         });
         const newId = res.data._id;
@@ -316,6 +336,7 @@ export default function FloorPlanEditor() {
         // Subsequent save — update design name + all scene objects
         await roomDesignAPI.update(designId, {
           name: title,
+          previewImage: previewImage,
           updatedSceneObjects: items.map((item) => ({
             sceneObjectId: item.instanceId,
             productId: item.id,

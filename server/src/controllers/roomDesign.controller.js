@@ -5,12 +5,13 @@ const mongoose = require("mongoose");
 // CREATE room design — optionally with initial scene objects
 const createRoomDesign = async (req, res) => {
   try {
-    const { name, roomType, sceneObjects, userId } = req.body;
+    const { name, roomType, sceneObjects, userId, previewImage } = req.body;
 
     const design = await RoomDesign.create({
       name,
       roomType,
       user_id: userId,
+      previewImage,
       sceneObjects: [],
     });
 
@@ -85,7 +86,7 @@ const getRoomDesignById = async (req, res) => {
 const updateRoomDesign = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, roomType, updatedSceneObjects } = req.body;
+    const { name, roomType, updatedSceneObjects, previewImage } = req.body;
 
     const design = await RoomDesign.findById(id);
     if (!design) {
@@ -94,6 +95,7 @@ const updateRoomDesign = async (req, res) => {
 
     if (name) design.name = name;
     if (roomType) design.roomType = roomType;
+    if (previewImage) design.previewImage = previewImage;
     // await design.save();
 
     // scene object updates
