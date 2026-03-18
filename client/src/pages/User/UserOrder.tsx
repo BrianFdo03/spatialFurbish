@@ -157,8 +157,7 @@ export function UserOrder() {
       <Footer
         brand="SpatialFurbish"
         data={{
-          brand_description:
-            "Natural skincare designed for balance, simplicity, and care.",
+          brand_description: "Visualizing Comfort, Precisely Modeled.",
           links: [
             { label: "All Products", href: "/shop" },
             { label: "Best Sellers", href: "/shop" },
