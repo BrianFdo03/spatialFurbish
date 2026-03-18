@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { roomDesignAPI } from "@/services/roomDesign.service"
+import Swal from "sweetalert2"
 
 interface RoomCardProps {
   id: string
@@ -15,7 +16,19 @@ export default function RoomCard({ id, name, type, createdAt, previewImage }: Ro
 
   const handleDelete = async () => {
 
-    if(!confirm("Delete this design?")) return
+    const result = await Swal.fire({
+      title: "Delete Design?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#1c1917",
+      cancelButtonColor: "#9ca3af",
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+      reverseButtons: true
+    })
+
+    if (!result.isConfirmed) return
 
     try{
       await roomDesignAPI.delete(id)
