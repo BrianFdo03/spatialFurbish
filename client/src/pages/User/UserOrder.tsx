@@ -157,18 +157,17 @@ export function UserOrder() {
       <Footer
         brand="SpatialFurbish"
         data={{
-          brand_description:
-            "Natural skincare designed for balance, simplicity, and care.",
+          brand_description: "Visualizing Comfort, Precisely Modeled.",
           links: [
             { label: "All Products", href: "/shop" },
             { label: "Best Sellers", href: "/shop" },
             { label: "New Arrivals", href: "/shop" },
           ],
           contact: {
-            email: "hello@lumiere.com",
+            email: "hello@spfurbish.com",
             phone: "+1 (555) 123-4567",
           },
-          copyright: "© 2025 Lumière Skincare. All rights reserved.",
+          copyright: "© 2025 SpatialFurbish. All rights reserved.",
         }}
       />
     </>

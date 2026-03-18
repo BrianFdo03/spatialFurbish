@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Armchair, Utensils, BedDouble, Presentation, Wrench, ArrowRight } from "lucide-react";
 import { productAPI } from "@/services/api";
 import { useSocket } from "@/context/SocketContext";
+import { getTextures } from "@/services/textureService";
+
 const data = {
   brand: "SpatialFurbish",
   navigation: [
@@ -77,7 +79,7 @@ const data = {
 };
 
 // Map string icon names to actual components
-const iconMap: Record<string, React.ElementType> = {
+const iconMap: Record<string, React.ComponentType<any>> = {
   Armchair,
   Utensils,
   BedDouble,
@@ -90,14 +92,19 @@ export function Home() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const { socket } = useSocket();
+  const [textures, setTextures] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const response = await productAPI.getAll();
-        // Store all products
-        setProducts(response.data || []);
+        const [productsRes, texturesRes] = await Promise.all([
+          productAPI.getAll(),
+          getTextures()
+        ]);
+
+        setProducts(productsRes.data || []);
+        setTextures(texturesRes || []);
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
@@ -278,12 +285,16 @@ export function Home() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product._id} product={product} />
-              ))}
-            </div>
-          )}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {filteredProducts.map((product) => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                textures={textures}
+              />
+            ))}
+          </div>
+        )}
 
           {!searchQuery && (
             <div className="mt-8 text-center md:hidden">

@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+
 import { Dashboard } from "./pages/Admin/Dashboard";
 import { OrdersPage } from "./pages/Admin/Orders";
 import { CategoriesPage } from "./pages/Admin/Categories";
@@ -22,10 +23,19 @@ import { Contact } from "./pages/User/Contact";
 import Profile from "./pages/User/Profile"; //Ravindu
 import { ProductDetails } from "./pages/User/ProductDetails";
 import { TexturesPage } from "./pages/Admin/Textures";
+import RoomSelectionPage from "./app/components/RoomSelectionPage";
+import FloorPlanEditor from "./app/components/FloorPlanEditor";
 
-export default function App() {
+import SavedRoomsPage from "./app/components/SavedRoomsPage";
+
+function App() {
   return (
     <Routes>
+      {/* Visialization Routes */}
+      <Route path="/visualization" element={<SavedRoomsPage />} />
+      <Route path="/room-selection" element={<RoomSelectionPage />} />
+      <Route path="/editor" element={<FloorPlanEditor />} />
+
       {/* Auth Routes */}
       <Route path="/signup" element={<SignupPage />} />
       <Route path="/login" element={<LoginPage />} />
@@ -97,10 +107,8 @@ export default function App() {
           </ProtectedRoute>
         }
       />
-
-      {/* discussed not to add reviews page now */}
-      {/* <Route path="/reviews" element={<ReviewsPage />} /> */}
-      {/* <Route path="/payments" element={<PaymentsPage />} /> */}
     </Routes>
   );
 }
+
+export default App;

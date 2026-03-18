@@ -1,20 +1,27 @@
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { useCart } from "@/context/CartContext";
-import { ShoppingBag } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { useCart } from "@/context/CartContext";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { ShoppingBag } from "lucide-react";
 
-interface ProductCardProps {
-  product: {
-    _id: string;
-    name: string;
-    category: string;
-    price: number;
-    images: string[];
-    stock?: number;
-  };
+interface Product {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  images: string[];
+  stock: number;
+  allowedColors?: string[];
+  allowedTextures?: string[];
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+interface ProductCardProps {
+  product: Product;
+  textures?: any[];
+}
+
+export function ProductCard({ product, textures }: ProductCardProps) {
   const { addToCart } = useCart();
   const navigate = useNavigate();
 
@@ -25,6 +32,10 @@ export function ProductCard({ product }: ProductCardProps) {
     }).format(price);
 
   const imageUrl = product.images?.[0] || "/products/placeholder.png";
+
+const productTextures = (textures || []).filter((texture) =>
+  product.allowedTextures?.includes(String(texture._id))
+);
 
   const isOutOfStock = product.stock === 0;
   const isLowStock = product.stock !== undefined && product.stock <= 10;
@@ -105,6 +116,57 @@ export function ProductCard({ product }: ProductCardProps) {
                   : "In stock"}
             </span>
           )}
+        </div>
+        {/* COLORS + TEXTURES CONTAINER */}
+        <div className="grid grid-cols-2 gap-4 w-full mt-2">
+
+          {/* COLORS */}
+          {product.allowedColors && product.allowedColors.length > 0 && (
+            <div
+              className="flex flex-col gap-1"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span className="text-[10px] uppercase tracking-wide text-stone-400 font-medium">
+                Colors
+              </span>
+
+              <div className="flex flex-wrap gap-1 max-w-[80px]">
+                {product.allowedColors.map((color, idx) => (
+                  <span
+                    key={idx}
+                    className="w-4 h-4 rounded-full border border-white shadow-sm ring-1 ring-black/10 hover:scale-110 transition-transform"
+                    style={{ backgroundColor: color }}
+                    title={color}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* TEXTURES */}
+          {productTextures.length > 0 && (
+            <div
+              className="flex flex-col items-end gap-1"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span className="text-[10px] uppercase tracking-wide text-stone-400 font-medium">
+                Textures
+              </span>
+
+              <div className="flex flex-wrap gap-1 max-w-[80px] justify-end">
+                {productTextures.map((texture, idx) => (
+                  <img
+                    key={idx}
+                    src={texture.texture}
+                    alt={texture.name}
+                    className="w-5 h-5 rounded border border-stone-200 object-cover hover:scale-110 transition-transform"
+                    title={texture.name}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
         </div>
       </CardFooter>
     </Card>
