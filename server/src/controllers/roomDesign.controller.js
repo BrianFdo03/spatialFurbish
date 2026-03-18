@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 // CREATE room design — optionally with initial scene objects
 const createRoomDesign = async (req, res) => {
   try {
-    const { name, roomType, objects, userId } = req.body;
+    const { name, roomType, sceneObjects, userId } = req.body;
 
     const design = await RoomDesign.create({
       name,
@@ -17,7 +17,7 @@ const createRoomDesign = async (req, res) => {
     // If scene objects were provided
     if (sceneObjects?.length > 0) {
       const newObjects = await SceneObject.insertMany(
-        objects.map((obj) => ({
+        sceneObjects.map((obj) => ({
           productId: obj.productId,
           position: obj.position,
           rotation: obj.rotation,
@@ -42,16 +42,21 @@ const createRoomDesign = async (req, res) => {
 // GET all designs for logged-in user
 const getUserDesigns = async (req, res) => {
   try {
-    const designs = await RoomDesign.find({
-      user_id: req.user._id,
-    }).sort({ createdAt: -1 });
 
-    if (designs.length === 0) {
-      return res.status(404).json({ message: "No designs found" });
+    const { userId } = req.query;
+
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
     }
 
+    const designs = await RoomDesign.find({
+      user_id: userId,
+    }).sort({ createdAt: -1 });
+
     res.json(designs);
+
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Failed to fetch designs" });
   }
 };

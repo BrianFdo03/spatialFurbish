@@ -1,24 +1,32 @@
 import { useNavigate } from "react-router-dom"
 import RoomCard from "./RoomCard"
+import { useEffect, useState } from "react"
+import { roomDesignAPI } from "@/services/roomDesign.service"
 
 export default function SavedRoomsPage() {
 
   const navigate = useNavigate()
+  const [rooms, setRooms] = useState<any[]>([])
 
-  const dummyRooms = [
-  {
-    id: "1",
-    name: "Living Room Design",
-    type: "Square",
-    createdAt: "Today"
-  },
-  {
-    id: "2",
-    name: "Bedroom Layout",
-    type: "Rectangle",
-    createdAt: "Yesterday"
-  }
-]
+  useEffect(() => {
+
+    const loadRooms = async () => {
+      try {
+
+        const user = JSON.parse(localStorage.getItem("user") ?? "{}")
+
+        const res = await roomDesignAPI.getUserDesigns(user._id)
+
+        setRooms(res.data)
+
+      } catch (err) {
+        console.error("Failed to load rooms", err)
+      }
+    }
+
+    loadRooms()
+
+  }, [])
 
   return (
     <div className="w-screen min-h-screen flex flex-col items-center pt-36 relative bg-bg">
@@ -61,38 +69,38 @@ export default function SavedRoomsPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl w-full px-8 relative z-10">
 
-  {dummyRooms.length === 0 ? (
+        {rooms.length === 0 ? (
 
-    <div className="col-span-3 flex flex-col items-center justify-center p-20 border border-border rounded-2xl bg-white/80 backdrop-blur-sm shadow-sm text-center">
+          <div className="col-span-3 flex flex-col items-center justify-center p-20 border border-border rounded-2xl bg-white/80 backdrop-blur-sm shadow-sm text-center">
 
-      <p className="text-lg text-text-muted mb-6">
-        No saved rooms yet
-      </p>
+            <p className="text-lg text-text-muted mb-6">
+              No saved rooms yet
+            </p>
 
-      <button
-        onClick={() => navigate("/room-selection")}
-        className="px-6 py-2.5 text-xs font-semibold uppercase tracking-wide text-white bg-stone-900 hover:bg-stone-800 transition rounded-md shadow-sm"
-      >
-        Create Your First Room
-      </button>
+            <button
+              onClick={() => navigate("/room-selection")}
+              className="px-6 py-2.5 text-xs font-semibold uppercase tracking-wide text-white bg-stone-900 hover:bg-stone-800 transition rounded-md shadow-sm"
+            >
+              Create Your First Room
+            </button>
 
-    </div>
+          </div>
 
-  ) : (
+        ) : (
 
-    dummyRooms.map((room) => (
-      <RoomCard
-        key={room.id}
-        id={room.id}
-        name={room.name}
-        type={room.type}
-        createdAt={room.createdAt}
-      />
-    ))
+          rooms.map((room) => (
+            <RoomCard
+              key={room._id}
+              id={room._id}
+              name={room.name}
+              type={room.roomType}
+              createdAt={new Date(room.createdAt).toLocaleDateString()}
+            />
+          ))
 
-  )}
+        )}
 
-</div>
+      </div>
 
     </div>
   )

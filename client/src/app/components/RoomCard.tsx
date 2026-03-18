@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom"
+import { roomDesignAPI } from "@/services/roomDesign.service"
 
 interface RoomCardProps {
   id: string
@@ -10,6 +11,21 @@ interface RoomCardProps {
 export default function RoomCard({ id, name, type, createdAt }: RoomCardProps) {
 
   const navigate = useNavigate()
+  const handleDelete = async () => {
+
+  if(!confirm("Delete this design?")) return
+
+  try{
+
+    await roomDesignAPI.delete(id)
+
+    window.location.reload()
+
+  }catch(err){
+    console.error("Delete failed", err)
+  }
+
+}
 
   return (
     <div className="p-6 rounded-2xl border border-border bg-white/80 backdrop-blur-sm shadow-sm transition hover:shadow-md">
@@ -33,13 +49,14 @@ export default function RoomCard({ id, name, type, createdAt }: RoomCardProps) {
       <div className="flex gap-2">
 
         <button
-          onClick={() => navigate(`/editor?id=${id}`)}
+          onClick={() => navigate(`/editor?room=${type}&id=${id}`)}
           className="px-3 py-1.5 text-xs font-semibold text-white bg-stone-900 hover:bg-stone-800 rounded"
         >
           Open
         </button>
 
         <button
+          onClick={handleDelete}
           className="px-3 py-1.5 text-xs font-semibold border border-border rounded hover:bg-stone-100"
         >
           Delete

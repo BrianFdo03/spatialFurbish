@@ -18,7 +18,8 @@ export const roomDesignAPI = {
   create: (data: CreateRoomDesignPayload) =>
     axiosInstance.post("/roomDesign", data),
 
-  getUserDesigns: () => axiosInstance.get("/roomDesign"),
+  getUserDesigns: (userId: string) =>
+  axiosInstance.get(`/roomDesign?userId=${userId}`),
 
   getById: (id: string) => axiosInstance.get(`/roomDesign/${id}`),
 
