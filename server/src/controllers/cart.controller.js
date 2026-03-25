@@ -23,7 +23,8 @@ const addToCart = async (req, res) => {
     const userId = req.user._id;
     const { productId, quantity, texture, color } = req.body;
 
-    const product = await Product.findById(productId);
+    const product =
+      await Product.findById(productId).populate("allowedTextures");
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
@@ -39,6 +40,14 @@ const addToCart = async (req, res) => {
     }
 
     const requestedQty = quantity || 1;
+
+    // Define your fallbacks
+    const fallbackColor = product.allowedColors?.[0] || "#3B82F6";
+    const fallbackTexture = product.allowedTextures?.[0]?.texture || ""; // Accessing the .texture field
+
+    const finalColor = color || fallbackColor;
+    const finalTexture = texture?.texture ? texture.texture : fallbackTexture;
+
     // Match item by both productId and optionally the chosen texture and color
     const itemIndex = cart.items.findIndex(
       (p) =>
@@ -85,11 +94,12 @@ const addToCart = async (req, res) => {
       const sceneObject = new SceneObject({
         productId: product._id,
         position: { x: 0, y: 0 }, // default position
-        angle: 0, // default rotation
-        color: color || null,
-        texture: texture ? texture.name || texture : null,
+        rotation: 0, // default rotation
+        color: finalColor,
+        texture: finalTexture,
         isPlaced: false,
         roomDesignId: null,
+        userId: userId, // Only for cart added items, not associated with any design
       });
 
       await sceneObject.save();

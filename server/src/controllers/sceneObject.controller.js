@@ -11,7 +11,7 @@ const addSceneObjects = async (req, res) => {
       objects.map((obj) => ({
         productId: obj.productId,
         position: obj.position,
-        rotation: obj.rotation,
+        rotation: obj.rotation ?? 0,
         color: obj.color,
         texture: obj.texture,
         isPlaced: true,
@@ -102,9 +102,30 @@ const deleteSceneObject = async (req, res) => {
   }
 };
 
+const getUnplacedSceneObjects = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
+    }
+
+    const objects = await SceneObject.find({
+      userId: userId,
+      isPlaced: false,
+      $or: [{ roomDesignId: { $exists: false } }, { roomDesignId: null }],
+    }).populate("productId");
+
+    res.json(objects);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to fetch cart items" });
+  }
+};
+
 module.exports = {
   addSceneObjects,
   addSceneObject,
   updateSceneObject,
   deleteSceneObject,
+  getUnplacedSceneObjects,
 };

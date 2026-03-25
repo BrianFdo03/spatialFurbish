@@ -1,132 +1,3 @@
-// import { useState, useReducer } from "react"
-// import { useSearchParams } from "react-router-dom"
-// import EditorTopBar from "./EditorTopBar"
-// import FurniturePanel from "./FurniturePanel"
-// import PropertiesPanel from "./PropertiesPanel"
-// import type { FurnitureDef, PlacedItem } from "../types/furniture"
-// import type { RoomProps } from "../types/room"
-// import FloorPlanCanvas from "./FloorPlanCanvas"
-// import RoomCanvas from "./RoomCanvas"
-// import type { RoomType } from "./RoomSelector"
-
-// type Action =
-//     | { type: 'ADD_ITEM', payload: FurnitureDef }
-//     | { type: 'UPDATE_ITEM', payload: { id: string, updates: Partial<PlacedItem> } }
-//     | { type: 'DELETE_ITEM', payload: string }
-//     // | { type: "LOAD_ITEMS"; payload: PlacedItem[] }
-//     | { type: 'UNDO' }
-
-// function reducer(state: PlacedItem[], action: Action): PlacedItem[] {
-//     switch (action.type) {
-//         case 'ADD_ITEM': {
-//             return [...state, {
-//                 ...action.payload,
-//                 instanceId: crypto.randomUUID(),
-//                 x: 100, // default spawn pos
-//                 y: 100,
-//                 rotation: 0,
-//                 color: action.payload.allowedColors?.[0] ?? "#3B82F6", // TODO: Need to have color selected by user when cart item is added
-//             }]
-//         }
-//         case 'UPDATE_ITEM':
-//             return state.map(item =>
-//                 item.instanceId === action.payload.id
-//                     ? { ...item, ...action.payload.updates }
-//                     : item
-//             )
-//         case 'DELETE_ITEM':
-//             return state.filter(item => item.instanceId !== action.payload)
-//         // case "LOAD_ITEMS":
-//         //     return action.payload
-//         default:
-//             return state
-//     }
-// }
-
-// export default function FloorPlanEditor() {
-//     const [searchParams] = useSearchParams()
-//     const [view, setView] = useState<"2d" | "3d">("2d")
-//     const [title, setTitle] = useState("Untitled Design")
-//     const [items, dispatch] = useReducer(reducer, [])
-//     const [selectedId, setSelectedId] = useState<string | null>(null)
-//     const [roomProps, setRoomProps] = useState<RoomProps>({
-//         wallColor: "#ffffff",
-//         wallTexture: "wall-1",
-//         floorColor: "#ffffff",
-//         floorTexture: "floor-1",
-//         wallHeight: 3,
-//         lightsOn: true,
-//     })
-
-//     const rawRoom = searchParams.get("room") ?? "square"
-//     const roomType = (["square", "rectangle", "l-shape", "u-shape", "t-shape", "circular"].includes(rawRoom) ? rawRoom : "square") as RoomType
-
-//     const selectedItem = items.find(i => i.instanceId === selectedId) || null
-
-//     const handleAdd = (def: FurnitureDef) => {
-//         dispatch({ type: 'ADD_ITEM', payload: def })
-//     }
-
-//     const handleUpdate = (id: string, updates: Partial<PlacedItem>) => {
-//         dispatch({ type: 'UPDATE_ITEM', payload: { id, updates } })
-//     }
-
-//     const handleDelete = (id: string) => {
-//         dispatch({ type: 'DELETE_ITEM', payload: id })
-//         setSelectedId(null)
-//     }
-
-//     return (
-//         <div className="flex flex-col h-screen w-screen overflow-hidden bg-bg text-text">
-//             <EditorTopBar
-//                 title={title}
-//                 onTitleChange={setTitle}
-//                 view={view}
-//                 onViewChange={setView}
-//                 onUndo={() => { }}
-//                 onSave={() => alert("Design saved locally!")}
-//             />
-
-//             <div className="flex flex-1 overflow-hidden">
-//                 <FurniturePanel onAdd={handleAdd} />
-
-//                 {view === "2d" ? (
-//                     <FloorPlanCanvas
-//                         roomType={roomType}
-//                         roomProps={roomProps}
-//                         items={items}
-//                         selectedId={selectedId}
-//                         onSelectItem={setSelectedId}
-//                         onUpdateItem={handleUpdate}
-//                     />
-//                 ) : (
-//                     <div className="flex-1 relative">
-//                         <RoomCanvas
-//                             roomProps={roomProps}
-//                             items={items}
-//                             selectedId={selectedId}
-//                             onSelectItem={setSelectedId}
-//                             onUpdateItem={handleUpdate}
-//                         />
-//                         <div className="absolute top-4 left-4 z-10 p-3 bg-white/80 backdrop-blur-md rounded-xl border border-border shadow-lg max-w-[200px]">
-//                             <p className="text-xs font-bold text-accent mb-1 uppercase tracking-wider">3D Real-time View</p>
-//                             <p className="text-[10px] text-text-muted">Interactive walk-through of your current layout.</p>
-//                         </div>
-//                     </div>
-//                 )}
-
-//                 <PropertiesPanel
-//                     selectedItem={selectedItem}
-//                     onUpdate={(updates) => selectedId && handleUpdate(selectedId, updates)}
-//                     onDelete={handleDelete}
-//                     roomProps={roomProps}
-//                     onUpdateRoom={(updates) => setRoomProps(prev => ({ ...prev, ...updates }))}
-//                 />
-//             </div>
-//         </div>
-//     )
-// }
-
 import { useState, useReducer, useEffect, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import EditorTopBar from "./EditorTopBar";
@@ -225,14 +96,39 @@ export default function FloorPlanEditor() {
 
     const loadDesign = async () => {
       try {
-        const res = await roomDesignAPI.getById(loadId);
-        const design = res.data;
+        const [designRes, cartRes] = await Promise.all([
+          roomDesignAPI.getById(loadId),
+          sceneObjectAPI.getUnplaced(user_id),
+        ]);
+
+        const design = designRes.data;
+        const cartObjects = cartRes.data;
 
         setDesignId(design._id);
         setTitle(design.name);
 
-        // Map DB scene objects back to PlacedItem shape
-        const loaded: PlacedItem[] = design.sceneObjects.map((obj: any) => ({
+        const placed: PlacedItem[] = design.sceneObjects.map((obj: any) => ({
+          instanceId: obj._id,
+          id: obj.productId?._id ?? "",
+          name: obj.productId?.name ?? "Item",
+          category: obj.productId?.category ?? "",
+          price: obj.productId?.price ?? 0,
+          image: obj.productId?.images?.[0] ?? "",
+          model: obj.productId?.productModel ?? "",
+          w: 1.2,
+          d: 1.2,
+          size: "",
+          allowedColors: obj.productId?.allowedColors ?? [],
+          allowedTextures: obj.productId?.allowedTextures ?? [],
+          x: obj.position?.x ?? 100,
+          y: obj.position?.y ?? 100,
+          rotation: obj.position?.rotation ?? 0,
+          color: obj.color ?? "#ffffff",
+          texture: obj.texture,
+          isPlaced: obj.isPlaced ?? true,
+        }));
+
+        const cart: PlacedItem[] = cartObjects.map((obj: any) => ({
           instanceId: obj._id, // use DB _id as instanceId so updates go to right record
           id: obj.productId?._id ?? "",
           name: obj.productId?.name ?? "Item",
@@ -250,9 +146,11 @@ export default function FloorPlanEditor() {
           rotation: obj.position?.rotation ?? 0,
           color: obj.color ?? "#ffffff",
           texture: obj.texture,
+          isPlaced: obj.isPlaced ?? false,
+          cartProduct: true,
         }));
 
-        dispatch({ type: "LOAD_ITEMS", payload: loaded });
+        dispatch({ type: "LOAD_ITEMS", payload: [...placed, ...cart] });
       } catch (err) {
         console.error("Failed to load design", err);
       }
@@ -283,26 +181,24 @@ export default function FloorPlanEditor() {
   };
 
   const capturePreview = (): string | undefined => {
+    const canvas = document.querySelector("canvas");
 
-    const canvas = document.querySelector("canvas")
+    if (!canvas) return undefined;
 
-    if (!canvas) return undefined
-
-    const ctx = (canvas as HTMLCanvasElement)
+    const ctx = canvas as HTMLCanvasElement;
 
     try {
-      return ctx.toDataURL("image/jpeg", 0.7)
+      return ctx.toDataURL("image/jpeg", 0.7);
     } catch {
-      return undefined
+      return undefined;
     }
-
-  }
+  };
 
   // Save: creates design + scene objects if first save, updates if already saved
   const handleSave = useCallback(async () => {
-    await new Promise(requestAnimationFrame)
+    await new Promise(requestAnimationFrame);
 
-    const previewImage = capturePreview()
+    const previewImage = capturePreview();
     // Log the available items to the console
     setIsSaving(true);
     try {
