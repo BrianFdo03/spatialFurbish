@@ -1,25 +1,19 @@
 import { axiosInstance } from "@/lib/axios";
 import type { SceneObjectPayload } from "./sceneObject.service";
 
-// export interface CreateRoomDesignPayload {
-//   name: string;
-//   userId: string;
-//   roomType: string;
-//   sceneObjects?: SceneObjectPayload[];
-// }
 export interface CreateRoomDesignPayload {
-  name: string
-  userId: string
-  roomType: string
-  previewImage?: string
-  sceneObjects?: SceneObjectPayload[]
+  name: string;
+  userId: string;
+  roomType: string;
+  previewImage?: string;
+  sceneObjects?: SceneObjectPayload[];
 }
 
 export interface UpdateRoomDesignPayload {
-  name?: string
-  roomType?: string
-  previewImage?: string
-  updatedSceneObjects?: SceneObjectPayload[]
+  name?: string;
+  roomType?: string;
+  previewImage?: string;
+  updatedSceneObjects?: SceneObjectPayload[];
 }
 
 export const roomDesignAPI = {
@@ -27,7 +21,7 @@ export const roomDesignAPI = {
     axiosInstance.post("/roomDesign", data),
 
   getUserDesigns: (userId: string) =>
-  axiosInstance.get(`/roomDesign?userId=${userId}`),
+    axiosInstance.get(`/roomDesign?userId=${userId}`),
 
   getById: (id: string) => axiosInstance.get(`/roomDesign/${id}`),
 

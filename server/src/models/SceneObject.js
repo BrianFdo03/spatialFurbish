@@ -8,6 +8,7 @@ const sceneObjectSchema = new mongoose.Schema({
   texture: String,
   isPlaced: Boolean,
   roomDesignId: { type: mongoose.Schema.Types.ObjectId, ref: "RoomDesign" },
+  userId: String,
 });
 
 module.exports = mongoose.model("SceneObject", sceneObjectSchema);
