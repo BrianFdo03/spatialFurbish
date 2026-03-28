@@ -5,12 +5,14 @@ export interface CreateRoomDesignPayload {
   name: string;
   userId: string;
   roomType: string;
+  previewImage?: string;
   sceneObjects?: SceneObjectPayload[];
 }
 
 export interface UpdateRoomDesignPayload {
   name?: string;
   roomType?: string;
+  previewImage?: string;
   updatedSceneObjects?: SceneObjectPayload[];
 }
 
@@ -18,7 +20,8 @@ export const roomDesignAPI = {
   create: (data: CreateRoomDesignPayload) =>
     axiosInstance.post("/roomDesign", data),
 
-  getUserDesigns: () => axiosInstance.get("/roomDesign"),
+  getUserDesigns: (userId: string) =>
+    axiosInstance.get(`/roomDesign?userId=${userId}`),
 
   getById: (id: string) => axiosInstance.get(`/roomDesign/${id}`),
 

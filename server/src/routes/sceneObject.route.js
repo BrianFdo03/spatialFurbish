@@ -3,6 +3,7 @@ const {
   addSceneObject,
   updateSceneObject,
   deleteSceneObject,
+  getUnplacedSceneObjects,
 } = require("../controllers/sceneObject.controller");
 const express = require("express");
 
@@ -12,5 +13,6 @@ router.post("/:designId/objects", addSceneObjects);
 router.post("/:designId/object", addSceneObject);
 router.put("/:designId/object/:objectId", updateSceneObject);
 router.delete("/:designId/objects/:objectId", deleteSceneObject);
+router.get("/unplaced/:userId", getUnplacedSceneObjects);
 
 module.exports = router;

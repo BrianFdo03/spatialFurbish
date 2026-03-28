@@ -164,12 +164,12 @@ export function Cart() {
           social_links: [
             { platform: "facebook", url: "#" },
             { platform: "instagram", url: "#" },
-            { platform: "youtube", url: "#" }
+            { platform: "youtube", url: "#" },
           ],
           links: [
             { label: "Privacy", href: "#" },
             { label: "Trends", href: "#" },
-            { label: "Contact", href: "#" }
+            { label: "Contact", href: "#" },
           ],
           copyright: "© 2026 SpatialFurbish furnitures. All rights reserved.",
         }}

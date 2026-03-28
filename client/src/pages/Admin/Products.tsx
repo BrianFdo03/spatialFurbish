@@ -243,7 +243,9 @@ export function ProductsPage() {
     setFormData((prev) => ({
       ...prev,
       allowedColors: prev.allowedColors.filter((_, i) => i !== index),
-      colorImages: prev.colorImages.filter((mapping) => mapping.color !== colorToRemove),
+      colorImages: prev.colorImages.filter(
+        (mapping) => mapping.color !== colorToRemove,
+      ),
     }));
   };
 
@@ -251,7 +253,9 @@ export function ProductsPage() {
   const handleAssignColorToImage = (color: string, imageUrl: string) => {
     setFormData((prev) => {
       // Remove any existing mapping for this color
-      const filtered = prev.colorImages.filter((mapping) => mapping.color !== color);
+      const filtered = prev.colorImages.filter(
+        (mapping) => mapping.color !== color,
+      );
       return {
         ...prev,
         colorImages: [...filtered, { color, imageUrl }],
@@ -262,7 +266,9 @@ export function ProductsPage() {
   const handleRemoveColorImageMapping = (color: string) => {
     setFormData((prev) => ({
       ...prev,
-      colorImages: prev.colorImages.filter((mapping) => mapping.color !== color),
+      colorImages: prev.colorImages.filter(
+        (mapping) => mapping.color !== color,
+      ),
     }));
   };
 
@@ -712,7 +718,9 @@ export function ProductsPage() {
                         placeholder="W (e.g. 10)"
                         className="bg-stone-50 border-stone-200 focus-visible:ring-[#788F76] h-8 text-sm w-24"
                       />
-                      <span className="text-stone-500 text-sm font-medium">x</span>
+                      <span className="text-stone-500 text-sm font-medium">
+                        x
+                      </span>
                       <Input
                         value={newSizeH}
                         onChange={(e) => setNewSizeH(e.target.value)}
@@ -720,7 +728,9 @@ export function ProductsPage() {
                         placeholder="H (e.g. 20)"
                         className="bg-stone-50 border-stone-200 focus-visible:ring-[#788F76] h-8 text-sm w-24"
                       />
-                      <span className="text-stone-500 text-sm font-medium">x</span>
+                      <span className="text-stone-500 text-sm font-medium">
+                        x
+                      </span>
                       <Input
                         value={newSizeL}
                         onChange={(e) => setNewSizeL(e.target.value)}
@@ -983,15 +993,18 @@ export function ProductsPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex -space-x-1">
-                          {product.allowedColors?.map((color: string, i: number) => (
-                            <div
-                              key={i}
-                              className="w-5 h-5 rounded-full border border-stone-200 shadow-sm"
-                              style={{ backgroundColor: color }}
-                              title={color}
-                            />
-                          ))}
-                          {(!product.allowedColors || product.allowedColors.length === 0) && (
+                          {product.allowedColors?.map(
+                            (color: string, i: number) => (
+                              <div
+                                key={i}
+                                className="w-5 h-5 rounded-full border border-stone-200 shadow-sm"
+                                style={{ backgroundColor: color }}
+                                title={color}
+                              />
+                            ),
+                          )}
+                          {(!product.allowedColors ||
+                            product.allowedColors.length === 0) && (
                             <span className="text-xs text-stone-400">None</span>
                           )}
                         </div>
@@ -1066,7 +1079,10 @@ export function ProductsPage() {
       </Card>
 
       {/* View Product Modal */}
-      <Dialog open={!!viewingProduct} onOpenChange={(isOpen) => !isOpen && setViewingProduct(null)}>
+      <Dialog
+        open={!!viewingProduct}
+        onOpenChange={(isOpen) => !isOpen && setViewingProduct(null)}
+      >
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-white">
           <DialogHeader>
             <DialogTitle className="text-2xl font-serif text-stone-900">
@@ -1099,8 +1115,15 @@ export function ProductsPage() {
                     <h3 className="font-medium text-stone-800 mb-2">Images</h3>
                     <div className="grid grid-cols-4 gap-2">
                       {viewingProduct.images.map((img: string, i: number) => (
-                        <div key={i} className="aspect-square rounded border border-stone-200 overflow-hidden">
-                          <img src={img} alt={`Product ${i}`} className="w-full h-full object-cover" />
+                        <div
+                          key={i}
+                          className="aspect-square rounded border border-stone-200 overflow-hidden"
+                        >
+                          <img
+                            src={img}
+                            alt={`Product ${i}`}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                       ))}
                     </div>
@@ -1111,8 +1134,13 @@ export function ProductsPage() {
               {/* Right Column: Information */}
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-stone-900 mb-1">{viewingProduct.name}</h2>
-                  <Badge variant="secondary" className="bg-stone-100 text-stone-700 hover:bg-stone-200 font-normal">
+                  <h2 className="text-2xl font-bold text-stone-900 mb-1">
+                    {viewingProduct.name}
+                  </h2>
+                  <Badge
+                    variant="secondary"
+                    className="bg-stone-100 text-stone-700 hover:bg-stone-200 font-normal"
+                  >
                     {viewingProduct.category || "General"}
                   </Badge>
                   <span className="text-xl font-medium text-[#788F76] ml-4 block mt-2">
@@ -1121,7 +1149,9 @@ export function ProductsPage() {
                 </div>
 
                 <div>
-                  <h3 className="font-medium text-stone-800 mb-1">Description</h3>
+                  <h3 className="font-medium text-stone-800 mb-1">
+                    Description
+                  </h3>
                   <p className="text-sm text-stone-600 leading-relaxed whitespace-pre-wrap">
                     {viewingProduct.description}
                   </p>
@@ -1129,8 +1159,13 @@ export function ProductsPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <h3 className="font-medium text-stone-800 mb-2">Stock Level</h3>
-                    <Badge variant="outline" className={`${viewingProduct.stock < 50 ? 'border-red-200 text-red-700' : 'border-emerald-200 text-emerald-700'}`}>
+                    <h3 className="font-medium text-stone-800 mb-2">
+                      Stock Level
+                    </h3>
+                    <Badge
+                      variant="outline"
+                      className={`${viewingProduct.stock < 50 ? "border-red-200 text-red-700" : "border-emerald-200 text-emerald-700"}`}
+                    >
                       {viewingProduct.stock} units available
                     </Badge>
                   </div>
@@ -1155,11 +1190,16 @@ export function ProductsPage() {
                 </div>
 
                 <div>
-                  <h3 className="font-medium text-stone-800 mb-2">Available Sizes</h3>
+                  <h3 className="font-medium text-stone-800 mb-2">
+                    Available Sizes
+                  </h3>
                   <div className="flex flex-wrap gap-2">
                     {viewingProduct.sizes && viewingProduct.sizes.length > 0 ? (
                       viewingProduct.sizes.map((size: string, i: number) => (
-                        <div key={i} className="px-3 py-1 bg-stone-100 border border-stone-200 rounded text-sm text-stone-700">
+                        <div
+                          key={i}
+                          className="px-3 py-1 bg-stone-100 border border-stone-200 rounded text-sm text-stone-700"
+                        >
                           {size}
                         </div>
                       ))
@@ -1168,13 +1208,15 @@ export function ProductsPage() {
                     )}
                   </div>
                 </div>
-
               </div>
             </div>
           )}
 
           <DialogFooter className="mt-6">
-            <Button onClick={() => setViewingProduct(null)} className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white">
+            <Button
+              onClick={() => setViewingProduct(null)}
+              className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white"
+            >
               Close
             </Button>
           </DialogFooter>

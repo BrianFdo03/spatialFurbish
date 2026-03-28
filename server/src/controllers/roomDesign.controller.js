@@ -5,30 +5,63 @@ const mongoose = require("mongoose");
 // CREATE room design — optionally with initial scene objects
 const createRoomDesign = async (req, res) => {
   try {
-    const { name, roomType, objects, userId } = req.body;
+    const { name, roomType, sceneObjects, userId, previewImage } = req.body;
 
     const design = await RoomDesign.create({
       name,
       roomType,
       user_id: userId,
+      previewImage,
       sceneObjects: [],
     });
 
     // If scene objects were provided
     if (sceneObjects?.length > 0) {
-      const newObjects = await SceneObject.insertMany(
-        objects.map((obj) => ({
-          productId: obj.productId,
-          position: obj.position,
-          rotation: obj.rotation,
-          color: obj.color,
-          texture: obj.texture,
-          isPlaced: true,
-          roomDesignId: design._id,
-        })),
+      const sceneObjectIds = [];
+
+      await Promise.all(
+        sceneObjects.map(async (obj) => {
+          const isValidObjectId = mongoose.Types.ObjectId.isValid(
+            obj.sceneObjectId,
+          );
+
+          // ✅ EXISTING object → UPDATE
+          if (isValidObjectId) {
+            const existingObject = await SceneObject.findById(
+              obj.sceneObjectId,
+            );
+
+            if (existingObject) {
+              existingObject.position = obj.position;
+              existingObject.rotation = obj.rotation;
+              existingObject.color = obj.color;
+              existingObject.texture = obj.texture;
+              existingObject.isPlaced = true;
+              existingObject.roomDesignId = design._id;
+
+              await existingObject.save();
+
+              sceneObjectIds.push(existingObject._id);
+              return;
+            }
+          }
+
+          // ✅ NEW object → CREATE
+          const newObject = await SceneObject.create({
+            productId: obj.productId,
+            position: obj.position,
+            rotation: obj.rotation,
+            color: obj.color,
+            texture: obj.texture,
+            isPlaced: true,
+            roomDesignId: design._id,
+          });
+
+          sceneObjectIds.push(newObject._id);
+        }),
       );
 
-      design.sceneObjects = newObjects.map((o) => o._id);
+      design.sceneObjects = sceneObjectIds;
       await design.save();
     }
 
@@ -42,16 +75,19 @@ const createRoomDesign = async (req, res) => {
 // GET all designs for logged-in user
 const getUserDesigns = async (req, res) => {
   try {
-    const designs = await RoomDesign.find({
-      user_id: req.user._id,
-    }).sort({ createdAt: -1 });
+    const { userId } = req.query;
 
-    if (designs.length === 0) {
-      return res.status(404).json({ message: "No designs found" });
+    if (!userId) {
+      return res.status(400).json({ message: "userId is required" });
     }
+
+    const designs = await RoomDesign.find({
+      user_id: userId,
+    }).sort({ createdAt: -1 });
 
     res.json(designs);
   } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "Failed to fetch designs" });
   }
 };
@@ -80,7 +116,7 @@ const getRoomDesignById = async (req, res) => {
 const updateRoomDesign = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, roomType, updatedSceneObjects } = req.body;
+    const { name, roomType, updatedSceneObjects, previewImage } = req.body;
 
     const design = await RoomDesign.findById(id);
     if (!design) {
@@ -89,6 +125,7 @@ const updateRoomDesign = async (req, res) => {
 
     if (name) design.name = name;
     if (roomType) design.roomType = roomType;
+    if (previewImage) design.previewImage = previewImage;
     // await design.save();
 
     // scene object updates
@@ -98,7 +135,10 @@ const updateRoomDesign = async (req, res) => {
       await Promise.all(
         updatedSceneObjects.map(async (obj) => {
           if (obj.sceneObjectId && obj.productId) {
-            if (obj.sceneObjectId.toString().length == 24) {
+            const isValidObjectId = mongoose.Types.ObjectId.isValid(
+              obj.sceneObjectId,
+            );
+            if (isValidObjectId) {
               // If sceneObjectId is provided, update the existing scene object
               const existingObject = await SceneObject.findById(
                 obj.sceneObjectId,
@@ -111,12 +151,10 @@ const updateRoomDesign = async (req, res) => {
                 existingObject.texture = obj.texture;
                 existingObject.isPlaced =
                   obj.isPlaced ?? existingObject.isPlaced;
+                existingObject.roomDesignId = design._id;
                 await existingObject.save();
 
-                // Ensure the scene object ID is stored in the design's sceneObjects array
-                if (!design.sceneObjects.includes(existingObject._id)) {
-                  sceneObjectIds.push(existingObject._id);
-                }
+                sceneObjectIds.push(existingObject._id);
               }
             } else {
               console.log(
@@ -142,7 +180,13 @@ const updateRoomDesign = async (req, res) => {
           }
         }),
       );
-      design.sceneObjects.push(...sceneObjectIds);
+      // NO DUPLICATES
+      design.sceneObjects = [
+        ...new Set([
+          ...design.sceneObjects.map((id) => id.toString()),
+          ...sceneObjectIds.map((id) => id.toString()),
+        ]),
+      ];
       await design.save();
     }
 

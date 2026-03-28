@@ -1,7 +1,14 @@
 import { useEffect, useState } from "react";
-import { categoryAPI } from '@/services/api';
+import { categoryAPI } from "@/services/api";
 import { Layout } from "@/components/Dashboard/Layout";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -27,11 +34,11 @@ export function CategoriesPage() {
 
   // Form state
   const [formData, setFormData] = useState({
-    name: ''
+    name: "",
   });
 
   // Search state
-  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // 2. FETCH DATA (useEffect)
   useEffect(() => {
@@ -54,38 +61,42 @@ export function CategoriesPage() {
 
   // 3. DELETE HANDLER
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this category?")) return;
+    if (!window.confirm("Are you sure you want to delete this category?"))
+      return;
 
     try {
       await categoryAPI.delete(id);
       // Refresh the list after successful deletion
       loadCategories();
     } catch (err) {
-      alert('Error deleting category');
+      alert("Error deleting category");
     }
   };
 
   // Filter categories based on search query
-  const filteredCategories = categories.filter(category => {
-    const searchMatch = searchQuery === '' ||
+  const filteredCategories = categories.filter((category) => {
+    const searchMatch =
+      searchQuery === "" ||
       category.name.toLowerCase().includes(searchQuery.toLowerCase());
 
     return searchMatch;
   });
 
   // Handle form input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { id, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [id]: value
+      [id]: value,
     }));
   };
 
   // Handle cancel - reset form and close dialog
   const handleCancel = () => {
     setFormData({
-      name: ''
+      name: "",
     });
     setEditingCategory(null);
     setOpen(false);
@@ -95,7 +106,7 @@ export function CategoriesPage() {
   const handleEdit = (category: any) => {
     setEditingCategory(category);
     setFormData({
-      name: category.name
+      name: category.name,
     });
     setOpen(true);
   };
@@ -106,7 +117,7 @@ export function CategoriesPage() {
 
     try {
       const categoryData = {
-        name: formData.name
+        name: formData.name,
       };
 
       if (editingCategory) {
@@ -119,7 +130,7 @@ export function CategoriesPage() {
 
       // Reset form and close dialog
       setFormData({
-        name: ''
+        name: "",
       });
       setEditingCategory(null);
       setOpen(false);
@@ -127,7 +138,7 @@ export function CategoriesPage() {
       // Refresh categories list
       loadCategories();
     } catch (err) {
-      alert('Error saving category: ' + (err as Error).message);
+      alert("Error saving category: " + (err as Error).message);
     }
   };
 
@@ -144,12 +155,12 @@ export function CategoriesPage() {
           <DialogContent className="sm:max-w-[500px] bg-white text-stone-800">
             <DialogHeader>
               <DialogTitle className="text-xl font-serif text-stone-900">
-                {editingCategory ? 'Edit Category' : 'Add New Category'}
+                {editingCategory ? "Edit Category" : "Add New Category"}
               </DialogTitle>
               <DialogDescription className="text-stone-500">
                 {editingCategory
-                  ? 'Update the category details below.'
-                  : 'Create a new product category here. Click save when you\'re done.'}
+                  ? "Update the category details below."
+                  : "Create a new product category here. Click save when you're done."}
               </DialogDescription>
             </DialogHeader>
 
@@ -157,7 +168,9 @@ export function CategoriesPage() {
               <div className="grid gap-4 py-4">
                 {/* Name Input */}
                 <div className="grid gap-2">
-                  <Label htmlFor="name" className="text-stone-700">Category Name</Label>
+                  <Label htmlFor="name" className="text-stone-700">
+                    Category Name
+                  </Label>
                   <Input
                     id="name"
                     value={formData.name}
@@ -167,16 +180,22 @@ export function CategoriesPage() {
                     required
                   />
                 </div>
-
-
               </div>
 
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={handleCancel} className="border-stone-200 text-stone-600 hover:bg-stone-50">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancel}
+                  className="border-stone-200 text-stone-600 hover:bg-stone-50"
+                >
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-[#788F76] hover:bg-[#667c64] text-white">
-                  {editingCategory ? 'Update Category' : 'Save Category'}
+                <Button
+                  type="submit"
+                  className="bg-[#788F76] hover:bg-[#667c64] text-white"
+                >
+                  {editingCategory ? "Update Category" : "Save Category"}
                 </Button>
               </DialogFooter>
             </form>
@@ -214,22 +233,36 @@ export function CategoriesPage() {
             <Table>
               <TableHeader className="bg-stone-50">
                 <TableRow>
-                  <TableHead className="font-medium text-stone-600">Name</TableHead>
-                  <TableHead className="font-medium text-stone-600 text-right">Actions</TableHead>
+                  <TableHead className="font-medium text-stone-600">
+                    Name
+                  </TableHead>
+                  <TableHead className="font-medium text-stone-600 text-right">
+                    Actions
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {/* 5. DYNAMIC DATA MAPPING */}
                 {filteredCategories.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={2} className="text-center py-8 text-stone-500">
-                      {categories.length === 0 ? 'No categories found.' : 'No categories match the search query.'}
+                    <TableCell
+                      colSpan={2}
+                      className="text-center py-8 text-stone-500"
+                    >
+                      {categories.length === 0
+                        ? "No categories found."
+                        : "No categories match the search query."}
                     </TableCell>
                   </TableRow>
                 ) : (
                   filteredCategories.map((category) => (
-                    <TableRow key={category._id} className="hover:bg-stone-50/50">
-                      <TableCell className="font-semibold text-stone-800">{category.name}</TableCell>
+                    <TableRow
+                      key={category._id}
+                      className="hover:bg-stone-50/50"
+                    >
+                      <TableCell className="font-semibold text-stone-800">
+                        {category.name}
+                      </TableCell>
                       <TableCell className="text-right space-x-2">
                         <Button
                           variant="ghost"

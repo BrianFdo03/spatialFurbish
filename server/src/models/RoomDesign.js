@@ -24,10 +24,16 @@ const roomDesignSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    previewImage: {
+      type: String,
+      default: null
+    }
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt fields
   },
+
+  
 );
 
 // Create and export the model

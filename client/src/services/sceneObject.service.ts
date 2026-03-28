@@ -26,4 +26,7 @@ export const sceneObjectAPI = {
 
   delete: (designId: string, objectId: string) =>
     axiosInstance.delete(`/sceneObject/${designId}/objects/${objectId}`),
+
+  getUnplaced: (userId: string) =>
+    axiosInstance.get(`/sceneObject/unplaced/${userId}`),
 };
