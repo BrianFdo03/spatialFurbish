@@ -95,7 +95,10 @@ Follow the existing code style and ensure new features are tested before submitt
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Author  
-Created by brianfernando3030
+Nayananayaka Ranasinghe
+Lokupulukkuttiralage Perera 
+Ungamandadige Fernando
+Rathnayaka Rathnayake 
 
 ## Support  
 For support, please open an issue in the repository.
