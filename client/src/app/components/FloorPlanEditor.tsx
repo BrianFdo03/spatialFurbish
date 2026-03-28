@@ -92,17 +92,40 @@ export default function FloorPlanEditor() {
 
   // Load existing design if ?id= is present in URL
   useEffect(() => {
-    if (!loadId) return;
-
     const loadDesign = async () => {
       try {
-        const [designRes, cartRes] = await Promise.all([
-          roomDesignAPI.getById(loadId),
-          sceneObjectAPI.getUnplaced(user_id),
-        ]);
-
-        const design = designRes.data;
+        const cartRes = await sceneObjectAPI.getUnplaced(user_id);
         const cartObjects = cartRes.data;
+        const cart: PlacedItem[] = cartObjects.map((obj: any) => ({
+          instanceId: obj._id, // use DB _id as instanceId so updates go to right record
+          id: obj.productId?._id ?? "",
+          name: obj.productId?.name ?? "Item",
+          category: obj.productId?.category ?? "",
+          price: obj.productId?.price ?? 0,
+          image: obj.productId?.images?.[0] ?? "",
+          model: obj.productId?.productModel ?? "",
+          w: 1.2,
+          d: 1.2,
+          size: "",
+          allowedColors: obj.productId?.allowedColors ?? [],
+          allowedTextures: obj.productId?.allowedTextures ?? [],
+          x: obj.position?.x ?? 100,
+          y: obj.position?.y ?? 100,
+          rotation: obj.position?.rotation ?? 0,
+          color: obj.color ?? "#ffffff",
+          texture: obj.texture,
+          isPlaced: obj.isPlaced ?? false,
+          cartProduct: true,
+        }));
+
+        if (!loadId) {
+          // NEW DESIGN → only cart items
+          dispatch({ type: "LOAD_ITEMS", payload: cart });
+          return;
+        }
+
+        const designRes = await roomDesignAPI.getById(loadId);
+        const design = designRes.data;
 
         setDesignId(design._id);
         setTitle(design.name);
@@ -128,28 +151,6 @@ export default function FloorPlanEditor() {
           isPlaced: obj.isPlaced ?? true,
         }));
 
-        const cart: PlacedItem[] = cartObjects.map((obj: any) => ({
-          instanceId: obj._id, // use DB _id as instanceId so updates go to right record
-          id: obj.productId?._id ?? "",
-          name: obj.productId?.name ?? "Item",
-          category: obj.productId?.category ?? "",
-          price: obj.productId?.price ?? 0,
-          image: obj.productId?.images?.[0] ?? "",
-          model: obj.productId?.productModel ?? "",
-          w: 1.2,
-          d: 1.2,
-          size: "",
-          allowedColors: obj.productId?.allowedColors ?? [],
-          allowedTextures: obj.productId?.allowedTextures ?? [],
-          x: obj.position?.x ?? 100,
-          y: obj.position?.y ?? 100,
-          rotation: obj.position?.rotation ?? 0,
-          color: obj.color ?? "#ffffff",
-          texture: obj.texture,
-          isPlaced: obj.isPlaced ?? false,
-          cartProduct: true,
-        }));
-
         dispatch({ type: "LOAD_ITEMS", payload: [...placed, ...cart] });
       } catch (err) {
         console.error("Failed to load design", err);
@@ -157,7 +158,7 @@ export default function FloorPlanEditor() {
     };
 
     loadDesign();
-  }, [loadId]);
+  }, [loadId, user_id]);
 
   const handleAdd = (def: FurnitureDef) => {
     dispatch({ type: "ADD_ITEM", payload: def });
@@ -203,6 +204,7 @@ export default function FloorPlanEditor() {
     setIsSaving(true);
     try {
       const objectsPayload = items.map((item) => ({
+        sceneObjectId: item.instanceId,
         productId: item.id,
         position: { x: item.x, y: item.y },
         rotation: item.rotation,
