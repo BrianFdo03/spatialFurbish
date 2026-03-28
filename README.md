@@ -1,76 +1,104 @@
-# Full Stack Development
+# Spatial Furbish
 
 ## Overview  
-This project aims to provide a full-stack development template that simplifies the process of building scalable and maintainable applications. This template includes a range of features that facilitate development in both frontend and backend technologies.
+Spatial Furbish is a full-stack furniture e-commerce platform with an integrated 3D room planner. Users can browse and purchase furniture, visualize pieces in a customizable room layout, and manage orders — all in one place. Admins have a dedicated dashboard for managing products, categories, orders, customers, reviews, and textures.
 
 ## Features  
-- Responsive Design  
-- RESTful API Integration  
-- User Authentication  
-- Database Management  
-- Customizable UI Components
+- 3D Room Planner with furniture placement and floor/wall texture customization  
+- User authentication with JWT and role-based access control  
+- Product browsing, filtering, and detailed product views  
+- Shopping cart and order placement  
+- Real-time updates via Socket.IO  
+- Image uploads via Cloudinary  
+- Admin dashboard for full platform management  
+- Responsive UI with Tailwind CSS and shadcn/ui components
 
 ## Tech Stack  
-- **Frontend:** React.js, Bootstrap  
+- **Frontend:** React 19, TypeScript, Vite, Tailwind CSS, Three.js / React Three Fiber  
 - **Backend:** Node.js, Express.js  
-- **Database:** MongoDB  
-- **Deployment:** Docker, Heroku
+- **Database:** MongoDB, Mongoose  
+- **Real-time:** Socket.IO  
+- **Storage:** Cloudinary  
+- **Deployment:** Docker
 
 ## Project Structure  
 ```
-├── client/      # Frontend code
-├── server/      # Backend code
-├── scripts/     # Various scripts
+├── client/      # React frontend (Vite + TypeScript)
+├── server/      # Express backend (Node.js)
 └── README.md    # Project documentation
 ```
 
 ## Getting Started Guide  
 This guide will help you set up the project locally for development.
 
+### Prerequisites  
+- Node.js 18+  
+- MongoDB Atlas account (or local MongoDB)  
+- Cloudinary account
+
 ### Installation  
 1. Clone the repository:  
-   `git clone https://github.com/venuraka/Full-Stack-Development.git`  
+   `git clone https://github.com/your-username/spatial-furbish.git`  
 2. Navigate to the project directory:  
-   `cd Full-Stack-Development`  
-3. Install the dependencies for both client and server:  
-   ```  
-   cd client && npm install  
+   `cd spatial-furbish`  
+3. Install dependencies for both client and server:  
+   ```
+   cd client && npm install
    cd ../server && npm install
    ```
 
+### Environment Setup  
+Create a `.env` file in the `server/` directory based on the following:
+```
+MONGO_URI=your_mongodb_connection_string
+PORT=3000
+NODE_ENV=development
+JWT_SECRET=your_jwt_secret
+CLIENT_URL=http://localhost:5173
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
 ## Development and Production Deployment  
 ### Development  
-Run the following command to start the development server:
+Run the client and server in separate terminals:
 ```
-npm run dev
+# Client
+cd client && npm run dev
+
+# Server
+cd server && npm run dev
 ```
 
 ### Production  
-To build for production, use the following command:
+Build the client and start the server:
 ```
-npm run build
+cd client && npm run build
+cd ../server && npm start
 ```
-And then deploy to your chosen hosting provider.
 
-## Configuration Files  
-Configuration files are located in the `config/` directory.  
-Make sure to set the environment variables according to the `.env.example` file.
+### Docker  
+Both client and server include Dockerfiles for containerized deployment.
 
 ## Available Scripts  
+- `npm run dev`: Starts the development server (client or server)  
+- `npm run build`: Builds the client for production  
 - `npm start`: Starts the production server  
-- `npm run dev`: Starts the development server  
-- `npm test`: Runs the tests  
-- `npm run build`: Builds the app for production
+- `npm run lint`: Runs ESLint on the client
 
 ## Contributing Guidelines  
-We welcome contributions to improve the project! To get started, please fork the repository and submit a pull request.  
-Make sure to follow the coding standards and write tests for new features.  
+Contributions are welcome. Please fork the repository and submit a pull request.  
+Follow the existing code style and ensure new features are tested before submitting.
 
 ## License  
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Author  
-Created by venuraka
+- Nayananayaka Ranasinghe
+- Lokupulukkuttiralage Perera 
+- Ungamandadige Fernando
+- Rathnayaka Rathnayake 
 
 ## Support  
-For support, please contact venuraka@example.com or open an issue in the repository.
+For support, please open an issue in the repository.

@@ -1,7 +1,6 @@
 import { Layout } from "@/components/Dashboard/Layout";
 import { DashboardStats } from "@/components/Dashboard/DashboardStats";
 import { RecentOrders } from "@/components/Dashboard/RecentOrders";
-import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSocket } from "@/context/SocketContext";

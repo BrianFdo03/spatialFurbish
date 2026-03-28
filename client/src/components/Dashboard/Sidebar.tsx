@@ -1,6 +1,5 @@
 // src/components/Sidebar.tsx
 import { useLogout } from "@/hooks/useLogout";
-import { GiRolledCloth } from "react-icons/gi";
 import {
   LayoutDashboard,
   Sofa,
