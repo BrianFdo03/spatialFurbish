@@ -17,19 +17,51 @@ const createRoomDesign = async (req, res) => {
 
     // If scene objects were provided
     if (sceneObjects?.length > 0) {
-      const newObjects = await SceneObject.insertMany(
-        sceneObjects.map((obj) => ({
-          productId: obj.productId,
-          position: obj.position,
-          rotation: obj.rotation,
-          color: obj.color,
-          texture: obj.texture,
-          isPlaced: true,
-          roomDesignId: design._id,
-        })),
+      const sceneObjectIds = [];
+
+      await Promise.all(
+        sceneObjects.map(async (obj) => {
+          const isValidObjectId = mongoose.Types.ObjectId.isValid(
+            obj.sceneObjectId,
+          );
+
+          // ✅ EXISTING object → UPDATE
+          if (isValidObjectId) {
+            const existingObject = await SceneObject.findById(
+              obj.sceneObjectId,
+            );
+
+            if (existingObject) {
+              existingObject.position = obj.position;
+              existingObject.rotation = obj.rotation;
+              existingObject.color = obj.color;
+              existingObject.texture = obj.texture;
+              existingObject.isPlaced = true;
+              existingObject.roomDesignId = design._id;
+
+              await existingObject.save();
+
+              sceneObjectIds.push(existingObject._id);
+              return;
+            }
+          }
+
+          // ✅ NEW object → CREATE
+          const newObject = await SceneObject.create({
+            productId: obj.productId,
+            position: obj.position,
+            rotation: obj.rotation,
+            color: obj.color,
+            texture: obj.texture,
+            isPlaced: true,
+            roomDesignId: design._id,
+          });
+
+          sceneObjectIds.push(newObject._id);
+        }),
       );
 
-      design.sceneObjects = newObjects.map((o) => o._id);
+      design.sceneObjects = sceneObjectIds;
       await design.save();
     }
 
