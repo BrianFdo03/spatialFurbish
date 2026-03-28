@@ -144,7 +144,7 @@ export function Cart() {
 
               <button
                 onClick={() => navigate("/place-order")}
-                className="w-full bg-[#8a9b82] text-white py-4 text-sm uppercase tracking-wide hover:opacity-90 transition"
+                className="w-full bg-[#000000] text-white py-4 text-sm uppercase tracking-wide hover:opacity-90 transition"
               >
                 Checkout →
               </button>
@@ -164,12 +164,12 @@ export function Cart() {
           social_links: [
             { platform: "facebook", url: "#" },
             { platform: "instagram", url: "#" },
-            { platform: "youtube", url: "#" }
+            { platform: "youtube", url: "#" },
           ],
           links: [
             { label: "Privacy", href: "#" },
             { label: "Trends", href: "#" },
-            { label: "Contact", href: "#" }
+            { label: "Contact", href: "#" },
           ],
           copyright: "© 2026 SpatialFurbish furnitures. All rights reserved.",
         }}

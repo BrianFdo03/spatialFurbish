@@ -243,7 +243,9 @@ export function ProductsPage() {
     setFormData((prev) => ({
       ...prev,
       allowedColors: prev.allowedColors.filter((_, i) => i !== index),
-      colorImages: prev.colorImages.filter((mapping) => mapping.color !== colorToRemove),
+      colorImages: prev.colorImages.filter(
+        (mapping) => mapping.color !== colorToRemove,
+      ),
     }));
   };
 
@@ -251,7 +253,9 @@ export function ProductsPage() {
   const handleAssignColorToImage = (color: string, imageUrl: string) => {
     setFormData((prev) => {
       // Remove any existing mapping for this color
-      const filtered = prev.colorImages.filter((mapping) => mapping.color !== color);
+      const filtered = prev.colorImages.filter(
+        (mapping) => mapping.color !== color,
+      );
       return {
         ...prev,
         colorImages: [...filtered, { color, imageUrl }],
@@ -262,7 +266,9 @@ export function ProductsPage() {
   const handleRemoveColorImageMapping = (color: string) => {
     setFormData((prev) => ({
       ...prev,
-      colorImages: prev.colorImages.filter((mapping) => mapping.color !== color),
+      colorImages: prev.colorImages.filter(
+        (mapping) => mapping.color !== color,
+      ),
     }));
   };
 
@@ -392,8 +398,11 @@ export function ProductsPage() {
         allowedTextures: formData.allowedTextures,
       };
 
-      console.log("SUBMITTING COLOR IMAGES Payload:", JSON.stringify(productData.colorImages));
-      
+      console.log(
+        "SUBMITTING COLOR IMAGES Payload:",
+        JSON.stringify(productData.colorImages),
+      );
+
       if (editingProduct) {
         // Update existing product
         await productAPI.update(editingProduct._id, productData);
@@ -424,7 +433,7 @@ export function ProductsPage() {
           }}
         >
           <DialogTrigger asChild>
-            <Button className="bg-[#788F76] hover:bg-[#667c64] text-white">
+            <Button className="bg-black hover:bg-[#D3D3D3] text-white hover:text-black shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98]">
               <Plus className="w-4 h-4 mr-2" /> Add Product
             </Button>
           </DialogTrigger>
@@ -638,47 +647,64 @@ export function ProductsPage() {
                   </div>
 
                   {/* Assign Images to Colors (Only visible if we have both colors and images) */}
-                  {formData.allowedColors.length > 0 && formData.images.length > 0 && (
-                     <div className="mt-4 border border-stone-200 rounded-md p-4 bg-stone-50/50">
-                        <Label className="text-stone-700 block mb-3 text-sm">Assign Images to Colors</Label>
+                  {formData.allowedColors.length > 0 &&
+                    formData.images.length > 0 && (
+                      <div className="mt-4 border border-stone-200 rounded-md p-4 bg-stone-50/50">
+                        <Label className="text-stone-700 block mb-3 text-sm">
+                          Assign Images to Colors
+                        </Label>
                         <div className="flex flex-col gap-3">
-                           {formData.allowedColors.map((color) => {
-                              const currentMapping = formData.colorImages.find(c => c.color === color);
-                              
-                              return (
-                                 <div key={color} className="flex items-center gap-3">
-                                    <div 
-                                       className="w-8 h-8 rounded-full border" 
-                                       style={{ backgroundColor: color }}
-                                       title={color}
-                                    />
-                                    <select
-                                       value={currentMapping?.imageUrl || ""}
-                                       onChange={(e) => {
-                                          if (e.target.value === "") {
-                                             handleRemoveColorImageMapping(color);
-                                          } else {
-                                             handleAssignColorToImage(color, e.target.value);
-                                          }
-                                       }}
-                                       className="flex-1 bg-white border border-stone-200 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#788F76] text-stone-700"
-                                    >
-                                       <option value="">-- Select corresponding image --</option>
-                                       {formData.images.map((img, idx) => (
-                                          <option key={idx} value={img}>
-                                             Image {idx + 1}
-                                          </option>
-                                       ))}
-                                    </select>
-                                    {currentMapping && (
-                                       <img src={currentMapping.imageUrl} alt="preview" className="w-8 h-8 rounded object-cover border border-stone-200" />
-                                    )}
-                                 </div>
-                              )
-                           })}
+                          {formData.allowedColors.map((color) => {
+                            const currentMapping = formData.colorImages.find(
+                              (c) => c.color === color,
+                            );
+
+                            return (
+                              <div
+                                key={color}
+                                className="flex items-center gap-3"
+                              >
+                                <div
+                                  className="w-8 h-8 rounded-full border"
+                                  style={{ backgroundColor: color }}
+                                  title={color}
+                                />
+                                <select
+                                  value={currentMapping?.imageUrl || ""}
+                                  onChange={(e) => {
+                                    if (e.target.value === "") {
+                                      handleRemoveColorImageMapping(color);
+                                    } else {
+                                      handleAssignColorToImage(
+                                        color,
+                                        e.target.value,
+                                      );
+                                    }
+                                  }}
+                                  className="flex-1 bg-white border border-stone-200 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#788F76] text-stone-700"
+                                >
+                                  <option value="">
+                                    -- Select corresponding image --
+                                  </option>
+                                  {formData.images.map((img, idx) => (
+                                    <option key={idx} value={img}>
+                                      Image {idx + 1}
+                                    </option>
+                                  ))}
+                                </select>
+                                {currentMapping && (
+                                  <img
+                                    src={currentMapping.imageUrl}
+                                    alt="preview"
+                                    className="w-8 h-8 rounded object-cover border border-stone-200"
+                                  />
+                                )}
+                              </div>
+                            );
+                          })}
                         </div>
-                     </div>
-                  )}
+                      </div>
+                    )}
                 </div>
 
                 {/* Available Sizes */}
@@ -702,7 +728,7 @@ export function ProductsPage() {
                         </button>
                       </Badge>
                     ))}
-                    
+
                     {/* Add Size Input */}
                     <div className="flex items-center gap-2 mt-2 w-full">
                       <Input
@@ -712,7 +738,9 @@ export function ProductsPage() {
                         placeholder="W (e.g. 10)"
                         className="bg-stone-50 border-stone-200 focus-visible:ring-[#788F76] h-8 text-sm w-24"
                       />
-                      <span className="text-stone-500 text-sm font-medium">x</span>
+                      <span className="text-stone-500 text-sm font-medium">
+                        x
+                      </span>
                       <Input
                         value={newSizeH}
                         onChange={(e) => setNewSizeH(e.target.value)}
@@ -720,7 +748,9 @@ export function ProductsPage() {
                         placeholder="H (e.g. 20)"
                         className="bg-stone-50 border-stone-200 focus-visible:ring-[#788F76] h-8 text-sm w-24"
                       />
-                      <span className="text-stone-500 text-sm font-medium">x</span>
+                      <span className="text-stone-500 text-sm font-medium">
+                        x
+                      </span>
                       <Input
                         value={newSizeL}
                         onChange={(e) => setNewSizeL(e.target.value)}
@@ -983,15 +1013,18 @@ export function ProductsPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex -space-x-1">
-                          {product.allowedColors?.map((color: string, i: number) => (
-                            <div
-                              key={i}
-                              className="w-5 h-5 rounded-full border border-stone-200 shadow-sm"
-                              style={{ backgroundColor: color }}
-                              title={color}
-                            />
-                          ))}
-                          {(!product.allowedColors || product.allowedColors.length === 0) && (
+                          {product.allowedColors?.map(
+                            (color: string, i: number) => (
+                              <div
+                                key={i}
+                                className="w-5 h-5 rounded-full border border-stone-200 shadow-sm"
+                                style={{ backgroundColor: color }}
+                                title={color}
+                              />
+                            ),
+                          )}
+                          {(!product.allowedColors ||
+                            product.allowedColors.length === 0) && (
                             <span className="text-xs text-stone-400">None</span>
                           )}
                         </div>
@@ -1066,7 +1099,10 @@ export function ProductsPage() {
       </Card>
 
       {/* View Product Modal */}
-      <Dialog open={!!viewingProduct} onOpenChange={(isOpen) => !isOpen && setViewingProduct(null)}>
+      <Dialog
+        open={!!viewingProduct}
+        onOpenChange={(isOpen) => !isOpen && setViewingProduct(null)}
+      >
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-white">
           <DialogHeader>
             <DialogTitle className="text-2xl font-serif text-stone-900">
@@ -1093,14 +1129,21 @@ export function ProductsPage() {
                     )}
                   </div>
                 </div>
-                
+
                 {viewingProduct.images && viewingProduct.images.length > 0 && (
                   <div>
                     <h3 className="font-medium text-stone-800 mb-2">Images</h3>
                     <div className="grid grid-cols-4 gap-2">
                       {viewingProduct.images.map((img: string, i: number) => (
-                        <div key={i} className="aspect-square rounded border border-stone-200 overflow-hidden">
-                          <img src={img} alt={`Product ${i}`} className="w-full h-full object-cover" />
+                        <div
+                          key={i}
+                          className="aspect-square rounded border border-stone-200 overflow-hidden"
+                        >
+                          <img
+                            src={img}
+                            alt={`Product ${i}`}
+                            className="w-full h-full object-cover"
+                          />
                         </div>
                       ))}
                     </div>
@@ -1111,8 +1154,13 @@ export function ProductsPage() {
               {/* Right Column: Information */}
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-stone-900 mb-1">{viewingProduct.name}</h2>
-                  <Badge variant="secondary" className="bg-stone-100 text-stone-700 hover:bg-stone-200 font-normal">
+                  <h2 className="text-2xl font-bold text-stone-900 mb-1">
+                    {viewingProduct.name}
+                  </h2>
+                  <Badge
+                    variant="secondary"
+                    className="bg-stone-100 text-stone-700 hover:bg-stone-200 font-normal"
+                  >
                     {viewingProduct.category || "General"}
                   </Badge>
                   <span className="text-xl font-medium text-[#788F76] ml-4 block mt-2">
@@ -1121,7 +1169,9 @@ export function ProductsPage() {
                 </div>
 
                 <div>
-                  <h3 className="font-medium text-stone-800 mb-1">Description</h3>
+                  <h3 className="font-medium text-stone-800 mb-1">
+                    Description
+                  </h3>
                   <p className="text-sm text-stone-600 leading-relaxed whitespace-pre-wrap">
                     {viewingProduct.description}
                   </p>
@@ -1129,24 +1179,32 @@ export function ProductsPage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <h3 className="font-medium text-stone-800 mb-2">Stock Level</h3>
-                    <Badge variant="outline" className={`${viewingProduct.stock < 50 ? 'border-red-200 text-red-700' : 'border-emerald-200 text-emerald-700'}`}>
+                    <h3 className="font-medium text-stone-800 mb-2">
+                      Stock Level
+                    </h3>
+                    <Badge
+                      variant="outline"
+                      className={`${viewingProduct.stock < 50 ? "border-red-200 text-red-700" : "border-emerald-200 text-emerald-700"}`}
+                    >
                       {viewingProduct.stock} units available
                     </Badge>
                   </div>
-                  
+
                   <div>
                     <h3 className="font-medium text-stone-800 mb-2">Colors</h3>
                     <div className="flex flex-wrap gap-2">
-                      {viewingProduct.allowedColors && viewingProduct.allowedColors.length > 0 ? (
-                        viewingProduct.allowedColors.map((color: string, i: number) => (
-                          <div 
-                            key={i} 
-                            className="w-6 h-6 rounded-full border border-stone-300 shadow-sm" 
-                            style={{ backgroundColor: color }}
-                            title={color}
-                          />
-                        ))
+                      {viewingProduct.allowedColors &&
+                      viewingProduct.allowedColors.length > 0 ? (
+                        viewingProduct.allowedColors.map(
+                          (color: string, i: number) => (
+                            <div
+                              key={i}
+                              className="w-6 h-6 rounded-full border border-stone-300 shadow-sm"
+                              style={{ backgroundColor: color }}
+                              title={color}
+                            />
+                          ),
+                        )
                       ) : (
                         <span className="text-sm text-stone-500">None</span>
                       )}
@@ -1155,11 +1213,16 @@ export function ProductsPage() {
                 </div>
 
                 <div>
-                  <h3 className="font-medium text-stone-800 mb-2">Available Sizes</h3>
+                  <h3 className="font-medium text-stone-800 mb-2">
+                    Available Sizes
+                  </h3>
                   <div className="flex flex-wrap gap-2">
                     {viewingProduct.sizes && viewingProduct.sizes.length > 0 ? (
                       viewingProduct.sizes.map((size: string, i: number) => (
-                        <div key={i} className="px-3 py-1 bg-stone-100 border border-stone-200 rounded text-sm text-stone-700">
+                        <div
+                          key={i}
+                          className="px-3 py-1 bg-stone-100 border border-stone-200 rounded text-sm text-stone-700"
+                        >
                           {size}
                         </div>
                       ))
@@ -1168,13 +1231,15 @@ export function ProductsPage() {
                     )}
                   </div>
                 </div>
-
               </div>
             </div>
           )}
 
           <DialogFooter className="mt-6">
-            <Button onClick={() => setViewingProduct(null)} className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white">
+            <Button
+              onClick={() => setViewingProduct(null)}
+              className="w-full sm:w-auto bg-stone-900 hover:bg-stone-800 text-white"
+            >
               Close
             </Button>
           </DialogFooter>
