@@ -83,20 +83,7 @@ export function Dashboard() {
   }, [socket, isConnected]);
 
   return (
-    <Layout
-      title="Dashboard Overview"
-      action={
-        <Button asChild>
-          <a
-            href="https://docs.google.com/spreadsheets/d/1kLs8Gc7RP-zruKhptf0rkTNszhnlrdzbZ46lQApEeEU/edit?usp=sharing"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            See Messages
-          </a>
-        </Button>
-      }
-    >
+    <Layout title="Dashboard Overview">
       <DashboardStats refreshKey={refreshKey} />
       <RecentOrders refreshKey={refreshKey} />
     </Layout>

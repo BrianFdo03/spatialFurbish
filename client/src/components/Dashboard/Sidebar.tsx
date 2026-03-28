@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Sofa,
   FolderOpen,
+  SwatchBook,
   ShoppingCart,
   Users,
   Home,
@@ -21,7 +22,7 @@ export function Sidebar() {
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
     { icon: Sofa, label: "Products", path: "/products" },
     { icon: FolderOpen, label: "Categories", path: "/categories" },
-    { icon: GiRolledCloth, label: "Textures", path: "/textures" },
+    { icon: SwatchBook, label: "Textures", path: "/textures" },
     { icon: ShoppingCart, label: "Orders", path: "/orders" },
     { icon: Users, label: "Users", path: "/customers" },
     // discussed not to add reviews page now
