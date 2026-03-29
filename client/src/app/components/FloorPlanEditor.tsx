@@ -189,7 +189,7 @@ export default function FloorPlanEditor() {
     const ctx = canvas as HTMLCanvasElement;
 
     try {
-      return ctx.toDataURL("image/jpeg", 0.7);
+      return ctx.toDataURL("image/jpeg", 0.3);
     } catch {
       return undefined;
     }
